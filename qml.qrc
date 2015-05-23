@@ -1,0 +1,12 @@
+<RCC>
+    <qresource prefix="/">
+        <file>qml/Main.qml</file>
+        <file>qml/MainMenuBar.qml</file>
+        <file>qml/Development/Main.qml</file>
+        <file>qml/Development/DevImage.qml</file>
+        <file>qml/Development/HistogramFinal.qml</file>
+        <file>qml/Development/TaskStack.qml</file>
+        <file>qml/Development/Filmstrip.qml</file>
+        <file>qml/Development/HistogramChannelToggle.qml</file>
+    </qresource>
+</RCC>

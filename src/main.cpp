@@ -7,7 +7,8 @@
 
 int main(int argc, char *argv[])
 {
-    QApplication app(argc, argv);
+    QApplication app( argc, argv );
+    Magick::InitializeMagick( argv[0] );
 
     qSetMessagePattern("%{time} %{threadid} %{type}: %{message}");
 

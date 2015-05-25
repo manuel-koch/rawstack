@@ -12,7 +12,8 @@ public:
     explicit ConfigBase(QObject *parent = 0);
     virtual ~ConfigBase();
 
-    bool dirty() const { return m_dirty; }
+    bool   dirty() const { return m_changes!=0; }
+    size_t changes() const { return m_changes; }
 
 signals:
 
@@ -20,11 +21,12 @@ signals:
 
 protected slots:
 
-    void setDirty(bool dirty);
+    void markDirty();
+    void resetDirty();
 
 private:
 
-    bool m_dirty;
+    size_t m_changes;
 };
 
 #endif // CONFIGBASE_H

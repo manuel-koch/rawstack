@@ -2,7 +2,7 @@
 
 ConfigBase::ConfigBase(QObject *parent)
     : QObject(parent)
-    , m_dirty(false)
+    , m_changes(0)
 {
     // EMPTY
 }
@@ -12,11 +12,18 @@ ConfigBase::~ConfigBase()
     // EMPTY
 }
 
-void ConfigBase::setDirty(bool dirty)
+void ConfigBase::markDirty()
 {
-    if (m_dirty == dirty)
-        return;
-    m_dirty = dirty;
-    emit dirtyChanged(m_dirty);
+    bool wasClean = m_changes==0;
+    m_changes++;
+    if( wasClean )
+        emit dirtyChanged(true);
 }
 
+void ConfigBase::resetDirty()
+{
+    bool wasDirty = m_changes!=0;
+    m_changes = 0;
+    if( wasDirty )
+        emit dirtyChanged(false);
+}

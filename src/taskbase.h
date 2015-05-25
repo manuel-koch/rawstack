@@ -19,10 +19,10 @@ public:
     explicit TaskBase(QString name, QObject *parent);
     virtual ~TaskBase();
 
-    QString name() const { return m_name; }
+    QString     name() const { return m_name; }
     ConfigBase* config() const { return m_config; }
     WorkerBase* worker() const { return m_worker; }
-    double progress() const { return m_worker ? m_worker->progress() : 0; }
+    double      progress() const { return m_worker ? m_worker->progress() : 0; }
 
     void setConfig( ConfigBase *config );
     void setWorker( WorkerBase *worker );

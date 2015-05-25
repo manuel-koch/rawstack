@@ -1,6 +1,8 @@
 #ifndef WORKERBASE_H
 #define WORKERBASE_H
 
+#include <Magick++.h>
+
 #include <QObject>
 
 class ConfigBase;
@@ -16,6 +18,10 @@ public:
     virtual ~WorkerBase();
 
     double progress() const { return m_progress; }
+
+    virtual const Magick::Image gmimage() { return m_img; }
+
+    template <typename T> T *config() { return qobject_cast<T*>(m_config); }
 
 signals:
 
@@ -37,10 +43,15 @@ private:
 
     virtual void developImpl( WorkerBase *predecessor );
 
+protected:
+
+    Magick::Image m_img;
+
 private:
 
     double      m_progress;
     ConfigBase *m_config;
+
 };
 
 #endif // WORKERBASE_H

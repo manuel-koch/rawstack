@@ -1,4 +1,5 @@
 #include "ufrawworker.h"
+#include "ufrawprocess.h"
 
 #include <QDebug>
 #include <QThread>
@@ -17,10 +18,11 @@ UfrawWorker::~UfrawWorker()
 void UfrawWorker::developImpl(WorkerBase *predecessor)
 {
     qDebug() << "UfrawWorker::developImpl()" << this << predecessor;
-    QThread::sleep(5);
-    setProgress(0.3);
-    QThread::sleep(2);
-    setProgress(0.8);
-    QThread::sleep(2);
+
+    UfrawProcess ufraw;
+    ufraw.setProgram( "/opt/local/bin/ufraw-batch" );
+    ufraw.setRaw( "/Users/manuel/tmp/TestBilder/01.cr2" );
+    ufraw.run();
+    ufraw.waitForFinished(-1);
 }
 

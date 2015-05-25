@@ -18,6 +18,7 @@ private:
 
     // WorkerBase interface
     virtual void developImpl(WorkerBase *predecessor);
+
 };
 
 #endif // UFRAWWORKER_H

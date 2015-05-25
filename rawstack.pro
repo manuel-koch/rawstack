@@ -10,7 +10,8 @@ SOURCES += \
     src/workerbase.cpp \
     src/configbase.cpp \
     src/ufrawconfig.cpp \
-    src/ufrawworker.cpp
+    src/ufrawworker.cpp \
+    src/ufrawprocess.cpp
 
 RESOURCES += qml.qrc
 
@@ -28,4 +29,5 @@ HEADERS += \
     src/workerbase.h \
     src/configbase.h \
     src/ufrawconfig.h \
-    src/ufrawworker.h
+    src/ufrawworker.h \
+    src/ufrawprocess.h

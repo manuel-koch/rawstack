@@ -1,5 +1,25 @@
 TEMPLATE = app
 
+# Use latest C++ standard to enable lambdas
+QMAKE_CXXFLAGS += -std=c++11
+
+# Get compiler settings for GraphicsMagick++
+GRAPHICSMAGICK_CXXFLAGS = $$system(/opt/local/bin/GraphicsMagick++-config --cppflags --cxxflags)
+GRAPHICSMAGICK_LIBS     = $$system(/opt/local/bin/GraphicsMagick++-config --libs)
+GRAPHICSMAGICK_LFLAGS   = $$system(/opt/local/bin/GraphicsMagick++-config --ldflags)
+message(GRAPHICSMAGICK_CXXFLAGS = $$GRAPHICSMAGICK_CXXFLAGS)
+message(GRAPHICSMAGICK_LFLAGS = $$GRAPHICSMAGICK_LFLAGS)
+message(GRAPHICSMAGICK_LIBS = $$GRAPHICSMAGICK_LIBS)
+
+# Add switches for GraphicsMagick to make variables
+QMAKE_LIBS     += $$GRAPHICSMAGICK_LIBS
+QMAKE_CXXFLAGS += $$GRAPHICSMAGICK_CXXFLAGS
+QMAKE_LFLAGS   += $$GRAPHICSMAGICK_LFLAGS
+
+# Need this to work around strange linker errors related to std::string stuff.
+# See https://forum.qt.io/topic/33577/trouble-compiling-using-static-library-stk-qt-creator-and-qmake/12
+QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.9
+
 QT += qml quick widgets
 
 SOURCES += \

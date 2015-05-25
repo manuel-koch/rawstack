@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QProcess>
+#include <QFile>
 
 class UfrawProcess : public QProcess
 {
@@ -34,12 +35,14 @@ public:
     QByteArray &out() { return m_outData; }
     QByteArray &err() { return m_errData; }
 
-    void   run();
+    void   run( bool probe );
     int    shrink() const { return m_shrink; }
     double exposure() const { return m_exposure; }
     Interpolate interpolate() const { return m_interpolate; }
     Restore restore() const { return m_restore; }
     Clip clip() const { return m_clip; }
+    int wbTemperature() { return m_wbTemperature; }
+    double wbGreen() { return m_wbGreen; }
 
 signals:
 
@@ -53,6 +56,8 @@ public slots:
     void setInterpolate( Interpolate interpolate );
     void setRestore( Restore restore );
     void setClip( Clip clip );
+    void setWbTemperature( int wbTemperature );
+    void setWbGreen( double wbGreen );
 
 private slots:
 
@@ -65,7 +70,8 @@ private slots:
 
 private:
 
-    void buildArgs(QStringList &args);
+    void buildArgs(QString probePath, QStringList &args);
+    void loadProbeSettings(QFile &file);
 
 private:
 
@@ -77,6 +83,8 @@ private:
     Interpolate m_interpolate;
     Restore     m_restore;
     Clip        m_clip;
+    int         m_wbTemperature;
+    double      m_wbGreen;
 };
 
 #endif // UFRAWPROCESS_H

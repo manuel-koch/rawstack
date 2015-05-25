@@ -27,7 +27,14 @@ void UfrawWorker::developImpl(WorkerBase *predecessor)
     ufraw.setRaw( "/Users/manuel/tmp/TestBilder/01.cr2" );
     ufraw.setExposure( cfg->exposure() );
     ufraw.setShrink( 4 );
-    ufraw.run();
+
+    // probe for other settings first...
+    ufraw.run( true );
+    cfg->setWbTemperature( ufraw.wbTemperature() );
+    cfg->setWbGreen( ufraw.wbGreen() );
+
+    // then extract the image
+    ufraw.run( false );
     ufraw.waitForStarted(-1);
     setProgress(0.1);
     ufraw.waitForFinished(-1);

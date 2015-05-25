@@ -1,6 +1,8 @@
-#include <QDebug>
-
 #include "ufrawprocess.h"
+
+#include <QDebug>
+#include <QTemporaryFile>
+#include <QRegularExpression>
 
 UfrawProcess::UfrawProcess(QObject *parent)
     : QProcess(parent)
@@ -9,6 +11,8 @@ UfrawProcess::UfrawProcess(QObject *parent)
     , m_interpolate(InterpolateAhd)
     , m_restore(RestoreClip)
     , m_clip(ClipDigital)
+    , m_wbTemperature(0)
+    , m_wbGreen(0)
 {
     connect( this, SIGNAL(finished(int)),                        this, SLOT(onTerminated(int)) );
     connect( this, SIGNAL(started()),                            this, SLOT(onStarted()) );
@@ -24,17 +28,33 @@ UfrawProcess::~UfrawProcess()
         waitForFinished();
 }
 
-void UfrawProcess::run()
+void UfrawProcess::run(bool probe)
 {
     if( state() == QProcess::Running )
         return;
-    qDebug() << "UfrawProcess::run() starting...";
+    qDebug() << "UfrawProcess::run()" << (probe ? "probe" : "extract") <<  "...";
+
+    QTemporaryFile probeSettings("XXXXXX.tif");
+    probeSettings.open();
+
+    m_outData.clear();
+    m_errData.clear();
 
     QStringList args;
-    buildArgs( args );
+    buildArgs( probe ? probeSettings.fileName() : "", args );
     qDebug() << "UfrawProcess::run()" << args;
     setArguments( args );
     start();
+
+    if( probe )
+    {
+        waitForFinished(-1);
+        QString probePath = probeSettings.fileName();
+        probePath = probePath.left( probePath.length() - 3 ) + "ufraw";
+        QFile probeFile(probePath);
+        loadProbeSettings( probeFile );
+        probeFile.remove();
+    }
 }
 
 void UfrawProcess::setRaw(QString raw)
@@ -78,6 +98,16 @@ void UfrawProcess::setClip(UfrawProcess::Clip clip)
     m_clip = clip;
 }
 
+void UfrawProcess::setWbTemperature(int wbTemperature)
+{
+    m_wbTemperature = wbTemperature;
+}
+
+void UfrawProcess::setWbGreen(double wbGreen)
+{
+    m_wbGreen = wbGreen;
+}
+
 void UfrawProcess::onTerminated(int exitCode)
 {
     qDebug() << "UfrawProcess::onTerminated()" << exitCode;
@@ -112,7 +142,7 @@ void UfrawProcess::onErrData()
     emit progress();
 }
 
-void UfrawProcess::buildArgs(QStringList &args)
+void UfrawProcess::buildArgs(QString probePath, QStringList &args)
 {
     QString interpolate;
     switch( m_interpolate )
@@ -145,7 +175,6 @@ void UfrawProcess::buildArgs(QStringList &args)
     args.clear();
     args << "--overwrite" << "--zip"<< "--noexif"
          << "--out-depth=16" << "--out-type=ppm"
-         << "--create-id=no" << "--output=-"
          << "--lensfun=auto"
          << "--auto-crop"
          << "--rotate=camera"
@@ -154,7 +183,43 @@ void UfrawProcess::buildArgs(QStringList &args)
          << QString("--interpolation=%1").arg(interpolate)
          << QString("--restore=%1").arg(restore)
          << QString("--clip=%1").arg(clip)
-         << "--wb=camera"
-         << "--color-smoothing"
-         << m_raw;
+         << "--color-smoothing";
+
+    if( m_wbTemperature && m_wbGreen )
+        args << QString("--temperature=%1").arg(m_wbTemperature) << QString("--green=%1").arg(m_wbGreen);
+    else
+        args << "--wb=camera";
+
+    if( probePath.isEmpty() )
+        args << "--create-id=no" << "--output=-";
+    else
+        args << "--create-id=only" << QString("--output=%1").arg(probePath);
+
+    args << m_raw;
+}
+
+void UfrawProcess::loadProbeSettings(QFile &file)
+{
+    qDebug() << "UfrawProcess::loadProbeSettings()" << file.fileName();
+    if( !file.open(QFile::ReadOnly) ) {
+        qDebug() << "UfrawProcess::loadProbeSettings() open failed";
+        return;
+    }
+    QString xml = QString::fromUtf8(file.readAll());
+    QRegularExpression re("<(?P<tag>\\w+)>\\s*(?P<val>.+?)\\s*</(?P=tag)>",QRegularExpression::MultilineOption);
+    if( !re.isValid() )
+        qDebug() << "UfrawProcess::loadProbeSettings() invalid re:" << re.errorString();
+    QRegularExpressionMatchIterator it = re.globalMatch(xml);
+    while( it.hasNext() )
+    {
+        QRegularExpressionMatch m = it.next();
+        QString tag = m.captured("tag");
+        QString val = m.captured("val");
+        qDebug() <<  tag << val;
+        if( tag == "Temperature" )
+            m_wbTemperature = val.toInt();
+        else if( tag == "Green" )
+            m_wbGreen = val.toDouble();
+    }
+    file.close();
 }

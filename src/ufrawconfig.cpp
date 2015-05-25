@@ -23,3 +23,23 @@ void UfrawConfig::setExposure(double exposure)
     markDirty();
 }
 
+void UfrawConfig::setWbTemperature(int wbTemperature)
+{
+    if (m_wbTemperature == wbTemperature)
+        return;
+    m_wbTemperature = wbTemperature;
+    qDebug() << "UfrawConfig::setWbTemperature()" << m_wbTemperature;
+    emit wbTemperatureChanged(wbTemperature);
+    markDirty();
+}
+
+void UfrawConfig::setWbGreen(double wbGreen)
+{
+    if (m_wbGreen == wbGreen)
+        return;
+    m_wbGreen = wbGreen;
+    qDebug() << "UfrawConfig::setWbGreen()" << m_wbGreen;
+    emit wbGreenChanged(wbGreen);
+    markDirty();
+}
+

@@ -65,6 +65,10 @@ private slots:
 
 private:
 
+    void buildArgs(QStringList &args);
+
+private:
+
     QString     m_raw;
     QByteArray  m_outData;
     QByteArray  m_errData;

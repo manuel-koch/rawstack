@@ -8,5 +8,11 @@
         <file>qml/Development/TaskStack.qml</file>
         <file>qml/Development/Filmstrip.qml</file>
         <file>qml/Development/HistogramChannelToggle.qml</file>
+        <file>qml/Development/Tasks/Task.qml</file>
+        <file>qml/Development/Tasks/TaskController.qml</file>
+        <file>qml/Development/Tasks/TaskHeader.qml</file>
+        <file>qml/Development/Tasks/TaskSetting.qml</file>
+        <file>qml/Development/Tasks/UfrawController.qml</file>
+        <file>qml/Development/Tasks/UfrawTask.qml</file>
     </qresource>
 </RCC>

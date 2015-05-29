@@ -31,7 +31,8 @@ SOURCES += \
     src/configbase.cpp \
     src/ufrawconfig.cpp \
     src/ufrawworker.cpp \
-    src/ufrawprocess.cpp
+    src/ufrawprocess.cpp \
+    src/taskstack.cpp
 
 RESOURCES += qml.qrc
 
@@ -50,4 +51,6 @@ HEADERS += \
     src/configbase.h \
     src/ufrawconfig.h \
     src/ufrawworker.h \
-    src/ufrawprocess.h
+    src/ufrawprocess.h \
+    src/taskbuilder.h \
+    src/taskstack.h

@@ -3,9 +3,8 @@
 
 #include <QDebug>
 
-TaskBase::TaskBase(QString name, QObject *parent)
+TaskBase::TaskBase(QObject *parent)
     : QObject(parent)
-    , m_name(name)
     , m_config(NULL)
     , m_worker(NULL)
 {
@@ -33,7 +32,7 @@ void TaskBase::setWorker(WorkerBase *worker)
 
 void TaskBase::develop(TaskBase *predecessor)
 {
-    qDebug() << "TaskBase::develop()" << m_name << predecessor;
+    qDebug() << "TaskBase::develop()" << this << predecessor;
    if( m_worker )
    {
        WorkerBase *predecWorder = predecessor ? predecessor->worker() : NULL;
@@ -41,21 +40,13 @@ void TaskBase::develop(TaskBase *predecessor)
    }
 }
 
-void TaskBase::setName(QString name)
-{
-    if (m_name == name)
-        return;
-    m_name = name;
-    emit nameChanged(m_name);
-}
-
 void TaskBase::onStarted()
 {
-    qDebug() << "TaskBase::onStarted()" << m_name;
+    qDebug() << "TaskBase::onStarted()" << this;
 }
 
 void TaskBase::onFinished()
 {
-    qDebug() << "TaskBase::onFinished()" << m_name;
+    qDebug() << "TaskBase::onFinished()" << this;
 }
 

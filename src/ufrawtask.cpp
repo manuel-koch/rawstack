@@ -6,7 +6,7 @@
 #include <QThread>
 
 UfrawTask::UfrawTask(QObject *parent, QThread *workerThread)
-    : TaskBase("ufraw",parent)
+    : TaskBase(parent)
 {
     qDebug() << "UfrawTask::UfrawTask()" << this << workerThread;
     setConfig( new UfrawConfig(this) );

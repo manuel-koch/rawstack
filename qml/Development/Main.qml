@@ -23,7 +23,7 @@ Rectangle {
         }
 
         DevImage {
-//            activeTask: theTaskStack.activeTask
+            activeTask:        theTaskStack.activeTask
             Layout.rowSpan:    2
             Layout.fillWidth:  true
             Layout.fillHeight: true

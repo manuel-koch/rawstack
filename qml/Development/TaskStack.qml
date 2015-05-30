@@ -10,13 +10,15 @@ Rectangle {
 
     property TaskBase activeTask
 
+    onActiveTaskChanged: console.log("activeTask",activeTask)
+
     Component {
         id: taskDelegate
         Loader {
             id: theLoader
             height: item.height
             width:  parent.width
-            property var myModel: model
+            property var delegateModel: model
             Component.onCompleted: {
                 console.log("Create task delegate for",model.name)
                 if( model.name === "ufraw" )
@@ -35,12 +37,12 @@ Rectangle {
             Binding {
                 target:   item.controller
                 property: "task"
-                value:    myModel.task
+                value:    delegateModel.task
                 when:     item
             }
             MouseArea {
                 anchors.fill: parent
-                onClicked:    theList.currentIndex = myModel.index
+                onClicked:    theList.currentIndex = delegateModel.index
             }
         }
     }
@@ -48,7 +50,7 @@ Rectangle {
     Component {
         id: defaultDelegate
         Text {
-            text: "Unknown Task: "+parent.myModel.name
+            text: "Unknown Task: "+parent.delegateModel.name
         }
     }
 
@@ -73,6 +75,12 @@ Rectangle {
         spacing:                 3
         focus:                   true
         clip:                    true
+        onCurrentIndexChanged: {
+            if( currentIndex != -1 )
+                activeTask = currentItem.delegateModel.task
+            else
+                activeTask = null
+        }
     }
 }
 

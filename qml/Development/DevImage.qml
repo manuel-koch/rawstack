@@ -1,6 +1,6 @@
 import QtQuick 2.0
 import QtQuick.Controls 1.3
-//import com.rawstack.types 1.0
+import com.rawstack.types 1.0
 
 Rectangle {
     id: theDevImage
@@ -9,8 +9,9 @@ Rectangle {
     height: 100
     color:  "silver"
 
-//    property ImageTask activeTask
-//    property DevelopmentRotateController rotateController: DevelopmentRotateController { }
+    property TaskBase activeTask
+
+    //    property DevelopmentRotateController rotateController: DevelopmentRotateController { }
 
 //    QtObject {
 //        id: internal

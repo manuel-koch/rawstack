@@ -5,6 +5,7 @@
 WorkerBase::WorkerBase(ConfigBase *config)
     : QObject(NULL)
     , m_progress(0)
+    , m_cycle(0)
     , m_config(config)
 {
     connect( this, SIGNAL(develop(WorkerBase*)), this, SLOT(onDevelop(WorkerBase*)) );
@@ -37,9 +38,17 @@ void WorkerBase::onDevelop(WorkerBase *predecessor)
 
     setProgress(1);
     emit finished();
+    nextCycle();
 }
 
 void WorkerBase::developImpl(WorkerBase *predecessor)
 {
     qDebug() << "WorkerBase::developImpl()" << this << predecessor;
+}
+
+void WorkerBase::nextCycle()
+{
+    m_cycle++;
+    qDebug() << "WorkerBase::nextCycle()" << this << m_cycle;
+    emit cycleChanged(m_cycle);
 }

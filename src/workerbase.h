@@ -11,6 +11,7 @@ class WorkerBase : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(double progress READ progress NOTIFY progressChanged)
+    Q_PROPERTY(int    cycle    READ cycle    NOTIFY cycleChanged)
 
 public:
 
@@ -18,6 +19,7 @@ public:
     virtual ~WorkerBase();
 
     double progress() const { return m_progress; }
+    int cycle() const { return m_cycle; }
 
     virtual const Magick::Image gmimage() { return m_img; }
 
@@ -26,6 +28,7 @@ public:
 signals:
 
     void progressChanged(double progress);
+    void cycleChanged(int cycle);
 
     void develop( WorkerBase *predecessor );
     void started();
@@ -42,6 +45,7 @@ private slots:
 private:
 
     virtual void developImpl( WorkerBase *predecessor );
+    void nextCycle();
 
 protected:
 
@@ -50,8 +54,8 @@ protected:
 private:
 
     double      m_progress;
+    int         m_cycle;
     ConfigBase *m_config;
-
 };
 
 #endif // WORKERBASE_H

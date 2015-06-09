@@ -2,6 +2,13 @@
 
 #include <QDebug>
 
+QImage WorkerBase::convert(Magick::Image image)
+{
+    Magick::Blob blob;
+    image.write( &blob, "tif" );
+    return QImage::fromData( QByteArray( static_cast<const char*>(blob.data()), blob.length() ) );
+}
+
 WorkerBase::WorkerBase(ConfigBase *config)
     : QObject(NULL)
     , m_progress(0)

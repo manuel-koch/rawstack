@@ -1,8 +1,11 @@
 #include "taskfactory.h"
 #include "taskbuilder.h"
 #include "taskstack.h"
+#include "commontasks.h"
 #include "taskbase.h"
 #include "configbase.h"
+#include "imagefactoryregistry.h"
+#include "imageprovider.h"
 
 // FIXME: Remove temporary includes
 #include "ufrawtask.h"
@@ -19,6 +22,9 @@ void register_types()
     qRegisterMetaType<TaskBase*>("TaskBase");
     qRegisterMetaType<ConfigBase*>("ConfigBase");
     qRegisterMetaType<TaskStack*>("TaskStack");
+    qRegisterMetaType<CommonTasks*>("CommonTasks");
+    qRegisterMetaType<ImageFactory*>("ImageFactory");
+    qRegisterMetaType<ImageFactoryBase*>("ImageFactoryBase");
     qmlRegisterType<TaskBase>("com.rawstack.types", 1, 0, "TaskBase");
 }
 
@@ -30,6 +36,9 @@ int main(int argc, char *argv[])
     register_types();
     qSetMessagePattern("%{time} %{threadid} %{type}: %{message}");
 
+    ImageFactoryRegistry imageFactoryRegistry;
+    ImageFactoryRegistry::setInstance( &imageFactoryRegistry );
+
     TaskFactory factory;
     TaskBuilder<UfrawTask> ufrawBuilder("ufraw");
     factory.add( &ufrawBuilder );
@@ -39,13 +48,13 @@ int main(int argc, char *argv[])
     TaskStack taskStack;
     taskStack.addTask( task );
 
-    //task->develop();
-
     QQmlApplicationEngine engine;
+    engine.addImageProvider( "worker", static_cast<QQmlImageProviderBase*>( new ImageProvider() ) );
     QQmlContext *rootContext = engine.rootContext();
-    rootContext->setContextProperty( "theDevTaskStack", &taskStack );
+    rootContext->setContextProperty( "globalDevTaskStack", &taskStack );
 
     engine.load(QUrl(QStringLiteral("qrc:/qml/Main.qml")));
 
-    return app.exec();
+    int result = app.exec();
+    return result;
 }

@@ -1,11 +1,13 @@
 #include "taskstack.h"
 #include "taskbase.h"
 #include "configbase.h"
+#include "commontasks.h"
 
 #include <QDebug>
 
 TaskStack::TaskStack(QObject *parent)
     : QAbstractListModel(parent)
+    , m_commonTasks(NULL)
     , m_progress(0)
 {
     m_rolemap = QAbstractListModel::roleNames();
@@ -13,10 +15,13 @@ TaskStack::TaskStack(QObject *parent)
     m_rolemap[TaskRole]     = "task";
     m_rolemap[ConfigRole]   = "config";
     m_rolemap[ProgressRole] = "progress";
+
+    m_commonTasks = new CommonTasks(this);
 }
 
 TaskStack::~TaskStack()
 {
+    delete m_commonTasks;
     std::for_each( m_tasks.begin(), m_tasks.end(), [] (TaskBase *task) {
         delete task;
     });
@@ -28,7 +33,7 @@ void TaskStack::addTask(TaskBase *task, int idx)
     if( m_tasks.indexOf(task) != -1 )
         return;
 
-    if( idx < 0 )
+    if( idx < 0 || idx>m_tasks.size() )
         idx = m_tasks.size(); // append at end
 
     qDebug() << "TaskStack::addTask()" << task << idx;
@@ -39,6 +44,10 @@ void TaskStack::addTask(TaskBase *task, int idx)
     connect( task, SIGNAL(started()),               this, SLOT(onTaskStarted()) );
     connect( task, SIGNAL(progressChanged(double)), this, SLOT(onTaskProgress(double)) );
     connect( task, SIGNAL(finished()),              this, SLOT(onTaskFinished()) );
+
+    m_commonTasks->setFinal( m_tasks.back() );
+    if( task->config()->name() == "ufraw" )
+        m_commonTasks->setUfraw(task);
 
     endInsertRows();
 }

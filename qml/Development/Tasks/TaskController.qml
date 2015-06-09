@@ -7,11 +7,12 @@ Item {
     property TaskBase task
 
     function triggerDevelop(now,force) {
+        console.trace()
         if( force || theController.task.config.enabled )
             if( !now )
                 theAggregateTimer.restart()
             else if( theController.task.config.dirty )
-                theDevTaskStack.develop()
+                globalDevTaskStack.develop()
     }
 
     function toggleEnabled() {
@@ -27,7 +28,7 @@ Item {
         id: theAggregateTimer
         repeat:      false
         interval:    300
-        onTriggered: if( theController.task.config.dirty ) theDevTaskStack.develop()
+        onTriggered: if( theController.task.config.dirty ) globalDevTaskStack.develop()
     }
 }
 

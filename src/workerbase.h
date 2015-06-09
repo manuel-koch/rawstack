@@ -4,6 +4,7 @@
 #include <Magick++.h>
 
 #include <QObject>
+#include <QImage>
 
 class ConfigBase;
 
@@ -19,9 +20,10 @@ public:
     virtual ~WorkerBase();
 
     double progress() const { return m_progress; }
-    int cycle() const { return m_cycle; }
+    int    cycle()    const { return m_cycle; }
 
     virtual const Magick::Image gmimage() { return m_img; }
+    static QImage convert(Magick::Image image);
 
     template <typename T> T *config() { return qobject_cast<T*>(m_config); }
 

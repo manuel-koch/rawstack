@@ -4,11 +4,13 @@
 #include <QAbstractListModel>
 
 class TaskBase;
+class CommonTasks;
 
 class TaskStack : public QAbstractListModel
 {
     Q_OBJECT
-    Q_PROPERTY(double progress READ progress NOTIFY progressChanged)
+    Q_PROPERTY(double       progress READ progress  NOTIFY progressChanged)
+    Q_PROPERTY(CommonTasks* tasks    READ tasks     CONSTANT)
 
 public:
 
@@ -52,8 +54,13 @@ private slots:
 
 private:
 
+    CommonTasks *tasks() { return m_commonTasks; }
+
+private:
+
     RoleMap           m_rolemap;
     QList<TaskBase*>  m_tasks;
+    CommonTasks      *m_commonTasks;
     double            m_progress;
 };
 

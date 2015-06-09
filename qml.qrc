@@ -14,5 +14,6 @@
         <file>qml/Development/Tasks/TaskSetting.qml</file>
         <file>qml/Development/Tasks/UfrawController.qml</file>
         <file>qml/Development/Tasks/UfrawTask.qml</file>
+        <file>qml/Development/ColoredImage.qml</file>
     </qresource>
 </RCC>

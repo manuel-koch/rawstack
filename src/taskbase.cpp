@@ -7,6 +7,7 @@ TaskBase::TaskBase(QObject *parent)
     : QObject(parent)
     , m_config(NULL)
     , m_worker(NULL)
+    , m_images(NULL)
 {
     connect( this, SIGNAL(started()),  this, SLOT(onStarted()) );
     connect( this, SIGNAL(finished()), this, SLOT(onFinished()) );
@@ -28,6 +29,7 @@ void TaskBase::setWorker(WorkerBase *worker)
     connect( m_worker, SIGNAL(started()),               this, SIGNAL(started()) );
     connect( m_worker, SIGNAL(progressChanged(double)), this, SIGNAL(progressChanged(double)) );
     connect( m_worker, SIGNAL(finished()),              this, SIGNAL(finished()) );
+    m_images = new ImageFactory(worker,this);
 }
 
 void TaskBase::develop(TaskBase *predecessor)

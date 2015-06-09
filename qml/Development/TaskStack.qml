@@ -65,7 +65,7 @@ Rectangle {
     ListView {
         id: theList
         anchors.fill:            parent
-        model:                   theDevTaskStack
+        model:                   globalDevTaskStack
         highlight:               highlightDelegate
         highlightMoveDuration:   0
         highlightResizeDuration: 0

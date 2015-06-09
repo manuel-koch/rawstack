@@ -32,7 +32,14 @@ SOURCES += \
     src/ufrawconfig.cpp \
     src/ufrawworker.cpp \
     src/ufrawprocess.cpp \
-    src/taskstack.cpp
+    src/taskstack.cpp \
+    src/imagefactory.cpp \
+    src/imagefactorybase.cpp \
+    src/imageprovider.cpp \
+    src/imagefactoryoverexposed.cpp \
+    src/imagefactoryunderexposed.cpp \
+    src/imagefactoryregistry.cpp \
+    src/commontasks.cpp
 
 RESOURCES += qml.qrc
 
@@ -53,4 +60,11 @@ HEADERS += \
     src/ufrawworker.h \
     src/ufrawprocess.h \
     src/taskbuilder.h \
-    src/taskstack.h
+    src/taskstack.h \
+    src/imagefactory.h \
+    src/imagefactorybase.h \
+    src/imageprovider.h \
+    src/imagefactoryoverexposed.h \
+    src/imagefactoryunderexposed.h \
+    src/imagefactoryregistry.h \
+    src/commontasks.h

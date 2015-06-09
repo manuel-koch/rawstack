@@ -7,6 +7,12 @@ Rectangle {
     height: 480
     color:  "silver"
 
+    Component.onCompleted: {
+        console.log("tasks.ufraw",      globalDevTaskStack.tasks.ufraw)
+        console.log("tasks.ufraw image",globalDevTaskStack.tasks.ufraw.images.image)
+        console.log("tasks.final",      globalDevTaskStack.tasks.final)
+    }
+
     GridLayout {
         id: theGrid
         rows:          3

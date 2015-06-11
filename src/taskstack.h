@@ -36,7 +36,6 @@ public:
 public slots:
 
     Q_INVOKABLE void develop();
-    void setProgress(double progress);
 
 public:
 
@@ -60,6 +59,7 @@ private slots:
 private:
 
     void setDeveloping(bool developing);
+    void setProgress(double progress);
     CommonTasks *tasks() { return m_commonTasks; }
 
 private:

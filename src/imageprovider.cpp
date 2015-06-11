@@ -24,8 +24,8 @@ QImage ImageProvider::requestImage(const QString &path, QSize *size, const QSize
 
     QImage image;
 
-    QString id = path.split("?").at(0);
-    ImageFactoryBase *factory = ImageFactoryRegistry::getInstance()->getFactory(id);
+    QUrl url(path);
+    ImageFactoryBase *factory = ImageFactoryRegistry::getInstance()->getFactory(url.path());
     if( !factory )
         return image;
 

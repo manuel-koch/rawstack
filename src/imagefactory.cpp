@@ -6,7 +6,9 @@ ImageFactory::ImageFactory(WorkerBase *worker, QObject *parent)
     , m_underExposed(worker)
     , m_overExposed(worker)
 {
-    // EMPTY
+    connect( &m_image,        SIGNAL(urlChanged(QUrl)), this, SIGNAL(imageChanged(QUrl)) );
+    connect( &m_underExposed, SIGNAL(urlChanged(QUrl)), this, SIGNAL(underExposedChanged(QUrl)) );
+    connect( &m_overExposed,  SIGNAL(urlChanged(QUrl)), this, SIGNAL(overExposedChanged(QUrl)) );
 }
 
 ImageFactory::~ImageFactory()

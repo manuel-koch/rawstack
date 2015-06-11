@@ -9,6 +9,7 @@ class CommonTasks;
 class TaskStack : public QAbstractListModel
 {
     Q_OBJECT
+    Q_PROPERTY(bool         developing READ developing NOTIFY developingChanged)
     Q_PROPERTY(double       progress READ progress  NOTIFY progressChanged)
     Q_PROPERTY(CommonTasks* tasks    READ tasks     CONSTANT)
 
@@ -21,6 +22,7 @@ public:
         NameRole = Qt::UserRole+1,
         TaskRole,
         ConfigRole,
+        Developing,
         ProgressRole
     };
 
@@ -28,6 +30,7 @@ public:
     virtual ~TaskStack();
 
     void addTask(TaskBase *task, int idx = -1 );
+    bool developing() const { return m_developing; }
     double progress() const { return m_progress; }
 
 public slots:
@@ -46,6 +49,8 @@ signals:
 
     void progressChanged(double progress);
 
+    void developingChanged(bool arg);
+
 private slots:
 
     void onTaskStarted();
@@ -54,6 +59,7 @@ private slots:
 
 private:
 
+    void setDeveloping(bool developing);
     CommonTasks *tasks() { return m_commonTasks; }
 
 private:
@@ -61,6 +67,7 @@ private:
     RoleMap           m_rolemap;
     QList<TaskBase*>  m_tasks;
     CommonTasks      *m_commonTasks;
+    bool              m_developing;
     double            m_progress;
 };
 

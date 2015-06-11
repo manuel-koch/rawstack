@@ -96,6 +96,16 @@ Rectangle {
             }
         }
 
+        Timer {
+            id: theExposureTimer
+            repeat:   true
+            interval: 500
+            onTriggered: {
+                theUnderImage.visible = !theUnderImage.visible
+                theOverImage.visible  = !theOverImage.visible
+            }
+        }
+
         ColoredImage {
             id: theUnderImage
             anchors.fill: parent
@@ -179,7 +189,7 @@ Rectangle {
 
     Rectangle {
         id: theProgress
-        visible:                  true || progressHideTimer.running
+        visible:                  globalDevTaskStack.developing || progressHideTimer.running
         width:                    parent.width*0.75
         height:                   15
         anchors.horizontalCenter: parent.horizontalCenter
@@ -194,22 +204,12 @@ Rectangle {
             maximumValue:    1
             value:           globalDevTaskStack.progress
         }
-    }
-
-    Timer {
-        id: theExposureTimer
-        repeat:   true
-        interval: 500
-        onTriggered: {
-            theUnderImage.visible = !theUnderImage.visible
-            theOverImage.visible  = !theOverImage.visible
+        Timer {
+            id: progressHideTimer
+            repeat:   false
+            interval: 1000
         }
     }
 
-    Timer {
-        id: progressHideTimer
-        repeat:   false
-        interval: 1000
-    }
 }
 

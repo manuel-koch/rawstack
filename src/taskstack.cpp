@@ -14,6 +14,7 @@ TaskStack::TaskStack(QObject *parent)
     m_rolemap[NameRole]     = "name";
     m_rolemap[TaskRole]     = "task";
     m_rolemap[ConfigRole]   = "config";
+    m_rolemap[Developing]   = "developing";
     m_rolemap[ProgressRole] = "progress";
 
     m_commonTasks = new CommonTasks(this);
@@ -105,9 +106,11 @@ QVariant TaskStack::data(const QModelIndex &index, int role) const
 
 void TaskStack::onTaskStarted()
 {
-    qDebug() << "TaskStack::onTaskStarted()";
     TaskBase *task = qobject_cast<TaskBase*>( sender() );
     int idx = m_tasks.indexOf( task );
+    if( idx == -1 )
+        return;
+    setDeveloping(true);
     qDebug() << "TaskStack::onTaskStarted()" << task << idx;
     double p = (double)idx / m_tasks.size();
     setProgress( p );
@@ -115,9 +118,10 @@ void TaskStack::onTaskStarted()
 
 void TaskStack::onTaskProgress(double progress)
 {
-    qDebug() << "TaskStack::onTaskProgress()";
     TaskBase *task = qobject_cast<TaskBase*>( sender() );
     int idx = m_tasks.indexOf( task );
+    if( idx == -1 )
+        return;
     qDebug() << "TaskStack::onTaskProgress()" << task << idx;
     double p = (double)idx / m_tasks.size() + progress / m_tasks.size();
     setProgress( p );
@@ -125,11 +129,27 @@ void TaskStack::onTaskProgress(double progress)
 
 void TaskStack::onTaskFinished()
 {
-    qDebug() << "TaskStack::onTaskFinished()";
     TaskBase *task = qobject_cast<TaskBase*>( sender() );
     int idx = m_tasks.indexOf( task );
+    if( idx == -1 )
+        return;
     qDebug() << "TaskStack::onTaskFinished()" << task << idx;
     double p = (double)(idx+1) / m_tasks.size();
     setProgress( p );
+    int nextIdx = idx+1;
+    if( nextIdx >= m_tasks.size() )
+        setDeveloping(false);
+    else
+        m_tasks[nextIdx]->develop();
+}
+
+void TaskStack::setDeveloping(bool developing)
+{
+    if( m_developing != developing )
+    {
+        m_developing = developing;
+        qDebug() << "TaskStack::setDeveloping()" << m_developing;
+        emit developingChanged(m_developing);
+    }
 }
 

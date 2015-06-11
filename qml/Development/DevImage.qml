@@ -148,21 +148,21 @@ Rectangle {
 //        }
     }
 
-//    Row {
-//        anchors { left: parent.left; right: parent.right; top: parent.top; topMargin: -theZoomBadge.radius }
-//        spacing: theZoomBadge.radius
+    Row {
+        anchors { left: parent.left; right: parent.right; top: parent.top; topMargin: -theZoomBadge.radius }
+        spacing: theZoomBadge.radius
 
-//        InfoBadge {
-//            id: theZoomBadge
-//            text: "Zoom: "+internal.zoomName
-//        }
+        InfoBadge {
+            id: theZoomBadge
+            text: "Zoom: "+internal.zoomName
+        }
 
-//        InfoBadge {
-//            id: theGridBadge
-//            text: "Grid: "+theGrid.gridType
-//            visible: theGrid.gridType
-//        }
-//    }
+        InfoBadge {
+            id: theGridBadge
+            text: "Grid: "+theGrid.gridType
+            visible: theGrid.gridType
+        }
+    }
 
     MouseArea {
         anchors.fill: parent

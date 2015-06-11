@@ -126,15 +126,15 @@ Rectangle {
             onSourceChanged: console.log("overexposed",source)
         }
 
-//        ImageGrid {
-//            id: theGrid
-//            anchors.top:        parent.top
-//            anchors.left:       parent.left
-//            anchors.topMargin:  (parent.height-height)/2
-//            anchors.leftMargin: (parent.width-width)/2
-//            width:              theImage.paintedWidth
-//            height:             theImage.paintedHeight
-//        }
+        ImageGrid {
+            id: theGrid
+            anchors.top:        parent.top
+            anchors.left:       parent.left
+            anchors.topMargin:  (parent.height-height)/2
+            anchors.leftMargin: (parent.width-width)/2
+            width:              theImage.paintedWidth
+            height:             theImage.paintedHeight
+        }
 
 //        RotateOverlay {
 //            id: theRotateOverlay

@@ -35,6 +35,7 @@ public:
 
 public slots:
 
+    /// Start developing the image with stacked tasks
     Q_INVOKABLE void develop();
 
 public:
@@ -46,9 +47,8 @@ public:
 
 signals:
 
-    void progressChanged(double progress);
-
     void developingChanged(bool arg);
+    void progressChanged(double progress);
 
 private slots:
 

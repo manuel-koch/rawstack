@@ -13,6 +13,7 @@ class ConfigBase : public QObject
     Q_PROPERTY(bool dirty READ dirty NOTIFY dirtyChanged)
 
 public:
+
     explicit ConfigBase(QString name, QObject *parent = 0);
     virtual ~ConfigBase();
 

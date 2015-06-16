@@ -10,8 +10,9 @@ class TaskStack : public QAbstractListModel
 {
     Q_OBJECT
     Q_PROPERTY(bool         developing READ developing NOTIFY developingChanged)
-    Q_PROPERTY(double       progress READ progress  NOTIFY progressChanged)
-    Q_PROPERTY(CommonTasks* tasks    READ tasks     CONSTANT)
+    Q_PROPERTY(double       progress   READ progress  NOTIFY progressChanged)
+    Q_PROPERTY(CommonTasks* tasks      READ tasks     CONSTANT)
+    Q_PROPERTY(QString      config     READ config    NOTIFY configChanged)
 
 public:
 
@@ -32,6 +33,7 @@ public:
     void addTask(TaskBase *task, int idx = -1 );
     bool developing() const { return m_developing; }
     double progress() const { return m_progress; }
+    QString config() const { return m_config; }
 
 public slots:
 
@@ -40,6 +42,9 @@ public slots:
 
     /// Save current stack config to select file
     Q_INVOKABLE void saveToFile( QString path );
+
+    /// Load current stack config from select file
+    Q_INVOKABLE void loadFromFile( QString path );
 
 public:
 
@@ -52,6 +57,7 @@ signals:
 
     void developingChanged(bool arg);
     void progressChanged(double progress);
+    void configChanged(QString config);
 
 private slots:
 
@@ -63,6 +69,7 @@ private:
 
     void setDeveloping(bool developing);
     void setProgress(double progress);
+    void setConfig( QString config );
     CommonTasks *tasks() { return m_commonTasks; }
 
 private:
@@ -72,6 +79,7 @@ private:
     CommonTasks      *m_commonTasks;
     bool              m_developing;
     double            m_progress;
+    QString           m_config;
 };
 
 #endif // TASKSTACK_H

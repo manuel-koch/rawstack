@@ -66,6 +66,9 @@ void TaskStack::develop()
 
 void TaskStack::saveToFile(QString path)
 {
+    if( m_tasks.empty() )
+        return;
+
     ConfigBase *ufraw = m_commonTasks->ufraw()->config();
     QFileInfo rawInfo( ufraw->property("raw").toString() );
     qDebug() << "TaskStack::saveToFile()" << rawInfo.absoluteFilePath();
@@ -81,8 +84,9 @@ void TaskStack::saveToFile(QString path)
         cfgInfo = QFileInfo( pathInfo.dir(), pathInfo.completeBaseName() + ".rawstack" );
     }
 
-    qDebug() << "TaskStack::saveToFile()" << cfgInfo.absoluteFilePath();
-    QFile file(cfgInfo.absoluteFilePath());
+    setConfig( cfgInfo.absoluteFilePath() );
+    qDebug() << "TaskStack::saveToFile()" << m_config;
+    QFile file(m_config);
     ConfigFileSaver saver(file);
     saver.begin();
     saver.add("raw",rawInfo.absoluteFilePath());
@@ -92,6 +96,11 @@ void TaskStack::saveToFile(QString path)
     saver.end();
 }
 
+void TaskStack::loadFromFile(QString path)
+{
+
+}
+
 void TaskStack::setProgress(double progress)
 {
     if( m_progress == progress )
@@ -99,6 +108,15 @@ void TaskStack::setProgress(double progress)
     m_progress = progress;
     qDebug() << "TaskStack::setProgress()" << m_progress;
     emit progressChanged(progress);
+}
+
+void TaskStack::setConfig(QString config)
+{
+    if( m_config == config )
+        return;
+    m_config = config;
+    qDebug() << "TaskStack::setConfig()" << m_config;
+    emit configChanged(m_config);
 }
 
 int TaskStack::rowCount(const QModelIndex &parent) const

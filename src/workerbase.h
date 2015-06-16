@@ -16,8 +16,10 @@ class WorkerBase : public QObject
 
 public:
 
-    explicit WorkerBase(ConfigBase *config);
+    explicit WorkerBase();
     virtual ~WorkerBase();
+
+    void setConfig(ConfigBase *config) { m_config = config; }
 
     double progress() const { return m_progress; }
     int    cycle()    const { return m_cycle; }

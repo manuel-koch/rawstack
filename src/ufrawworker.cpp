@@ -5,8 +5,8 @@
 #include <QDebug>
 #include <QThread>
 
-UfrawWorker::UfrawWorker(ConfigBase *config)
-    : WorkerBase(config)
+UfrawWorker::UfrawWorker()
+    : WorkerBase()
 {
     // EMPTY
 }
@@ -21,6 +21,8 @@ void UfrawWorker::developImpl(WorkerBase *predecessor)
     qDebug() << "UfrawWorker::developImpl()" << this << predecessor;
 
     UfrawConfig *cfg = config<UfrawConfig>();
+    if( !cfg )
+        return;
 
     UfrawProcess ufraw;
     ufraw.setProgram( "/opt/local/bin/ufraw-batch" );

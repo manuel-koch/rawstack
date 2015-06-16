@@ -11,7 +11,7 @@ class UfrawWorker : public WorkerBase
 
 public:
 
-    explicit UfrawWorker(ConfigBase *config);
+    explicit UfrawWorker();
     virtual ~UfrawWorker();
 
 private:

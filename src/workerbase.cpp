@@ -9,11 +9,11 @@ QImage WorkerBase::convert(Magick::Image image)
     return QImage::fromData( QByteArray( static_cast<const char*>(blob.data()), blob.length() ) );
 }
 
-WorkerBase::WorkerBase(ConfigBase *config)
+WorkerBase::WorkerBase()
     : QObject(NULL)
     , m_progress(0)
     , m_cycle(0)
-    , m_config(config)
+    , m_config(NULL)
 {
     connect( this, SIGNAL(develop(WorkerBase*)), this, SLOT(onDevelop(WorkerBase*)) );
 }

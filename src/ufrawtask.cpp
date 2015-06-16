@@ -9,8 +9,7 @@ UfrawTask::UfrawTask(QObject *parent, QThread *workerThread)
     : TaskBase(parent)
 {
     qDebug() << "UfrawTask::UfrawTask()" << this << workerThread;
-    setConfig( new UfrawConfig(this) );
-    setWorker( new UfrawWorker(config()) );
+    setWorker( new UfrawWorker() );
     worker()->moveToThread( workerThread );
 }
 

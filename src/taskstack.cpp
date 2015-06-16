@@ -2,8 +2,12 @@
 #include "taskbase.h"
 #include "configbase.h"
 #include "commontasks.h"
+#include "configfilesaver.h"
 
 #include <QDebug>
+#include <QFileInfo>
+#include <QFile>
+#include <QDir>
 
 TaskStack::TaskStack(QObject *parent)
     : QAbstractListModel(parent)
@@ -58,6 +62,34 @@ void TaskStack::develop()
     qDebug() << "TaskStack::develop()";
     if( !m_tasks.empty() )
         m_tasks[0]->develop();
+}
+
+void TaskStack::saveToFile(QString path)
+{
+    ConfigBase *ufraw = m_commonTasks->ufraw()->config();
+    QFileInfo rawInfo( ufraw->property("raw").toString() );
+    qDebug() << "TaskStack::saveToFile()" << rawInfo.absoluteFilePath();
+
+    QFileInfo cfgInfo;
+    if( path.isEmpty() )
+    {
+        cfgInfo = QFileInfo( rawInfo.dir(), rawInfo.completeBaseName() + ".rawstack" );
+    }
+    else
+    {
+        QFileInfo pathInfo(path);
+        cfgInfo = QFileInfo( pathInfo.dir(), pathInfo.completeBaseName() + ".rawstack" );
+    }
+
+    qDebug() << "TaskStack::saveToFile()" << cfgInfo.absoluteFilePath();
+    QFile file(cfgInfo.absoluteFilePath());
+    ConfigFileSaver saver(file);
+    saver.begin();
+    saver.add("raw",rawInfo.absoluteFilePath());
+    std::for_each( m_tasks.begin(), m_tasks.end(), [&] (TaskBase *task) {
+        saver.add( task->config() );
+    });
+    saver.end();
 }
 
 void TaskStack::setProgress(double progress)

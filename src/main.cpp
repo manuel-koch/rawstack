@@ -44,12 +44,13 @@ int main(int argc, char *argv[])
     factory.add( &ufrawBuilder );
 
     TaskBase *task = factory.create("ufraw");
-
+    task->config()->setProperty( "raw", "/Users/manuel/tmp/TestBilder/01.cr2" );
     TaskStack taskStack;
     taskStack.addTask( task );
+    taskStack.saveToFile("/Users/manuel/tmp/TestBilder/01.rawstack");
 
     QQmlApplicationEngine engine;
-    engine.addImageProvider( "worker", static_cast<QQmlImageProviderBase*>( new ImageProvider() ) );
+    engine.addImageProvider( ImageProvider::name, static_cast<QQmlImageProviderBase*>( new ImageProvider() ) );
     QQmlContext *rootContext = engine.rootContext();
     rootContext->setContextProperty( "globalDevTaskStack", &taskStack );
 

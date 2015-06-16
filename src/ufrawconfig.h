@@ -6,24 +6,24 @@
 class UfrawConfig : public ConfigBase
 {
     Q_OBJECT
-    Q_PROPERTY(QString raw READ raw WRITE setRaw NOTIFY rawChanged)
+    Q_PROPERTY(QString raw           READ raw           WRITE setRaw           NOTIFY rawChanged)
     Q_PROPERTY(double  exposure      READ exposure      WRITE setExposure      NOTIFY exposureChanged)
     Q_PROPERTY(int     wbTemperature READ wbTemperature WRITE setWbTemperature NOTIFY wbTemperatureChanged)
     Q_PROPERTY(double  wbGreen       READ wbGreen       WRITE setWbGreen       NOTIFY wbGreenChanged)
 
 public:
 
-    static const char  *Name;
-    constexpr static const double DefaultExposure      = 1.0;
+    static const char *Name;
+    constexpr static const double DefaultExposure   = 1.0;
     constexpr static const int DefaultWbTemperature = 0.0;
-    constexpr static const double DefaultWbGreen       = 0.0;
+    constexpr static const double DefaultWbGreen    = 0.0;
 
     explicit UfrawConfig(QObject *parent);
     virtual ~UfrawConfig();
 
     // ConfigBase interface
-    virtual QJsonObject toJson() const;
-    virtual bool fromJson(const QJsonObject &json);
+    virtual QDomNode toXML(QDomNode &node ) const;
+    virtual bool fromXML( QDomNode const &node );
 
     QString raw() const { return m_raw; }
     double  exposure() const { return m_exposure; }

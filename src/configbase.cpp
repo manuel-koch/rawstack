@@ -1,4 +1,5 @@
 #include "configbase.h"
+#include "stringtoolbox.h"
 
 #include <QDebug>
 
@@ -17,26 +18,22 @@ ConfigBase::~ConfigBase()
     // EMPTY
 }
 
-QJsonObject ConfigBase::toJson() const
+QDomNode ConfigBase::toXML( QDomNode &node ) const
 {
-    qDebug() << "ConfigBase::toJson()" << this;
-    QJsonObject json;
-    json["name"]    = m_name;
-    json["enabled"] = m_enabled;
-    return json;
+    qDebug() << "ConfigBase::toXML()" << this;
+    QDomElement e = node.ownerDocument().createElement(m_name);
+    e.setAttribute("enabled",m_enabled);
+    return node.appendChild( e );
 }
 
-bool ConfigBase::fromJson(const QJsonObject &json)
+bool ConfigBase::fromXML( QDomNode const &node )
 {
-    qDebug() << "ConfigBase::fromJson()" << this;
-    if( json["name"].isUndefined() )
+    qDebug() << "ConfigBase::fromXML()" << this;
+    QDomElement e = node.toElement();
+    if( e.tagName() != m_name )
         return false;
-    m_name = json["name"].toString();
-    if( json["enabled"].isUndefined() )
-        m_enabled = true;
-    else
-        m_enabled = json["enabled"].toBool();
-    return !m_name.isEmpty();
+    m_enabled = StringToolbox::toBool( e.attribute("enabled"), true );
+    return true;
 }
 
 void ConfigBase::setEnabled(bool enabled)

@@ -2,7 +2,7 @@
 #define CONFIGBASE_H
 
 #include <QObject>
-#include <QJsonObject>
+#include <QDomElement>
 
 class ConfigBase : public QObject
 {
@@ -23,8 +23,8 @@ public:
     bool    dirty() const { return m_changes!=0; }
     size_t  changes() const { return m_changes; }
 
-    virtual QJsonObject toJson() const;
-    virtual bool fromJson( QJsonObject const &json );
+    virtual QDomNode toXML(QDomNode &node ) const;
+    virtual bool fromXML(QDomNode const &node );
 
 public slots:
 

@@ -38,6 +38,9 @@ public slots:
     /// Start developing the image with stacked tasks
     Q_INVOKABLE void develop();
 
+    /// Save current stack config to select file
+    Q_INVOKABLE void saveToFile( QString path );
+
 public:
 
     // QAbstractItemModel interface

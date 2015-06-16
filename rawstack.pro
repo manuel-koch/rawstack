@@ -20,7 +20,7 @@ QMAKE_LFLAGS   += $$GRAPHICSMAGICK_LFLAGS
 # See https://forum.qt.io/topic/33577/trouble-compiling-using-static-library-stk-qt-creator-and-qmake/12
 QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.9
 
-QT += qml quick widgets
+QT += qml quick widgets xml
 
 SOURCES += \
     src/main.cpp \
@@ -39,7 +39,11 @@ SOURCES += \
     src/imagefactoryoverexposed.cpp \
     src/imagefactoryunderexposed.cpp \
     src/imagefactoryregistry.cpp \
-    src/commontasks.cpp
+    src/commontasks.cpp \
+    src/configsaverbase.cpp \
+    src/stringtoolbox.cpp \
+    src/configxmlsaver.cpp \
+    src/configfilesaver.cpp
 
 RESOURCES += qml.qrc
 
@@ -67,4 +71,8 @@ HEADERS += \
     src/imagefactoryoverexposed.h \
     src/imagefactoryunderexposed.h \
     src/imagefactoryregistry.h \
-    src/commontasks.h
+    src/commontasks.h \
+    src/configsaverbase.h \
+    src/stringtoolbox.h \
+    src/configxmlsaver.h \
+    src/configfilesaver.h

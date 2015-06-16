@@ -24,7 +24,7 @@ void UfrawWorker::developImpl(WorkerBase *predecessor)
 
     UfrawProcess ufraw;
     ufraw.setProgram( "/opt/local/bin/ufraw-batch" );
-    ufraw.setRaw( "/Users/manuel/tmp/TestBilder/01.cr2" );
+    ufraw.setRaw( cfg->raw() );
     ufraw.setExposure( cfg->exposure() );
     ufraw.setShrink( 4 );
 

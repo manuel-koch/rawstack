@@ -1,4 +1,5 @@
 #include "ufrawconfig.h"
+#include "stringtoolbox.h"
 
 #include <QDebug>
 
@@ -18,48 +19,44 @@ UfrawConfig::~UfrawConfig()
     // EMPTY
 }
 
-QJsonObject UfrawConfig::toJson() const
+QDomNode UfrawConfig::toXML( QDomNode &node ) const
 {
-    qDebug() << "UfrawConfig::toJson()";
-    QJsonObject json( ConfigBase::toJson() );
-    QJsonObject settings;
-    settings["exposure"]      = m_exposure;
-    settings["wbTemperature"] = m_wbTemperature;
-    settings["wbGreen"]       = m_wbGreen;
-    json["ufrawSettings"] = settings;
-    return json;
+    node = ConfigBase::toXML(node);
+
+    qDebug() << "UfrawConfig::toXML()";
+    QDomText t;
+    QDomElement e;
+
+    e = node.ownerDocument().createElement("exposure");
+    t = node.ownerDocument().createTextNode(QString("%1").arg(m_exposure));
+    e.appendChild(t);
+    node.appendChild(e);
+
+    e = node.ownerDocument().createElement("wbTemperature");
+    t = node.ownerDocument().createTextNode(QString("%1").arg(m_wbTemperature));
+    e.appendChild(t);
+    node.appendChild(e);
+
+    e = node.ownerDocument().createElement("wbGreen");
+    t = node.ownerDocument().createTextNode(QString("%1").arg(m_wbGreen));
+    e.appendChild(t);
+    node.appendChild(e);
+
+    return node;
 }
 
-bool UfrawConfig::fromJson(const QJsonObject &json)
+bool UfrawConfig::fromXML(QDomNode const &node )
 {
-    qDebug() << "UfrawConfig::fromJson()";
-    ConfigBase::fromJson(json);
-    if( name() != Name )
+    if( !ConfigBase::fromXML(node) )
         return false;
 
-    auto it = json.find("ufrawSettings");
-    if( it == json.end() )
-        return false;
+    qDebug() << "UfrawConfig::fromXML()";
 
-    QJsonObject settings = it.value().toObject();
-
-    if( settings["exposure"].isUndefined() )
-        setExposure( DefaultExposure );
-    else
-        setExposure( settings["exposure"].toDouble() );
-
-    if( settings["wbTemperature"].isUndefined() )
-        setWbTemperature( DefaultWbTemperature );
-    else
-        setWbTemperature( settings["wbTemperature"].toInt() );
-
-    if( settings["wbGreen"].isUndefined() )
-        setWbGreen( DefaultWbGreen );
-    else
-        setWbGreen( settings["wbGreen"].toDouble() );
+    setExposure( StringToolbox::toDouble( node.firstChildElement("exposure").text(), DefaultExposure ) );
+    setWbTemperature( StringToolbox::toDouble( node.firstChildElement("wbTemperature").text(), DefaultWbTemperature ) );
+    setWbGreen( StringToolbox::toDouble( node.firstChildElement("wbGreen").text(), DefaultWbGreen ) );
 
     resetDirty();
-
     return true;
 }
 

@@ -21,6 +21,9 @@ TaskBase::~TaskBase()
 void TaskBase::setConfig(ConfigBase *config)
 {
     m_config = config;
+    if( m_config )
+        m_config->setParent(this);
+    m_worker->setConfig(m_config);
 }
 
 void TaskBase::setWorker(WorkerBase *worker)

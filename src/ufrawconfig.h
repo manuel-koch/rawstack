@@ -18,7 +18,7 @@ public:
     constexpr static const int DefaultWbTemperature = 0.0;
     constexpr static const double DefaultWbGreen    = 0.0;
 
-    explicit UfrawConfig(QObject *parent);
+    explicit UfrawConfig(QObject *parent = NULL);
     virtual ~UfrawConfig();
 
     // ConfigBase interface

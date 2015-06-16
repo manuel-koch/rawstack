@@ -10,7 +10,7 @@ template <typename T>
 class TaskBuilder : public TaskBuilderBase
 {
 public:
-    explicit TaskBuilder(const std::string &name) : TaskBuilderBase(name) { }
+    explicit TaskBuilder(QString name) : TaskBuilderBase(name) { }
     virtual ~TaskBuilder() { }
 
     virtual TaskBase *create(QObject *parent, QThread *thread)

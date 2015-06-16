@@ -1,5 +1,7 @@
 #include "taskfactory.h"
 #include "taskbuilderbase.h"
+#include "configbase.h"
+#include "taskbase.h"
 
 #include <QDebug>
 #include <QThread>
@@ -21,26 +23,27 @@ bool TaskFactory::add(TaskBuilderBase *builder)
     auto it = m_builder.find(builder->name());
     if( it != m_builder.end() )
     {
-        qDebug() << "TaskFactory::add()" << builder->name().c_str() << "already added";
+        qDebug() << "TaskFactory::add()" << builder->name() << "already added";
         return false;
     }
-    qDebug() << "TaskFactory::add()" << builder->name().c_str();
+    qDebug() << "TaskFactory::add()" << builder->name();
     m_builder[builder->name()] = builder;
     return true;
 }
 
-TaskBase *TaskFactory::create(const std::string &name)
+TaskBase *TaskFactory::create(ConfigBase *config)
 {
-    auto it = m_builder.find(name);
+    auto it = m_builder.find(config->name());
     if( it == m_builder.end() )
     {
-        qDebug() << "TaskFactory::create()" << name.c_str() << "unknown";
+        qDebug() << "TaskFactory::create()" << config << "unknown";
         return NULL;
     }
 
     TaskBuilderBase *builder = (*it);
     TaskBase *task = builder->create(this,m_thread);
     qDebug() << "TaskFactory::create()" << task;
+    task->setConfig( config );
     return task;
 }
 

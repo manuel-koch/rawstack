@@ -7,6 +7,7 @@
 class QThread;
 class TaskBuilderBase;
 class TaskBase;
+class ConfigBase;
 
 class TaskFactory : public QObject
 {
@@ -18,13 +19,16 @@ public:
 
 public slots:
 
+    /// Add an instance that can create a task
     bool add(TaskBuilderBase *builder);
-    TaskBase *create(const std::string &name);
+
+    // Create task for given config
+    TaskBase *create(ConfigBase *config);
 
 private:
 
-    QThread                            *m_thread;
-    QMap<std::string,TaskBuilderBase*>  m_builder;
+    QThread                        *m_thread;
+    QMap<QString,TaskBuilderBase*>  m_builder;
 };
 
 #endif // TASKFACTORY_H

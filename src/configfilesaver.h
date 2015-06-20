@@ -8,18 +8,15 @@
 
 class ConfigFileSaver : public ConfigXMLSaver
 {
+    Q_OBJECT
+
 public:
-    ConfigFileSaver( QFile &file, QObject *parent = NULL );
-    ~ConfigFileSaver();
 
-    void setFile( QFile file );
+    explicit ConfigFileSaver( QObject *parent = NULL );
+    virtual ~ConfigFileSaver();
 
-    // ConfigSaverBase interface
-    virtual void end();
+    virtual void save(QString path);
 
-private:
-
-    QFile &m_file;
 };
 
 #endif // CONFIGFILESAVER_H

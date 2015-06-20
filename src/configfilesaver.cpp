@@ -2,9 +2,8 @@
 
 #include <QTextStream>
 
-ConfigFileSaver::ConfigFileSaver(QFile &file, QObject *parent)
+ConfigFileSaver::ConfigFileSaver(QObject *parent)
     : ConfigXMLSaver(parent)
-    , m_file(file)
 {
     // EMPTY
 }
@@ -14,12 +13,12 @@ ConfigFileSaver::~ConfigFileSaver()
     // EMPTY
 }
 
-void ConfigFileSaver::end()
+void ConfigFileSaver::save(QString path)
 {
-    ConfigXMLSaver::end();
-    if( m_file.open( QFile::WriteOnly | QFile::Truncate ) )
+    QFile file(path);
+    if( file.open( QFile::WriteOnly | QFile::Truncate ) )
     {
-        QTextStream stream(&m_file);
+        QTextStream stream(&file);
         doc().save(stream,QDomNode::EncodingFromDocument);
     }
 }

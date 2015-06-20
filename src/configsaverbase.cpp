@@ -11,11 +11,6 @@ ConfigSaverBase::~ConfigSaverBase()
     // EMPTY
 }
 
-void ConfigSaverBase::begin()
-{
-    // EMPTY
-}
-
 void ConfigSaverBase::add(QString key, QString value)
 {
     Q_UNUSED(key);
@@ -25,9 +20,4 @@ void ConfigSaverBase::add(QString key, QString value)
 void ConfigSaverBase::add(ConfigBase *config)
 {
     Q_UNUSED(config)
-}
-
-void ConfigSaverBase::end()
-{
-    // EMPTY
 }

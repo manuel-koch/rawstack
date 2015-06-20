@@ -12,7 +12,7 @@ class ConfigXMLSaver : public ConfigSaverBase
 public:
 
     explicit ConfigXMLSaver( QObject *parent = NULL );
-    ~ConfigXMLSaver();
+    virtual ~ConfigXMLSaver();
 
     static const int VersionMajor = 1;
     static const int VersionMinor = 0;
@@ -20,10 +20,8 @@ public:
     QDomDocument const &doc() { return m_doc; }
 
     // ConfigSaverBase interface
-    virtual void begin();
     virtual void add(QString key, QString value);
     virtual void add(ConfigBase *config);
-    virtual void end();
 
 private:
 

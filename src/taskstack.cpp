@@ -82,14 +82,12 @@ void TaskStack::saveToFile(QString path)
 
     setConfig( cfgInfo.absoluteFilePath() );
     qDebug() << "TaskStack::saveToFile()" << m_config;
-    QFile file(m_config);
-    ConfigFileSaver saver(file);
-    saver.begin();
-    saver.add("raw",rawInfo.absoluteFilePath());
+    ConfigFileSaver fileSaver;
+    fileSaver.add("raw",rawInfo.absoluteFilePath());
     std::for_each( m_tasks.begin(), m_tasks.end(), [&] (TaskBase *task) {
-        saver.add( task->config() );
+        fileSaver.add( task->config() );
     });
-    saver.end();
+    fileSaver.save(m_config);
 }
 
 void TaskStack::loadFromFile(QString path)

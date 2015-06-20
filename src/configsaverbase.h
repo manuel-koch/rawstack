@@ -13,12 +13,10 @@ class ConfigSaverBase : public QObject
 public:
 
     explicit ConfigSaverBase(QObject *parent = NULL);
-    ~ConfigSaverBase();
+    virtual ~ConfigSaverBase();
 
-    virtual void begin();
     virtual void add(QString key, QString value);
     virtual void add(ConfigBase *config);
-    virtual void end();
 };
 
 #endif // CONFIGSAVERBASE_H

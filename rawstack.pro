@@ -75,4 +75,6 @@ HEADERS += \
     src/configsaverbase.h \
     src/stringtoolbox.h \
     src/configxmlsaver.h \
-    src/configfilesaver.h
+    src/configfilesaver.h \
+    src/configbuilder.h \
+    src/configbuilderbase.h

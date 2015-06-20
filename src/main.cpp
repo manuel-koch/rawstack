@@ -1,5 +1,6 @@
 #include "taskfactory.h"
 #include "taskbuilder.h"
+#include "configbuilder.h"
 #include "taskstack.h"
 #include "commontasks.h"
 #include "taskbase.h"
@@ -8,6 +9,7 @@
 #include "imageprovider.h"
 
 // FIXME: Remove temporary includes
+#include "ufrawconfig.h"
 #include "ufrawtask.h"
 #include "configbase.h"
 // END-OF-FIXME
@@ -40,10 +42,13 @@ int main(int argc, char *argv[])
     ImageFactoryRegistry::setInstance( &imageFactoryRegistry );
 
     TaskFactory factory;
-    TaskBuilder<UfrawTask> ufrawBuilder("ufraw");
-    factory.add( &ufrawBuilder );
+    TaskBuilder<UfrawTask>     ufrawTaskBuilder("ufraw");
+    ConfigBuilder<UfrawConfig> ufrawConfigBuilder("ufraw");
+    factory.add( &ufrawTaskBuilder );
+    factory.add( &ufrawConfigBuilder );
 
-    TaskBase *task = factory.create("ufraw");
+    UfrawConfig *ufrawConfig = new UfrawConfig();
+    TaskBase *task = factory.create(ufrawConfig);
     task->config()->setProperty( "raw", "/Users/manuel/tmp/TestBilder/01.cr2" );
     TaskStack taskStack;
     taskStack.addTask( task );

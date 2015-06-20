@@ -6,6 +6,7 @@
 
 class QThread;
 class TaskBuilderBase;
+class ConfigBuilderBase;
 class TaskBase;
 class ConfigBase;
 
@@ -19,16 +20,23 @@ public:
 
 public slots:
 
-    /// Add an instance that can create a task
+    /// Add an instance that can create a task instance
     bool add(TaskBuilderBase *builder);
 
-    // Create task for given config
+    /// Add an instance that can create a config instance
+    bool add(ConfigBuilderBase *builder);
+
+    /// Create config by name
+    ConfigBase *create(QString name);
+
+    /// Create task for given config
     TaskBase *create(ConfigBase *config);
 
 private:
 
-    QThread                        *m_thread;
-    QMap<QString,TaskBuilderBase*>  m_builder;
+    QThread                         *m_thread;
+    QMap<QString,TaskBuilderBase*>   m_taskBuilder;
+    QMap<QString,ConfigBuilderBase*> m_configBuilder;
 };
 
 #endif // TASKFACTORY_H

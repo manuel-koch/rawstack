@@ -72,6 +72,8 @@ private:
     void setConfig( QString config );
     CommonTasks *tasks() { return m_commonTasks; }
 
+    void clearTasks();
+
 private:
 
     RoleMap           m_rolemap;

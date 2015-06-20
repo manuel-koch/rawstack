@@ -1,5 +1,6 @@
 #include "taskfactory.h"
 #include "taskbuilderbase.h"
+#include "configbuilderbase.h"
 #include "configbase.h"
 #include "taskbase.h"
 
@@ -20,23 +21,51 @@ TaskFactory::~TaskFactory()
 
 bool TaskFactory::add(TaskBuilderBase *builder)
 {
-    auto it = m_builder.find(builder->name());
-    if( it != m_builder.end() )
+    auto it = m_taskBuilder.find(builder->name());
+    if( it != m_taskBuilder.end() )
     {
-        qDebug() << "TaskFactory::add()" << builder->name() << "already added";
+        qDebug() << "TaskFactory::add() task" << builder->name() << "already added";
         return false;
     }
-    qDebug() << "TaskFactory::add()" << builder->name();
-    m_builder[builder->name()] = builder;
+    qDebug() << "TaskFactory::add() task" << builder->name();
+    m_taskBuilder[builder->name()] = builder;
     return true;
+}
+
+bool TaskFactory::add(ConfigBuilderBase *builder)
+{
+    auto it = m_configBuilder.find(builder->name());
+    if( it != m_configBuilder.end() )
+    {
+        qDebug() << "TaskFactory::add() config" << builder->name() << "already added";
+        return false;
+    }
+    qDebug() << "TaskFactory::add() config" << builder->name();
+    m_configBuilder[builder->name()] = builder;
+    return true;
+}
+
+ConfigBase *TaskFactory::create(QString config)
+{
+    auto it = m_configBuilder.find(config);
+    if( it == m_configBuilder.end() )
+    {
+        qDebug() << "TaskFactory::create() config" << config << "unknown";
+        return NULL;
+    }
+
+    ConfigBuilderBase *builder = (*it);
+    ConfigBase *cfg = builder->create();
+    qDebug() << "TaskFactory::create() " << cfg;
+    return cfg;
 }
 
 TaskBase *TaskFactory::create(ConfigBase *config)
 {
-    auto it = m_builder.find(config->name());
-    if( it == m_builder.end() )
+    auto it = m_taskBuilder.find(config->name());
+    if( it == m_taskBuilder.end() )
     {
-        qDebug() << "TaskFactory::create()" << config << "unknown";
+        qDebug() << "TaskFactory::create() task" << config << "unknown";
         return NULL;
     }
 

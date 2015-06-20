@@ -27,10 +27,6 @@ TaskStack::TaskStack(QObject *parent)
 TaskStack::~TaskStack()
 {
     delete m_commonTasks;
-    std::for_each( m_tasks.begin(), m_tasks.end(), [] (TaskBase *task) {
-        delete task;
-    });
-    m_tasks.clear();
 }
 
 void TaskStack::addTask(TaskBase *task, int idx)
@@ -98,7 +94,13 @@ void TaskStack::saveToFile(QString path)
 
 void TaskStack::loadFromFile(QString path)
 {
+    qDebug() << "TaskStack::loadFromFile()" << path;
+    QFileInfo cfgInfo(path);
+    cfgInfo = QFileInfo( cfgInfo.dir(), cfgInfo.completeBaseName() + ".rawstack" );
+    QFile file(cfgInfo.absoluteFilePath());
 
+    clearTasks();
+    //ConfigFileLoader loader(file);
 }
 
 void TaskStack::setProgress(double progress)
@@ -117,6 +119,18 @@ void TaskStack::setConfig(QString config)
     m_config = config;
     qDebug() << "TaskStack::setConfig()" << m_config;
     emit configChanged(m_config);
+}
+
+void TaskStack::clearTasks()
+{
+    beginResetModel();
+
+    std::for_each( m_tasks.begin(), m_tasks.end(), [] (TaskBase *task) {
+        delete task;
+    });
+    m_tasks.clear();
+
+    endResetModel();
 }
 
 int TaskStack::rowCount(const QModelIndex &parent) const

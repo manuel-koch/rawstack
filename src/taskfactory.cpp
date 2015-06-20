@@ -7,6 +7,8 @@
 #include <QDebug>
 #include <QThread>
 
+TaskFactory *TaskFactory::ms_instance = NULL;
+
 TaskFactory::TaskFactory(QObject *parent)
     : QObject(parent)
 {

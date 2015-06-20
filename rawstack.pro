@@ -43,7 +43,10 @@ SOURCES += \
     src/configsaverbase.cpp \
     src/stringtoolbox.cpp \
     src/configxmlsaver.cpp \
-    src/configfilesaver.cpp
+    src/configfilesaver.cpp \
+    src/configloaderbase.cpp \
+    src/configxmlloader.cpp \
+    src/configfileloader.cpp
 
 RESOURCES += qml.qrc
 
@@ -77,4 +80,7 @@ HEADERS += \
     src/configxmlsaver.h \
     src/configfilesaver.h \
     src/configbuilder.h \
-    src/configbuilderbase.h
+    src/configbuilderbase.h \
+    src/configloaderbase.h \
+    src/configxmlloader.h \
+    src/configfileloader.h

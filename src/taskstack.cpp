@@ -3,6 +3,8 @@
 #include "configbase.h"
 #include "commontasks.h"
 #include "configfilesaver.h"
+#include "configfileloader.h"
+#include "taskfactory.h"
 
 #include <QDebug>
 #include <QFileInfo>
@@ -95,10 +97,28 @@ void TaskStack::loadFromFile(QString path)
     qDebug() << "TaskStack::loadFromFile()" << path;
     QFileInfo cfgInfo(path);
     cfgInfo = QFileInfo( cfgInfo.dir(), cfgInfo.completeBaseName() + ".rawstack" );
-    QFile file(cfgInfo.absoluteFilePath());
 
     clearTasks();
-    //ConfigFileLoader loader(file);
+
+    QMap<QString,QString> settings;
+    ConfigFileLoader loader;
+    connect( &loader, &ConfigFileLoader::setting, [&] (QString key, QString value) {
+        qDebug() << "TaskStack::loadFromFile()" << key << value;
+        settings[key] = value;
+    });
+    connect( &loader, &ConfigFileLoader::config, [&] (ConfigBase *cfg) {
+        qDebug() << "TaskStack::loadFromFile()" << cfg;
+        addTask( TaskFactory::getInstance()->create(cfg) );
+    });
+    if( loader.load(cfgInfo.absoluteFilePath()) )
+    {
+        if( settings.contains("raw") )
+            m_commonTasks->ufraw()->config()->setProperty("raw",settings["raw"]);
+    }
+    else
+    {
+        qDebug() << "TaskStack::loadFromFile() failed";
+    }
 }
 
 void TaskStack::setProgress(double progress)

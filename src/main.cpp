@@ -42,6 +42,7 @@ int main(int argc, char *argv[])
     ImageFactoryRegistry::setInstance( &imageFactoryRegistry );
 
     TaskFactory taskFactory;
+    TaskFactory::setInstance(&taskFactory);
     taskFactory.add( new TaskBuilder<UfrawTask>("ufraw") );
     taskFactory.add( new ConfigBuilder<UfrawConfig>("ufraw") );
 
@@ -51,6 +52,7 @@ int main(int argc, char *argv[])
     TaskStack taskStack;
     taskStack.addTask( task );
     taskStack.saveToFile("/Users/manuel/tmp/TestBilder/01.rawstack");
+    taskStack.loadFromFile("/Users/manuel/tmp/TestBilder/01.rawstack");
 
     QQmlApplicationEngine engine;
     engine.addImageProvider( ImageProvider::name, static_cast<QQmlImageProviderBase*>( new ImageProvider() ) );

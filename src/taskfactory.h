@@ -20,10 +20,10 @@ public:
 
 public slots:
 
-    /// Add an instance that can create a task instance
+    /// Add an instance that can create a task instance, factory takes ownership of builder
     bool add(TaskBuilderBase *builder);
 
-    /// Add an instance that can create a config instance
+    /// Add an instance that can create a config instance, factory takes ownership of builder
     bool add(ConfigBuilderBase *builder);
 
     /// Create config by name
@@ -34,9 +34,9 @@ public slots:
 
 private:
 
-    QThread                         *m_thread;
-    QMap<QString,TaskBuilderBase*>   m_taskBuilder;
-    QMap<QString,ConfigBuilderBase*> m_configBuilder;
+    QThread                         *m_thread;        /// worker thread for tasks
+    QMap<QString,TaskBuilderBase*>   m_taskBuilder;   /// map of registered task builders
+    QMap<QString,ConfigBuilderBase*> m_configBuilder; /// map of registered config builders
 };
 
 #endif // TASKFACTORY_H

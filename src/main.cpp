@@ -41,14 +41,12 @@ int main(int argc, char *argv[])
     ImageFactoryRegistry imageFactoryRegistry;
     ImageFactoryRegistry::setInstance( &imageFactoryRegistry );
 
-    TaskFactory factory;
-    TaskBuilder<UfrawTask>     ufrawTaskBuilder("ufraw");
-    ConfigBuilder<UfrawConfig> ufrawConfigBuilder("ufraw");
-    factory.add( &ufrawTaskBuilder );
-    factory.add( &ufrawConfigBuilder );
+    TaskFactory taskFactory;
+    taskFactory.add( new TaskBuilder<UfrawTask>("ufraw") );
+    taskFactory.add( new ConfigBuilder<UfrawConfig>("ufraw") );
 
-    UfrawConfig *ufrawConfig = new UfrawConfig();
-    TaskBase *task = factory.create(ufrawConfig);
+    ConfigBase *ufrawConfig = taskFactory.create("ufraw");
+    TaskBase *task = taskFactory.create(ufrawConfig);
     task->config()->setProperty( "raw", "/Users/manuel/tmp/TestBilder/01.cr2" );
     TaskStack taskStack;
     taskStack.addTask( task );

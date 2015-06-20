@@ -7,7 +7,8 @@
 #include <QDebug>
 #include <QThread>
 
-TaskFactory::TaskFactory(QObject *parent) : QObject(parent)
+TaskFactory::TaskFactory(QObject *parent)
+    : QObject(parent)
 {
     m_thread = new QThread(this);
     m_thread->start();
@@ -17,6 +18,16 @@ TaskFactory::~TaskFactory()
 {
     m_thread->quit();
     m_thread->wait();
+    while( !m_taskBuilder.empty() )
+    {
+        delete m_taskBuilder.first();
+        m_taskBuilder.erase( m_taskBuilder.begin() );
+    }
+    while( !m_configBuilder.empty() )
+    {
+        delete m_configBuilder.first();
+        m_configBuilder.erase( m_configBuilder.begin() );
+    }
 }
 
 bool TaskFactory::add(TaskBuilderBase *builder)

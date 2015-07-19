@@ -24,6 +24,12 @@ void UfrawWorker::developImpl(WorkerBase *predecessor)
     if( !cfg )
         return;
 
+    if( cfg->raw().isEmpty() )
+    {
+        qWarning() << "UfrawWorker::developImpl() unknown raw";
+        return;
+    }
+
     UfrawProcess ufraw;
     ufraw.setProgram( "/opt/local/bin/ufraw-batch" );
     ufraw.setRaw( cfg->raw() );

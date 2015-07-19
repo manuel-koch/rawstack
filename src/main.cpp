@@ -18,6 +18,7 @@
 #include <QApplication>
 #include <QQmlApplicationEngine>
 #include <QtQml>
+#include <QUrl>
 
 void register_types()
 {
@@ -42,20 +43,18 @@ int main(int argc, char *argv[])
     ImageFactoryRegistry::setInstance( &imageFactoryRegistry );
 
     TaskFactory taskFactory;
-    TaskFactory::setInstance(&taskFactory);
+    TaskFactory::setInstance( &taskFactory );
     taskFactory.add( new TaskBuilder<UfrawTask>("ufraw") );
     taskFactory.add( new ConfigBuilder<UfrawConfig>("ufraw") );
 
-    ConfigBase *ufrawConfig = taskFactory.create("ufraw");
-    TaskBase *task = taskFactory.create(ufrawConfig);
-    task->config()->setProperty( "raw", "/Users/manuel/tmp/TestBilder/01.cr2" );
-    TaskStack taskStack;
-    taskStack.addTask( task );
-    taskStack.saveToFile("/Users/manuel/tmp/TestBilder/01.rawstack");
-    taskStack.loadFromFile("/Users/manuel/tmp/TestBilder/01.rawstack");
+    QQmlImageProviderBase *imageProvider     = static_cast<QQmlImageProviderBase*>( new ImageProvider() );
+    QString                imageProviderName = ImageProvider::name;
 
+    TaskStack taskStack;
     QQmlApplicationEngine engine;
-    engine.addImageProvider( ImageProvider::name, static_cast<QQmlImageProviderBase*>( new ImageProvider() ) );
+
+    engine.addImageProvider( imageProviderName, imageProvider );
+
     QQmlContext *rootContext = engine.rootContext();
     rootContext->setContextProperty( "globalDevTaskStack", &taskStack );
 

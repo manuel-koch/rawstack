@@ -209,6 +209,12 @@ void UfrawProcess::loadProbeSettings(QFile &file)
     QRegularExpression re("<(?P<tag>\\w+)>\\s*(?P<val>.+?)\\s*</(?P=tag)>",QRegularExpression::MultilineOption);
     if( !re.isValid() )
         qDebug() << "UfrawProcess::loadProbeSettings() invalid re:" << re.errorString();
+
+    QStringList knownInfo;
+    knownInfo << "Make" << "Model" << "Lens" << "LensModel"
+              << "ISOSpeed" << "Shutter" << "Aperture" << "FocalLength";
+    m_info.clear();
+
     QRegularExpressionMatchIterator it = re.globalMatch(xml);
     while( it.hasNext() )
     {
@@ -220,6 +226,9 @@ void UfrawProcess::loadProbeSettings(QFile &file)
             m_wbTemperature = val.toInt();
         else if( tag == "Green" )
             m_wbGreen = val.toDouble();
+        else if( knownInfo.indexOf(tag) != -1 )
+            m_info[tag] = QString::fromUtf8(val.toUtf8());
     }
     file.close();
+    qDebug() << "UfrawProcess::loadProbeSettings()" << m_info;
 }

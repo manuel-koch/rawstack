@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QProcess>
 #include <QFile>
+#include <QMap>
 
 class UfrawProcess : public QProcess
 {
@@ -32,6 +33,8 @@ public:
         RestoreHsv
     };
 
+    typedef QMap<QString,QString> InfoMap;
+
     QByteArray &out() { return m_outData; }
     QByteArray &err() { return m_errData; }
 
@@ -43,6 +46,8 @@ public:
     Clip clip() const { return m_clip; }
     int wbTemperature() { return m_wbTemperature; }
     double wbGreen() { return m_wbGreen; }
+
+    InfoMap const &info() { return m_info; }
 
 signals:
 
@@ -85,6 +90,7 @@ private:
     Clip        m_clip;
     int         m_wbTemperature;
     double      m_wbGreen;
+    InfoMap     m_info;
 };
 
 #endif // UFRAWPROCESS_H

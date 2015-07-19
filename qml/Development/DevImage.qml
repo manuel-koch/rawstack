@@ -72,7 +72,7 @@ Rectangle {
             id: theImage
             anchors.fill: parent
             fillMode:     Image.PreserveAspectFit
-            source:       globalDevTaskStack.tasks.final.images.image
+            source:       globalDevTaskStack.tasks.final ? globalDevTaskStack.tasks.final.images.image : ""
             Keys.onPressed: {
                 if( event.key === Qt.Key_G ) {
                     theGrid.toggleGrid()
@@ -110,7 +110,7 @@ Rectangle {
             id: theUnderImage
             anchors.fill: parent
             fillMode:     Image.PreserveAspectFit
-            source:       globalDevTaskStack.tasks.final.images.underExposed
+            source:       globalDevTaskStack.tasks.final ? globalDevTaskStack.tasks.final.images.underExposed : ""
             color:        "yellow"
             visible:      false
             onSourceChanged: console.log("underexposed",source)
@@ -120,7 +120,7 @@ Rectangle {
             id: theOverImage
             anchors.fill: parent
             fillMode:     Image.PreserveAspectFit
-            source:       globalDevTaskStack.tasks.final.images.overExposed
+            source:       globalDevTaskStack.tasks.final ? globalDevTaskStack.tasks.final.images.overExposed : ""
             color:        "red"
             visible:      false
             onSourceChanged: console.log("overexposed",source)

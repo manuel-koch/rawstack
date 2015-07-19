@@ -3,6 +3,7 @@
 
 #include <QAbstractListModel>
 #include <QUrl>
+#include <QFileInfo>
 
 class TaskBase;
 class CommonTasks;
@@ -75,7 +76,14 @@ private:
     void setConfig( QString config );
     CommonTasks *tasks() { return m_commonTasks; }
 
+    /// Clear list of tasks for current raw image
     void clearTasks();
+
+    /// Load tasks from given raw image or saved task configuration
+    bool loadTasks( QFileInfo const &file );
+
+    /// Apply default tasks for given raw image
+    void applyDefaultTasks( QFileInfo const &file );
 
 private:
 

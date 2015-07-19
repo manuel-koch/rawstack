@@ -10,6 +10,7 @@
 #include <QFileInfo>
 #include <QFile>
 #include <QDir>
+#include <QMimeDatabase>
 
 TaskStack::TaskStack(QObject *parent)
     : QAbstractListModel(parent)
@@ -115,30 +116,21 @@ void TaskStack::saveToFile(QString path)
 void TaskStack::loadFromFile(QUrl url)
 {
     qDebug() << "TaskStack::loadFromFile()" << url;
-    QFileInfo cfgInfo(url.toLocalFile());
-    cfgInfo = QFileInfo( cfgInfo.dir(), cfgInfo.completeBaseName() + ".rawstack" );
 
     clearTasks();
 
-    QMap<QString,QString> settings;
-    ConfigFileLoader loader;
-    connect( &loader, &ConfigFileLoader::setting, [&] (QString key, QString value) {
-        qDebug() << "TaskStack::loadFromFile()" << key << value;
-        settings[key] = value;
-    });
-    connect( &loader, &ConfigFileLoader::config, [&] (ConfigBase *cfg) {
-        qDebug() << "TaskStack::loadFromFile()" << cfg;
-        addTask( TaskFactory::getInstance()->create(cfg) );
-    });
-    if( loader.load(cfgInfo.absoluteFilePath()) )
+    QFileInfo pathInfo(url.toLocalFile());
+    if( !pathInfo.exists() )
     {
-        if( settings.contains("raw") )
-            m_commonTasks->ufraw()->config()->setProperty("raw",settings["raw"]);
+        qDebug() << "TaskStack::loadFromFile() path not found";
+        return;
     }
-    else
-    {
-        qDebug() << "TaskStack::loadFromFile() failed";
-    }
+
+    QFileInfo cfgInfo( pathInfo.dir(), pathInfo.completeBaseName() + ".rawstack" );
+    if( cfgInfo.exists() && loadTasks(cfgInfo) )
+        return;
+
+    applyDefaultTasks( pathInfo );
 }
 
 void TaskStack::setProgress(double progress)
@@ -166,6 +158,49 @@ void TaskStack::clearTasks()
     while( m_tasks.size() )
         removeTask( m_tasks.size()-1 );
     endResetModel();
+}
+
+bool TaskStack::loadTasks(const QFileInfo &file)
+{
+    QMap<QString,QString> settings;
+    ConfigFileLoader loader;
+    connect( &loader, &ConfigFileLoader::setting, [&] (QString key, QString value) {
+        qDebug() << "TaskStack::loadTasks()" << key << value;
+        settings[key] = value;
+    });
+    connect( &loader, &ConfigFileLoader::config, [&] (ConfigBase *cfg) {
+        qDebug() << "TaskStack::loadTasks()" << cfg;
+        addTask( TaskFactory::getInstance()->create(cfg) );
+    });
+    if( loader.load(file.absoluteFilePath()) )
+    {
+        if( settings.contains("raw") )
+            m_commonTasks->ufraw()->config()->setProperty("raw",settings["raw"]);
+        return true;
+    }
+    else
+    {
+        qDebug() << "TaskStack::loadTasks() failed";
+        return false;
+    }
+}
+
+void TaskStack::applyDefaultTasks(const QFileInfo &file)
+{
+    qDebug() << "TaskStack::applyDefaultTasks()" << file.absoluteFilePath();
+    QMimeDatabase mime;
+    QMimeType mimeType = mime.mimeTypeForFile(file);
+    QStringList validTypes;
+    validTypes << "image/x-canon-cr2";
+    qDebug() << "TaskStack::applyDefaultTasks()" << mimeType.name();
+    if( validTypes.indexOf(mimeType.name()) == -1 )
+    {
+        qDebug() << "TaskStack::applyDefaultTasks() unsupported file";
+        return;
+    }
+
+    addTask( TaskFactory::getInstance()->create( TaskFactory::getInstance()->create("ufraw") ) );
+    m_commonTasks->ufraw()->config()->setProperty("raw",file.absoluteFilePath());
 }
 
 int TaskStack::rowCount(const QModelIndex &parent) const

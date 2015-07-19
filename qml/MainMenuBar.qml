@@ -9,12 +9,14 @@ MenuBar {
         title: qsTr("&File")
 
         MenuItem {
-            text: qsTr("&Open image")
+            text:        qsTr("&Open")
+            shortcut:    "Ctrl+O"
             onTriggered: openImage()
         }
 
         MenuItem {
-            text: qsTr("&Quit")
+            text:        qsTr("&Quit")
+            shortcut:    "Ctrl+Q"
             onTriggered: Qt.quit();
         }
     }

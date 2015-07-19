@@ -2,6 +2,7 @@
 #define TASKSTACK_H
 
 #include <QAbstractListModel>
+#include <QUrl>
 
 class TaskBase;
 class CommonTasks;
@@ -31,6 +32,7 @@ public:
     virtual ~TaskStack();
 
     void addTask(TaskBase *task, int idx = -1 );
+    void removeTask(int idx);
     bool developing() const { return m_developing; }
     double progress() const { return m_progress; }
     QString config() const { return m_config; }
@@ -43,8 +45,9 @@ public slots:
     /// Save current stack config to select file
     Q_INVOKABLE void saveToFile( QString path );
 
-    /// Load current stack config from select file
-    Q_INVOKABLE void loadFromFile( QString path );
+    /// Load current stack config from select file.
+    /// Selected path can be a RAW image or a rawstack configuration.
+    Q_INVOKABLE void loadFromFile(QUrl url );
 
 public:
 

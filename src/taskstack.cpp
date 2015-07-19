@@ -28,6 +28,7 @@ TaskStack::TaskStack(QObject *parent)
 
 TaskStack::~TaskStack()
 {
+    clearTasks();
     delete m_commonTasks;
 }
 
@@ -39,7 +40,7 @@ void TaskStack::addTask(TaskBase *task, int idx)
     if( idx < 0 || idx>m_tasks.size() )
         idx = m_tasks.size(); // append at end
 
-    qDebug() << "TaskStack::addTask()" << task << idx;
+    qDebug() << "TaskStack::addTask()" << task << "at" << idx;
 
     beginInsertRows( QModelIndex(), idx, 1 );
 
@@ -53,6 +54,25 @@ void TaskStack::addTask(TaskBase *task, int idx)
         m_commonTasks->setUfraw(task);
 
     endInsertRows();
+
+    qDebug() << "TaskStack::addTask() nof tasks" << m_tasks.size();
+}
+
+void TaskStack::removeTask(int idx)
+{
+    if( idx >= m_tasks.size() )
+        return;
+
+    qDebug() << "TaskStack::removeTask()" << idx;
+
+    beginRemoveRows( QModelIndex(), idx, idx );
+
+    TaskBase *task = m_tasks.takeAt(idx);
+    delete task;
+
+    endRemoveRows();
+
+    qDebug() << "TaskStack::removeTask() nof tasks" << m_tasks.size();
 }
 
 void TaskStack::develop()
@@ -92,10 +112,10 @@ void TaskStack::saveToFile(QString path)
     fileSaver.save(m_config);
 }
 
-void TaskStack::loadFromFile(QString path)
+void TaskStack::loadFromFile(QUrl url)
 {
-    qDebug() << "TaskStack::loadFromFile()" << path;
-    QFileInfo cfgInfo(path);
+    qDebug() << "TaskStack::loadFromFile()" << url;
+    QFileInfo cfgInfo(url.toLocalFile());
     cfgInfo = QFileInfo( cfgInfo.dir(), cfgInfo.completeBaseName() + ".rawstack" );
 
     clearTasks();
@@ -141,13 +161,10 @@ void TaskStack::setConfig(QString config)
 
 void TaskStack::clearTasks()
 {
+    qDebug() << "TaskStack::clearTasks()";
     beginResetModel();
-
-    std::for_each( m_tasks.begin(), m_tasks.end(), [] (TaskBase *task) {
-        delete task;
-    });
-    m_tasks.clear();
-
+    while( m_tasks.size() )
+        removeTask( m_tasks.size()-1 );
     endResetModel();
 }
 
@@ -155,6 +172,7 @@ int TaskStack::rowCount(const QModelIndex &parent) const
 {
     if( parent.isValid() )
         return 0;
+    qDebug() << "TaskStack::rowCount()" << m_tasks.size();
     return m_tasks.size();
 }
 
@@ -163,6 +181,7 @@ QVariant TaskStack::data(const QModelIndex &index, int role) const
     if( index.row() < 0 || index.row() >= m_tasks.size() )
         return QVariant();
 
+    qDebug() << "TaskStack::data()" << index.row() << m_rolemap[role];
     switch( role )
     {
         case Qt::DisplayRole:

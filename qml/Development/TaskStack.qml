@@ -20,7 +20,7 @@ Rectangle {
             width:  parent.width
             property var delegateModel: model
             Component.onCompleted: {
-                console.log("Create task delegate for",model.name)
+                console.log("Create task delegate for",model,model.index,model.name)
                 if( model.name === "ufraw" )
                     source = "Tasks/UfrawTask.qml"
                 else if( model.name === "dcraw" )
@@ -38,7 +38,7 @@ Rectangle {
                 target:   item.controller
                 property: "task"
                 value:    delegateModel.task
-                when:     item
+                when:     item && item.controller
             }
             MouseArea {
                 anchors.fill: parent
@@ -50,7 +50,7 @@ Rectangle {
     Component {
         id: defaultDelegate
         Text {
-            text: "Unknown Task: "+parent.delegateModel.name
+            text: "Unknown Task"
         }
     }
 
@@ -81,6 +81,19 @@ Rectangle {
             else
                 activeTask = null
         }
+        onCountChanged: console.log("nof tasks",count)
     }
+
+    Connections {
+        target: globalDevTaskStack
+        onRowsInserted:  console.log("onRowsInserted",theList.count)
+        onRowsRemoved:   console.log("onRowsRemoved",theList.count)
+        onLayoutChanged: console.log("onLayoutChanged",theList.count)
+        onModelReset:    {
+            console.log("onModelReset",theList.count)
+            theList.forceLayout()
+        }
+    }
+
 }
 

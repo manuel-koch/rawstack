@@ -3,6 +3,8 @@
 #include <QDebug>
 #include <QTemporaryFile>
 #include <QRegularExpression>
+#include <QDomDocument>
+#include <QDomElement>
 
 UfrawProcess::UfrawProcess(QObject *parent)
     : QProcess(parent)
@@ -201,34 +203,53 @@ void UfrawProcess::buildArgs(QString probePath, QStringList &args)
 void UfrawProcess::loadProbeSettings(QFile &file)
 {
     qDebug() << "UfrawProcess::loadProbeSettings()" << file.fileName();
-    if( !file.open(QFile::ReadOnly) ) {
-        qDebug() << "UfrawProcess::loadProbeSettings() open failed";
-        return;
-    }
-    QString xml = QString::fromUtf8(file.readAll());
-    QRegularExpression re("<(?P<tag>\\w+)>\\s*(?P<val>.+?)\\s*</(?P=tag)>",QRegularExpression::MultilineOption);
-    if( !re.isValid() )
-        qDebug() << "UfrawProcess::loadProbeSettings() invalid re:" << re.errorString();
 
-    QStringList knownInfo;
-    knownInfo << "Make" << "Model" << "Lens" << "LensModel"
-              << "ISOSpeed" << "Shutter" << "Aperture" << "FocalLength";
+    m_wbTemperature = 0;
+    m_wbGreen       = 0;
     m_info.clear();
 
-    QRegularExpressionMatchIterator it = re.globalMatch(xml);
-    while( it.hasNext() )
+    if( !file.open( QFile::ReadOnly ) )
     {
-        QRegularExpressionMatch m = it.next();
-        QString tag = m.captured("tag");
-        QString val = m.captured("val");
-        qDebug() <<  tag << val;
-        if( tag == "Temperature" )
-            m_wbTemperature = val.toInt();
-        else if( tag == "Green" )
-            m_wbGreen = val.toDouble();
-        else if( knownInfo.indexOf(tag) != -1 )
-            m_info[tag] = QString::fromUtf8(val.toUtf8());
+        qDebug() << "UfrawProcess::loadProbeSettings() failed to read file";
+        return;
     }
+
+    QDomDocument doc;
+    QString err;
+    int errLine, errCol;
+    bool res = doc.setContent(&file,true,&err,&errLine,&errCol);
     file.close();
-    qDebug() << "UfrawProcess::loadProbeSettings()" << m_info;
+    if( !res )
+    {
+        qDebug() << "UfrawProcess::loadProbeSettings() error at line" << errLine << "col" << errCol << ":" << err;
+        return;
+    }
+
+    QDomElement rootElm        = doc.documentElement();
+    QDomElement temperatureElm = rootElm.firstChildElement("Temperature").toElement();
+    QDomElement greenElm       = rootElm.firstChildElement("Green").toElement();
+
+    if( temperatureElm.isElement() )
+    {
+        m_wbTemperature = temperatureElm.text().toInt();
+        qDebug() << "UfrawProcess::loadProbeSettings() Temperatur" << m_wbTemperature;
+    }
+    if( greenElm.isElement() )
+    {
+        m_wbGreen = greenElm.text().toFloat();
+        qDebug() << "UfrawProcess::loadProbeSettings() Green" << m_wbGreen;
+    }
+
+    QStringList knownInfos;
+    knownInfos << "Make" << "Model" << "Lens" << "LensModel"
+               << "ISOSpeed" << "Shutter" << "Aperture" << "FocalLength";
+    foreach( QString info, knownInfos )
+    {
+        QDomElement infoElm = rootElm.firstChildElement(info).toElement();
+        if( infoElm.isElement() )
+        {
+            m_info[info] = infoElm.text();
+            qDebug() << "UfrawProcess::loadProbeSettings()" << info << m_info[info];
+        }
+    }
 }

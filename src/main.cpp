@@ -51,6 +51,9 @@ int main(int argc, char *argv[])
     QString                imageProviderName = ImageProvider::name;
 
     TaskStack taskStack;
+    if( argc > 1 )
+        taskStack.loadFromFile( QUrl::fromLocalFile(argv[1]) );
+
     QQmlApplicationEngine engine;
 
     engine.addImageProvider( imageProviderName, imageProvider );

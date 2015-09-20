@@ -16,11 +16,10 @@ Task {
             decimals:          2
             maximumValue:      8
             minimumValue:      -8
-            stepSize:          0.2
+            stepSize:          0.05
             suffix:            "EV"
             value:             controller.exposure
             onEditingFinished: controller.setExposure( value )
         }
     }
 }
-

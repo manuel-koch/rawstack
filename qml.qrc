@@ -17,5 +17,6 @@
         <file>qml/Development/ColoredImage.qml</file>
         <file>qml/Development/ImageGrid.qml</file>
         <file>qml/Development/InfoBadge.qml</file>
+        <file>qml/Development/HistogramChannel.qml</file>
     </qresource>
 </RCC>

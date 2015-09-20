@@ -39,46 +39,44 @@ Item {
         }
     }
 
-    Image {
+    HistogramChannel {
         id: theLumChannel
+        objectName:   "lum"
         anchors.fill: parent
-        fillMode:     Image.Stretch
-//        source:       theDevCtrl.chain.images.histogramLum.url
+        bins:         globalDevTaskStack.tasks.final ? globalDevTaskStack.tasks.final.images.histogram.lum : []
         visible:      theLumToggle.enabled
-        opacity:      internal.opacity
-        onStatusChanged: {
-            if( status != Image.Ready )
-                theHint.text = "Histogram not\navailable yet"
-            else
-                theHint.text = ""
-        }
+        lineColor:    "black"
+        fillColor:    Qt.rgba(0.2,0.2,0.2,0.25)
     }
 
-    Image {
+    HistogramChannel {
         id: theRedChannel
+        objectName:   "red"
         anchors.fill: parent
-        fillMode:     Image.Stretch
-//        source:       theDevCtrl.chain.images.histogramRed.url
+        bins:         globalDevTaskStack.tasks.final ? globalDevTaskStack.tasks.final.images.histogram.red : []
         visible:      theRedToggle.enabled
-        opacity:      internal.opacity
+        lineColor:    "red"
+        fillColor:    Qt.rgba(1,0,0,0.25)
     }
 
-    Image {
+    HistogramChannel {
         id: theGreenChannel
+        objectName:   "green"
         anchors.fill: parent
-        fillMode:     Image.Stretch
-//        source:       theDevCtrl.chain.images.histogramGreen.url
+        bins:         globalDevTaskStack.tasks.final ? globalDevTaskStack.tasks.final.images.histogram.green : []
         visible:      theGreenToggle.enabled
-        opacity:      internal.opacity
+        lineColor:    "green"
+        fillColor:    Qt.rgba(0,1,0,0.25)
     }
 
-    Image {
+    HistogramChannel {
         id: theBlueChannel
         anchors.fill: parent
-        fillMode:     Image.Stretch
-//        source:       theDevCtrl.chain.images.histogramBlue.url
+        objectName:   "blue"
+        bins:         globalDevTaskStack.tasks.final ? globalDevTaskStack.tasks.final.images.histogram.blue : []
         visible:      theBlueToggle.enabled
-        opacity:      internal.opacity
+        lineColor:    "blue"
+        fillColor:    Qt.rgba(0,0,1,0.25)
     }
 
     Row {
@@ -117,7 +115,7 @@ Item {
             width:  internal.toggleSize
             height: internal.toggleSize
             radius: 2
-            color:  "silver"
+            color:  Qt.rgba(0.9,0.9,0.9)
             onToggleChannel: internal.toggleChannel(theLumToggle,exclusive)
             onEnabledChanged: console.log(color,enabled)
         }

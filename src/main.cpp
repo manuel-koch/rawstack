@@ -28,6 +28,7 @@ void register_types()
     qRegisterMetaType<CommonTasks*>("CommonTasks");
     qRegisterMetaType<ImageFactory*>("ImageFactory");
     qRegisterMetaType<ImageFactoryBase*>("ImageFactoryBase");
+    qRegisterMetaType<HistFactory*>("HistFactory");
     qmlRegisterType<TaskBase>("com.rawstack.types", 1, 0, "TaskBase");
 }
 

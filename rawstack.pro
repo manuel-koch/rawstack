@@ -46,7 +46,8 @@ SOURCES += \
     src/configfilesaver.cpp \
     src/configloaderbase.cpp \
     src/configxmlloader.cpp \
-    src/configfileloader.cpp
+    src/configfileloader.cpp \
+    src/histfactory.cpp
 
 RESOURCES += qml.qrc
 
@@ -83,4 +84,5 @@ HEADERS += \
     src/configbuilderbase.h \
     src/configloaderbase.h \
     src/configxmlloader.h \
-    src/configfileloader.h
+    src/configfileloader.h \
+    src/histfactory.h

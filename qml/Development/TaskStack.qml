@@ -23,8 +23,6 @@ Rectangle {
                 console.log("Create task delegate for",model,model.index,model.name)
                 if( model.name === "ufraw" )
                     source = "Tasks/UfrawTask.qml"
-                else if( model.name === "dcraw" )
-                    source = "Tasks/DcrawTask.qml"
                 else if( model.name === "rotate" )
                     source = "Tasks/RotateTask.qml"
                 else if( model.name === "level" )

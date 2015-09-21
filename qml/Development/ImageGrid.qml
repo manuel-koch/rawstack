@@ -6,8 +6,8 @@ Item {
     width:  300
     height: 200
 
-    property int    gridXSteps:    9
-    property int    gridYSteps:    9
+    property int    gridXSteps:    10
+    property int    gridYSteps:    10
     property real   gridThickness: 0.5
     property color  gridColor:     "red"
     property string gridType:      ""
@@ -20,8 +20,24 @@ Item {
 
     function toggleGrid() {
         if( gridType == "" )
-            gridType = "grid"
-        else if( gridType == "grid" )
+        {
+            gridType = "grid-5"
+            gridXSteps = 5
+            gridYSteps = 5
+        }
+        else if( gridType == "grid-5" )
+        {
+            gridType = "grid-10"
+            gridXSteps = 10
+            gridYSteps = 10
+        }
+        else if( gridType == "grid-10" )
+        {
+            gridType = "grid-20"
+            gridXSteps = 20
+            gridYSteps = 20
+        }
+        else if( gridType == "grid-20" )
             gridType = "thirds"
         else if( gridType == "thirds" )
             gridType = "phi"
@@ -40,7 +56,7 @@ Item {
             ctx.strokeStyle = theGrid.gridColor
             ctx.lineWidth   = gridThickness
             ctx.beginPath()
-            if( gridType === "grid" ) {
+            if( gridType.substring(0,4) === "grid" ) {
                 for( var i=1; i<theGrid.gridYSteps; i++ )
                 {
                     var y = height * i / theGrid.gridYSteps;

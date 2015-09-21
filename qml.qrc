@@ -20,5 +20,6 @@
         <file>qml/Development/HistogramChannel.qml</file>
         <file>qml/Development/Tasks/RotateController.qml</file>
         <file>qml/Development/Tasks/RotateTask.qml</file>
+        <file>qml/Development/RotateOverlay.qml</file>
     </qresource>
 </RCC>

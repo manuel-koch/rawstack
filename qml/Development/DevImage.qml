@@ -1,6 +1,7 @@
 import QtQuick 2.0
 import QtQuick.Controls 1.3
 import com.rawstack.types 1.0
+import "Tasks"
 
 Rectangle {
     id: theDevImage
@@ -11,11 +12,11 @@ Rectangle {
 
     property TaskBase activeTask
 
-    //    property DevelopmentRotateController rotateController: DevelopmentRotateController { }
+    property RotateController rotateController: RotateController { task: activeTask }
 
     QtObject {
         id: internal
-        property bool editRotate: activeTask ? activeTask.name == "rotate" : false
+        property bool editRotate: activeTask ? activeTask.config.name === "rotate" : false
         property string zoomName: "fit"
         property real zoomFactor: 0
         property real zoomIdx:    0
@@ -136,16 +137,16 @@ Rectangle {
             height:             theImage.paintedHeight
         }
 
-//        RotateOverlay {
-//            id: theRotateOverlay
-//            anchors.top:        parent.top
-//            anchors.left:       parent.left
-//            anchors.topMargin:  (parent.height-height)/2
-//            anchors.leftMargin: (parent.width-width)/2
-//            width:              theImage.paintedWidth
-//            height:             theImage.paintedHeight
-//            visible:            internal.editRotate
-//        }
+        RotateOverlay {
+            id: theRotateOverlay
+            anchors.top:        parent.top
+            anchors.left:       parent.left
+            anchors.topMargin:  (parent.height-height)/2
+            anchors.leftMargin: (parent.width-width)/2
+            width:              theImage.paintedWidth
+            height:             theImage.paintedHeight
+            visible:            internal.editRotate
+        }
     }
 
     Row {
@@ -155,6 +156,12 @@ Rectangle {
         InfoBadge {
             id: theZoomBadge
             text: "Zoom: "+internal.zoomName
+        }
+
+        InfoBadge {
+            id: theRotateBadge
+            text: "Rotate..."
+            visible: internal.editRotate
         }
 
         InfoBadge {

@@ -278,7 +278,7 @@ void TaskStack::onTaskFinished()
     if( nextIdx >= m_tasks.size() )
         setDeveloping(false);
     else
-        m_tasks[nextIdx]->develop();
+        m_tasks[nextIdx]->develop( m_tasks[idx] );
 }
 
 void TaskStack::setDeveloping(bool developing)

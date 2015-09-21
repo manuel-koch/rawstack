@@ -42,6 +42,8 @@ void WorkerBase::onDevelop(WorkerBase *predecessor)
     emit started();
     setProgress(0);
 
+    prepareImpl();
+
     QByteArray preHash = predecessor ? predecessor->hash() : QByteArray();
     QByteArray imgHash = m_config->hash( preHash );
     qDebug() << "WorkerBase::onDevelop()" << this << "curr" << imgHash.toHex();
@@ -57,6 +59,11 @@ void WorkerBase::onDevelop(WorkerBase *predecessor)
     setProgress(1);
     emit finished();
     nextCycle();
+}
+
+void WorkerBase::prepareImpl()
+{
+    qDebug() << "WorkerBase::prepareImpl()" << this;
 }
 
 void WorkerBase::developImpl(WorkerBase *predecessor)

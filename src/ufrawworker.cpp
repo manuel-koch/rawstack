@@ -16,6 +16,35 @@ UfrawWorker::~UfrawWorker()
     // EMPTY
 }
 
+void UfrawWorker::prepareImpl()
+{
+    qDebug() << "UfrawWorker::prepareImpl()" << this;
+
+    UfrawConfig *cfg = config<UfrawConfig>();
+    if( !cfg || cfg->raw().isEmpty() )
+    {
+        qWarning() << "UfrawWorker::prepareImpl() invalid config";
+        return;
+    }
+
+    if( cfg->wbTemperature() != UfrawConfig::DefaultWbTemperature &&
+        cfg->wbGreen()       != UfrawConfig::DefaultWbGreen )
+        return;
+
+    UfrawProcess ufraw;
+    ufraw.setProgram( "/opt/local/bin/ufraw-batch" );
+    ufraw.setRaw( cfg->raw() );
+    ufraw.setExposure( cfg->exposure() );
+    ufraw.setShrink( 4 );
+
+    // probe for other settings first...
+    ufraw.run( true );
+    if( cfg->wbTemperature() == UfrawConfig::DefaultWbTemperature )
+        cfg->setWbTemperature( ufraw.wbTemperature() );
+    if( cfg->wbGreen() == UfrawConfig::DefaultWbGreen )
+        cfg->setWbGreen( ufraw.wbGreen() );
+}
+
 void UfrawWorker::developImpl(WorkerBase *predecessor)
 {
     qDebug() << "UfrawWorker::developImpl()" << this << predecessor;
@@ -32,13 +61,10 @@ void UfrawWorker::developImpl(WorkerBase *predecessor)
     ufraw.setRaw( cfg->raw() );
     ufraw.setExposure( cfg->exposure() );
     ufraw.setShrink( 4 );
+    ufraw.setWbTemperature( cfg->wbTemperature() );
+    ufraw.setWbGreen( cfg->wbGreen() );
 
-    // probe for other settings first...
-    ufraw.run( true );
-    cfg->setWbTemperature( ufraw.wbTemperature() );
-    cfg->setWbGreen( ufraw.wbGreen() );
-
-    // then extract the image
+    // extract the image
     ufraw.run( false );
     ufraw.waitForStarted(-1);
     setProgress(0.1);

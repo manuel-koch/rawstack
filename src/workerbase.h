@@ -49,6 +49,7 @@ private slots:
 
 private:
 
+    virtual void prepareImpl();
     virtual void developImpl( WorkerBase *predecessor );
     void nextCycle();
 

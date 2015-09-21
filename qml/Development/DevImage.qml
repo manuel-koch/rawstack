@@ -159,15 +159,15 @@ Rectangle {
         }
 
         InfoBadge {
-            id: theRotateBadge
-            text: "Rotate..."
-            visible: internal.editRotate
-        }
-
-        InfoBadge {
             id: theGridBadge
             text: "Grid: "+theGrid.gridType
             visible: theGrid.gridType
+        }
+
+        InfoBadge {
+            id: theRotateBadge
+            text: "Rotate..."
+            visible: internal.editRotate
         }
     }
 

@@ -1,4 +1,5 @@
 #include "workerbase.h"
+#include "configbase.h"
 
 #include <QDebug>
 
@@ -41,8 +42,18 @@ void WorkerBase::onDevelop(WorkerBase *predecessor)
     emit started();
     setProgress(0);
 
-    developImpl( predecessor );
+    QByteArray preHash = predecessor ? predecessor->hash() : QByteArray();
+    QByteArray imgHash = m_config->hash( preHash );
+    qDebug() << "WorkerBase::onDevelop()" << this << "curr" << imgHash.toHex();
+    qDebug() << "WorkerBase::onDevelop()" << this << "last" << m_imgHash.toHex();
+    if( m_imgHash != imgHash )
+    {
+        m_img = Magick::Image();
+        developImpl( predecessor );
+        m_imgHash = imgHash;
+    }
 
+    m_config->resetDirty();
     setProgress(1);
     emit finished();
     nextCycle();

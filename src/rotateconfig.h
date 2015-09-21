@@ -19,6 +19,7 @@ public:
     // ConfigBase interface
     virtual QDomNode toXML(QDomNode &node ) const;
     virtual bool fromXML( QDomNode const &node );
+    virtual QByteArray hash( const QByteArray &baseHash );
 
     double degree() const { return m_degree; }
 
@@ -28,7 +29,7 @@ public slots:
 
 signals:
 
-    void degreeChanged( double degree );
+    void degreeChanged(double degree);
 
 private:
 

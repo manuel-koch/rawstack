@@ -20,8 +20,10 @@ public:
     QString name() const { return m_name; }
     bool    enabled() const { return m_enabled; }
     bool    canDisable() const { return m_canDisable; }
-    bool    dirty() const { return m_changes!=0; }
-    size_t  changes() const { return m_changes; }
+    bool    dirty() const { return m_dirty; }
+
+    // calculate hash of this configuration incl given base hash
+    virtual QByteArray hash( const QByteArray &baseHash );
 
     virtual QDomNode toXML(QDomNode &node ) const;
     virtual bool fromXML(QDomNode const &node );
@@ -30,6 +32,8 @@ public slots:
 
     void setEnabled(bool enabled);
     void setCanDisable(bool canDisable);
+    void markDirty();
+    void resetDirty();
 
 signals:
 
@@ -38,17 +42,12 @@ signals:
     void canDisableChanged(bool canDisable);
     void dirtyChanged(bool dirty);
 
-protected slots:
-
-    void markDirty();
-    void resetDirty();
-
 private:
 
     QString  m_name;
     bool     m_enabled;
     bool     m_canDisable;
-    size_t   m_changes;
+    bool     m_dirty;
 };
 
 #endif // CONFIGBASE_H

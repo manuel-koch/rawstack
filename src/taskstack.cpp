@@ -201,6 +201,8 @@ void TaskStack::applyDefaultTasks(const QFileInfo &file)
 
     addTask( TaskFactory::getInstance()->create( TaskFactory::getInstance()->create("ufraw") ) );
     m_commonTasks->ufraw()->config()->setProperty("raw",file.absoluteFilePath());
+
+    addTask( TaskFactory::getInstance()->create( TaskFactory::getInstance()->create("rotate") ) );
 }
 
 int TaskStack::rowCount(const QModelIndex &parent) const

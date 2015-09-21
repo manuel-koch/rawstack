@@ -21,12 +21,9 @@ void UfrawWorker::developImpl(WorkerBase *predecessor)
     qDebug() << "UfrawWorker::developImpl()" << this << predecessor;
 
     UfrawConfig *cfg = config<UfrawConfig>();
-    if( !cfg )
-        return;
-
-    if( cfg->raw().isEmpty() )
+    if( !cfg || cfg->raw().isEmpty() )
     {
-        qWarning() << "UfrawWorker::developImpl() unknown raw";
+        qWarning() << "UfrawWorker::developImpl() invalid config";
         return;
     }
 

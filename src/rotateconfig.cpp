@@ -2,6 +2,7 @@
 #include "stringtoolbox.h"
 
 #include <QDebug>
+#include <QCryptographicHash>
 
 const char *RotateConfig::Name = "rotate";
 
@@ -46,12 +47,21 @@ bool RotateConfig::fromXML(const QDomNode &node)
     return true;
 }
 
+QByteArray RotateConfig::hash(const QByteArray &baseHash)
+{
+    QCryptographicHash h(QCryptographicHash::Md5);
+    h.addData( ConfigBase::hash(baseHash) );
+    h.addData( reinterpret_cast<char*>(&m_degree), sizeof(m_degree) );
+    return h.result();
+}
+
 void RotateConfig::setDegree(double degree)
 {
     if( m_degree == degree )
         return;
 
     m_degree = degree;
+    qDebug() << "RotateConfig::setDegree()" << m_degree;
     degreeChanged( m_degree );
+    markDirty();
 }
-

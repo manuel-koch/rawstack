@@ -48,7 +48,9 @@ SOURCES += \
     src/configxmlloader.cpp \
     src/configfileloader.cpp \
     src/histfactory.cpp \
-    src/rotateconfig.cpp
+    src/rotateconfig.cpp \
+    src/rotatetask.cpp \
+    src/rotateworker.cpp
 
 RESOURCES += qml.qrc
 
@@ -87,4 +89,6 @@ HEADERS += \
     src/configxmlloader.h \
     src/configfileloader.h \
     src/histfactory.h \
-    src/rotateconfig.h
+    src/rotateconfig.h \
+    src/rotatetask.h \
+    src/rotateworker.h

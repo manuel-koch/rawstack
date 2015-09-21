@@ -2,6 +2,7 @@
 #include "stringtoolbox.h"
 
 #include <QDebug>
+#include <QCryptographicHash>
 
 const char *UfrawConfig::Name = "ufraw";
 
@@ -58,6 +59,17 @@ bool UfrawConfig::fromXML(QDomNode const &node )
 
     resetDirty();
     return true;
+}
+
+QByteArray UfrawConfig::hash(const QByteArray &baseHash)
+{
+    QCryptographicHash h(QCryptographicHash::Md5);
+    h.addData( ConfigBase::hash(baseHash) );
+    h.addData( m_raw.toLocal8Bit() );
+    h.addData( reinterpret_cast<char*>(&m_exposure),      sizeof(m_exposure) );
+    h.addData( reinterpret_cast<char*>(&m_wbTemperature), sizeof(m_wbTemperature) );
+    h.addData( reinterpret_cast<char*>(&m_wbGreen),       sizeof(m_wbGreen) );
+    return h.result();
 }
 
 void UfrawConfig::setExposure(double exposure)

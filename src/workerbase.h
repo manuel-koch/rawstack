@@ -23,6 +23,7 @@ public:
 
     double progress() const { return m_progress; }
     int    cycle()    const { return m_cycle; }
+    const QByteArray &hash() const { return m_imgHash; }
 
     virtual const Magick::Image gmimage() { return m_img; }
     static QImage convert(Magick::Image image);
@@ -60,6 +61,7 @@ private:
     double      m_progress;
     int         m_cycle;
     ConfigBase *m_config;
+    QByteArray  m_imgHash;
 };
 
 #endif // WORKERBASE_H

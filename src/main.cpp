@@ -8,11 +8,11 @@
 #include "imagefactoryregistry.h"
 #include "imageprovider.h"
 
-// FIXME: Remove temporary includes
+#include "configbase.h"
 #include "ufrawconfig.h"
 #include "ufrawtask.h"
-#include "configbase.h"
-// END-OF-FIXME
+#include "rotateconfig.h"
+#include "rotatetask.h"
 
 #include <QDebug>
 #include <QApplication>
@@ -47,6 +47,8 @@ int main(int argc, char *argv[])
     TaskFactory::setInstance( &taskFactory );
     taskFactory.add( new TaskBuilder<UfrawTask>("ufraw") );
     taskFactory.add( new ConfigBuilder<UfrawConfig>("ufraw") );
+    taskFactory.add( new TaskBuilder<RotateTask>("rotate") );
+    taskFactory.add( new ConfigBuilder<RotateConfig>("rotate") );
 
     QQmlImageProviderBase *imageProvider     = static_cast<QQmlImageProviderBase*>( new ImageProvider() );
     QString                imageProviderName = ImageProvider::name;

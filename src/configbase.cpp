@@ -2,13 +2,13 @@
 #include "stringtoolbox.h"
 
 #include <QDebug>
+#include <QCryptographicHash>
 
 ConfigBase::ConfigBase(QString name, QObject *parent)
     : QObject(parent)
     , m_name(name)
     , m_enabled(true)
     , m_canDisable(true)
-    , m_changes(0)
 {
     // EMPTY
 }
@@ -16,6 +16,15 @@ ConfigBase::ConfigBase(QString name, QObject *parent)
 ConfigBase::~ConfigBase()
 {
     // EMPTY
+}
+
+QByteArray ConfigBase::hash(const QByteArray &baseHash)
+{
+    QCryptographicHash h(QCryptographicHash::Md5);
+    h.addData( m_name.toLocal8Bit() );
+    h.addData( reinterpret_cast<char*>(&m_enabled), sizeof(m_enabled) );
+    h.addData( baseHash );
+    return h.result();
 }
 
 QDomNode ConfigBase::toXML( QDomNode &node ) const
@@ -57,22 +66,20 @@ void ConfigBase::setCanDisable(bool canDisable)
 
 void ConfigBase::markDirty()
 {
-    bool wasClean = m_changes==0;
-    m_changes++;
-    if( wasClean )
-    {
-        qDebug() << "ConfigBase::markDirty()" << this;
-        emit dirtyChanged(true);
-    }
+    if( m_dirty )
+        return;
+
+    qDebug() << "ConfigBase::markDirty()" << this;
+    m_dirty = true;
+    emit dirtyChanged(m_dirty);
 }
 
 void ConfigBase::resetDirty()
 {
-    bool wasDirty = m_changes!=0;
-    m_changes = 0;
-    if( wasDirty )
-    {
-        qDebug() << "ConfigBase::resetDirty()" << this;
-        emit dirtyChanged(false);
-    }
+    if( !m_dirty )
+        return;
+
+    qDebug() << "ConfigBase::resetDirty()" << this;
+    m_dirty = false;
+    emit dirtyChanged(m_dirty);
 }

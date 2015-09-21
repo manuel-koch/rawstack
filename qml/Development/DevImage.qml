@@ -27,6 +27,7 @@ Rectangle {
             zoomFactor = 0
             zoomIdx    = 3
             zoomName   = "fit"
+            theFlickable.returnToBounds()
         }
 
         function zoomIn() {
@@ -68,6 +69,14 @@ Rectangle {
         clip:           true
         boundsBehavior: Flickable.StopAtBounds
         maximumFlickVelocity: 300
+
+        rebound: Transition {
+                NumberAnimation {
+                    properties:  "x,y"
+                    duration:    0
+                    easing.type: Easing.Linear
+                }
+            }
 
         Image {
             id: theImage

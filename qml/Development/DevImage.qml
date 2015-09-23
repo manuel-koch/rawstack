@@ -20,12 +20,12 @@ Rectangle {
         property string zoomName: "fit"
         property real zoomFactor: 0
         property real zoomIdx:    0
-        property var zoomValues:  [ 0.25, 0.5, 0.75, 1.0, 1.25, 1.5, 2, 4 ]
+        property var  zoomValues:  [ 0.25, 0.5, 0.75, 1.0, 1.25, 1.5, 2, 4 ]
         property real zoomMin:    theFlickable.width / theImage.sourceSize.width
 
         function zoomFit() {
             zoomFactor = 0
-            zoomIdx    = 3
+            zoomIdx    = 0
             zoomName   = "fit"
         }
 
@@ -35,7 +35,7 @@ Rectangle {
             if( zoomFactor && zoomIdx+1 < zoomValues.length )
                 zoomIdx++;
             else if ( !zoomFactor ) {
-                for( var i=zoomValues.length-1; i>0; i-- ) {
+                for( var i=zoomValues.length-1; i>=0; i-- ) {
                     if( zoomValues[i] > zoomMin ) {
                         zoomIdx = i
                     }
@@ -60,13 +60,13 @@ Rectangle {
 
     Flickable {
         id: theFlickable
-        anchors.centerIn: parent
-        width:  parent.width  - parent.width%4
-        height: parent.height - parent.height%4
-        contentWidth:   internal.zoomFactor==0 ? width  : theImage.sourceSize.width  * internal.zoomFactor
-        contentHeight:  internal.zoomFactor==0 ? height : theImage.sourceSize.height * internal.zoomFactor
-        clip:           true
-        boundsBehavior: Flickable.StopAtBounds
+        anchors.centerIn:     parent
+        width:                parent.width  - parent.width%4
+        height:               parent.height - parent.height%4
+        contentWidth:         internal.zoomFactor==0 ? width  : theImage.sourceSize.width  * internal.zoomFactor
+        contentHeight:        internal.zoomFactor==0 ? height : theImage.sourceSize.height * internal.zoomFactor
+        clip:                 true
+        boundsBehavior:       Flickable.StopAtBounds
         maximumFlickVelocity: 300
 
         onContentWidthChanged:  returnToBounds()

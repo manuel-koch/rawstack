@@ -12,10 +12,11 @@
 #include <QDir>
 #include <QMimeDatabase>
 
-TaskStack::TaskStack(QObject *parent)
+TaskStack::TaskStack(bool preview, QObject *parent)
     : QAbstractListModel(parent)
     , m_commonTasks(NULL)
     , m_progress(0)
+    , m_preview(preview)
 {
     m_rolemap = QAbstractListModel::roleNames();
     m_rolemap[NameRole]     = "name";
@@ -78,9 +79,9 @@ void TaskStack::removeTask(int idx)
 
 void TaskStack::develop()
 {
-    qDebug() << "TaskStack::develop()";
+    qDebug() << "TaskStack::develop()" << (m_preview ? "preview" : "HQ");
     if( !m_tasks.empty() )
-        m_tasks[0]->develop();
+        m_tasks[0]->develop( m_preview );
 }
 
 void TaskStack::saveToFile(QString path)
@@ -276,9 +277,9 @@ void TaskStack::onTaskFinished()
     setProgress( p );
     int nextIdx = idx+1;
     if( nextIdx >= m_tasks.size() )
-        setDeveloping(false);
+        setDeveloping( false );
     else
-        m_tasks[nextIdx]->develop( m_tasks[idx] );
+        m_tasks[nextIdx]->develop( m_preview, m_tasks[idx] );
 }
 
 void TaskStack::setDeveloping(bool developing)

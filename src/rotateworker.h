@@ -15,7 +15,7 @@ public:
 private:
 
     // WorkerBase interface
-    virtual void developImpl(WorkerBase *predecessor);
+    virtual void developImpl(bool preview, WorkerBase *predecessor);
 
 };
 

@@ -53,7 +53,7 @@ int main(int argc, char *argv[])
     QQmlImageProviderBase *imageProvider     = static_cast<QQmlImageProviderBase*>( new ImageProvider() );
     QString                imageProviderName = ImageProvider::name;
 
-    TaskStack taskStack;
+    TaskStack taskStack(true);
     if( argc > 1 )
         taskStack.loadFromFile( QUrl::fromLocalFile(argv[1]) );
 

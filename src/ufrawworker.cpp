@@ -45,7 +45,7 @@ void UfrawWorker::prepareImpl()
         cfg->setWbGreen( ufraw.wbGreen() );
 }
 
-void UfrawWorker::developImpl(WorkerBase *predecessor)
+void UfrawWorker::developImpl(bool preview, WorkerBase *predecessor)
 {
     qDebug() << "UfrawWorker::developImpl()" << this << predecessor;
 
@@ -60,9 +60,14 @@ void UfrawWorker::developImpl(WorkerBase *predecessor)
     ufraw.setProgram( "/opt/local/bin/ufraw-batch" );
     ufraw.setRaw( cfg->raw() );
     ufraw.setExposure( cfg->exposure() );
-    ufraw.setShrink( 4 );
     ufraw.setWbTemperature( cfg->wbTemperature() );
     ufraw.setWbGreen( cfg->wbGreen() );
+    if( preview )
+    {
+        ufraw.setInterpolate( UfrawProcess::InterpolateBilinear );
+        ufraw.setColorSmoothing( false );
+        ufraw.setShrink( 4 );
+    }
 
     // extract the image
     ufraw.run( false );
@@ -71,12 +76,12 @@ void UfrawWorker::developImpl(WorkerBase *predecessor)
     ufraw.waitForFinished(-1);
     setProgress(0.8);
 
-    qDebug() << "UfrawWorker::run() finished" << QString::fromUtf8( ufraw.err() );
+    qDebug() << "UfrawWorker::developImpl() finished with exitcode" << ufraw.exitCode() << ":" << QString::fromUtf8( ufraw.err() );
     if( ufraw.exitCode() == 0 )
     {
-        qDebug() << "UfrawWorker::run() data" << ufraw.out().size();
+        qDebug() << "UfrawWorker::developImpl() data" << ufraw.out().size();
         Magick::Blob blob( ufraw.out().constData(), ufraw.out().size() );
+        m_img.magick("PPM");
         m_img.read( blob );
     }
 }
-

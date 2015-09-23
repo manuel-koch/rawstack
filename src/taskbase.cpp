@@ -35,13 +35,13 @@ void TaskBase::setWorker(WorkerBase *worker)
     m_images = new ImageFactory(worker,this);
 }
 
-void TaskBase::develop(TaskBase *predecessor)
+void TaskBase::develop(bool preview, TaskBase *predecessor)
 {
     qDebug() << "TaskBase::develop()" << this << predecessor;
    if( m_worker )
    {
        WorkerBase *predecWorder = predecessor ? predecessor->worker() : NULL;
-       m_worker->develop( predecWorder );
+       m_worker->develop( preview, predecWorder );
    }
 }
 

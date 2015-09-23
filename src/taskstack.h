@@ -29,13 +29,14 @@ public:
         ProgressRole
     };
 
-    explicit TaskStack( QObject *parent = NULL );
+    explicit TaskStack( bool preview, QObject *parent = NULL );
     virtual ~TaskStack();
 
-    void addTask(TaskBase *task, int idx = -1 );
-    void removeTask(int idx);
-    bool developing() const { return m_developing; }
-    double progress() const { return m_progress; }
+    void    addTask(TaskBase *task, int idx = -1 );
+    void    removeTask(int idx);
+    bool    preview() const { return m_preview; }
+    bool    developing() const { return m_developing; }
+    double  progress() const { return m_progress; }
     QString config() const { return m_config; }
 
 public slots:
@@ -48,7 +49,7 @@ public slots:
 
     /// Load current stack config from select file.
     /// Selected path can be a RAW image or a rawstack configuration.
-    Q_INVOKABLE void loadFromFile(QUrl url );
+    Q_INVOKABLE void loadFromFile( QUrl url );
 
 public:
 
@@ -93,6 +94,7 @@ private:
     bool              m_developing;
     double            m_progress;
     QString           m_config;
+    bool              m_preview; // whether developing is using preview quality
 };
 
 #endif // TASKSTACK_H

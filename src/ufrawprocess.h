@@ -41,6 +41,7 @@ public:
     void   run( bool probe );
     int    shrink() const { return m_shrink; }
     double exposure() const { return m_exposure; }
+    bool colorSmoothing() const { return m_colorSmoothing; }
     Interpolate interpolate() const { return m_interpolate; }
     Restore restore() const { return m_restore; }
     Clip clip() const { return m_clip; }
@@ -58,6 +59,7 @@ public slots:
     void setRaw( QString raw );
     void setShrink( int shrink );
     void setExposure( double exposure );
+    void setColorSmoothing( bool smooth );
     void setInterpolate( Interpolate interpolate );
     void setRestore( Restore restore );
     void setClip( Clip clip );
@@ -85,6 +87,7 @@ private:
     QByteArray  m_errData;
     int         m_shrink;
     double      m_exposure;
+    bool        m_colorSmoothing;
     Interpolate m_interpolate;
     Restore     m_restore;
     Clip        m_clip;

@@ -36,7 +36,7 @@ signals:
 
 public slots:
 
-    void develop( TaskBase *predecessor = NULL );
+    void develop( bool preview, TaskBase *predecessor = NULL );
 
 private slots:
 

@@ -16,7 +16,7 @@ WorkerBase::WorkerBase()
     , m_cycle(0)
     , m_config(NULL)
 {
-    connect( this, SIGNAL(develop(WorkerBase*)), this, SLOT(onDevelop(WorkerBase*)) );
+    connect( this, SIGNAL(develop(bool,WorkerBase*)), this, SLOT(onDevelop(bool,WorkerBase*)) );
 }
 
 WorkerBase::~WorkerBase()
@@ -35,9 +35,9 @@ void WorkerBase::setProgress(double progress)
     emit progressChanged(m_progress);
 }
 
-void WorkerBase::onDevelop(WorkerBase *predecessor)
+void WorkerBase::onDevelop(bool preview, WorkerBase *predecessor)
 {
-    qDebug() << "WorkerBase::onDevelop()" << this << predecessor;
+    qDebug() << "WorkerBase::onDevelop()" << this << (preview ? "preview" : "HQ") << predecessor;
 
     emit started();
     setProgress(0);
@@ -45,14 +45,32 @@ void WorkerBase::onDevelop(WorkerBase *predecessor)
     prepareImpl();
 
     QByteArray preHash = predecessor ? predecessor->hash() : QByteArray();
-    QByteArray imgHash = m_config->hash( preHash );
-    qDebug() << "WorkerBase::onDevelop()" << this << "curr" << imgHash.toHex();
-    qDebug() << "WorkerBase::onDevelop()" << this << "last" << m_imgHash.toHex();
-    if( m_imgHash != imgHash )
+    QByteArray curHash = m_config->hash( preHash );
+    if( m_imgHash != curHash )
     {
+        m_img = predecessor ? predecessor->gmimage() : Magick::Image();
+        if( m_config->enabled() )
+            developImpl( preview, predecessor );
+        m_imgHash = curHash;
+    }
+    else
+    {
+        qDebug() << "WorkerBase::onDevelop()" << this << "same hash, using current image";
+    }
+
+    if( m_img.isValid() )
+    {
+        qDebug() << "WorkerBase::onDevelop()" << this
+                 << "result image:" << m_img.format().c_str()
+                 << "width:"  << m_img.size().width()
+                 << "height:" << m_img.size().height();
+        Magick::Image img = m_img;
+        img.write( QString("/Users/manuel/tmp/test_%1.tif").arg(m_config->name()).toStdString() );
+    }
+    else
+    {
+        qWarning() << "WorkerBase::onDevelop()" << this << "invalid image created";
         m_img = Magick::Image();
-        developImpl( predecessor );
-        m_imgHash = imgHash;
     }
 
     m_config->resetDirty();
@@ -66,8 +84,9 @@ void WorkerBase::prepareImpl()
     qDebug() << "WorkerBase::prepareImpl()" << this;
 }
 
-void WorkerBase::developImpl(WorkerBase *predecessor)
+void WorkerBase::developImpl(bool preview, WorkerBase *predecessor)
 {
+    Q_UNUSED(preview);
     qDebug() << "WorkerBase::developImpl()" << this << predecessor;
 }
 

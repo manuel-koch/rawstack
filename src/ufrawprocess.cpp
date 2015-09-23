@@ -10,6 +10,7 @@ UfrawProcess::UfrawProcess(QObject *parent)
     : QProcess(parent)
     , m_shrink(1)
     , m_exposure(0)
+    , m_colorSmoothing(true)
     , m_interpolate(InterpolateAhd)
     , m_restore(RestoreClip)
     , m_clip(ClipDigital)
@@ -83,6 +84,11 @@ void UfrawProcess::setShrink(int shrink)
 void UfrawProcess::setExposure(double exposure)
 {
     m_exposure = exposure;
+}
+
+void UfrawProcess::setColorSmoothing(bool smooth)
+{
+    m_colorSmoothing = smooth;
 }
 
 void UfrawProcess::setInterpolate(UfrawProcess::Interpolate interpolate)
@@ -184,8 +190,10 @@ void UfrawProcess::buildArgs(QString probePath, QStringList &args)
          << QString("--exposure=%1").arg(m_exposure)
          << QString("--interpolation=%1").arg(interpolate)
          << QString("--restore=%1").arg(restore)
-         << QString("--clip=%1").arg(clip)
-         << "--color-smoothing";
+         << QString("--clip=%1").arg(clip);
+
+    if( m_colorSmoothing )
+         args << "--color-smoothing";
 
     if( m_wbTemperature && m_wbGreen )
         args << QString("--temperature=%1").arg(m_wbTemperature) << QString("--green=%1").arg(m_wbGreen);

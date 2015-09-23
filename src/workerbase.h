@@ -35,7 +35,7 @@ signals:
     void progressChanged(double progress);
     void cycleChanged(int cycle);
 
-    void develop( WorkerBase *predecessor );
+    void develop( bool preview, WorkerBase *predecessor );
     void started();
     void finished();
 
@@ -45,12 +45,12 @@ protected slots:
 
 private slots:
 
-    void onDevelop( WorkerBase *predecessor );
+    void onDevelop( bool preview, WorkerBase *predecessor );
 
 private:
 
     virtual void prepareImpl();
-    virtual void developImpl( WorkerBase *predecessor );
+    virtual void developImpl(bool preview, WorkerBase *predecessor );
     void nextCycle();
 
 protected:

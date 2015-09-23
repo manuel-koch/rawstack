@@ -47,24 +47,23 @@ RotateWorker::~RotateWorker()
     // EMPTY
 }
 
-void RotateWorker::developImpl(WorkerBase *predecessor)
+void RotateWorker::developImpl(bool preview, WorkerBase *predecessor)
 {
-    qDebug() << "RotateWorker::developImpl()" << this << predecessor;
+    Q_UNUSED(preview);
 
-    if( !predecessor )
-        return;
+    qDebug() << "RotateWorker::developImpl()" << this << predecessor;
 
     RotateConfig *cfg = config<RotateConfig>();
     if( !cfg )
         return;
 
-    m_img = predecessor->gmimage();
-    if( cfg->enabled() && cfg->degree() )
+    if( cfg->degree() )
     {
+        qDebug() << "RotateWorker::developImpl()" << this << m_img.isValid() << m_img.format().c_str();
         qDebug() << "RotateWorker::developImpl()" << this << cfg->degree();
-        Magick::Geometry crop = largestRotatedGeometrie( m_img, cfg->degree() );
+        Magick::Geometry croppedGeomentry = largestRotatedGeometrie( m_img, cfg->degree() );
         m_img.rotate( cfg->degree() );
         setProgress( 0.5 );
-        m_img.crop( crop );
+        m_img.crop( croppedGeomentry );
     }
 }

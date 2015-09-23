@@ -16,45 +16,71 @@ Rectangle {
 
     QtObject {
         id: internal
-        property bool editRotate: activeTask ? activeTask.config.name === "rotate" : false
-        property string zoomName: "fit"
-        property real zoomFactor: 0
-        property real zoomIdx:    0
-        property var  zoomValues:  [ 0.25, 0.5, 0.75, 1.0, 1.25, 1.5, 2, 4 ]
-        property real zoomMin:    theFlickable.width / theImage.sourceSize.width
+        property bool   editRotate: activeTask ? activeTask.config.name === "rotate" : false
+        property string zoomName:   "fit"
+        property real   zoomFactor: 0
+        property real   zoomIdx:    -1
+        property var    zoomValues: [ 0.25, 0.5, 0.75, 1.0, 1.25, 1.5, 2, 3, 4, 5, 7.5, 10 ]
+        property real   zoomMin:    theFlickable.width / theImage.sourceSize.width
 
         function zoomFit() {
-            zoomFactor = 0
-            zoomIdx    = 0
-            zoomName   = "fit"
+            zoomApply(-1)
         }
 
         function zoomIn() {
             if( theImage.status!=Image.Ready )
                 return
             if( zoomFactor && zoomIdx+1 < zoomValues.length )
-                zoomIdx++;
+                zoomApply( zoomIdx+1 )
             else if ( !zoomFactor ) {
+                var idx = -1;
                 for( var i=zoomValues.length-1; i>=0; i-- ) {
-                    if( zoomValues[i] > zoomMin ) {
-                        zoomIdx = i
-                    }
+                    if( zoomValues[i] > zoomMin )
+                        idx = i;
                 }
+                zoomApply( idx )
             }
-            zoomFactor = zoomValues[zoomIdx]
-            zoomName   = zoomFactor * 100 + "%"
         }
 
         function zoomOut() {
             if( theImage.status!=Image.Ready )
                 return
             if( zoomFactor && zoomIdx > 0 ) {
-                zoomIdx--
-                zoomFactor = zoomValues[zoomIdx]
-                zoomName   = zoomFactor * 100 + "%"
+                zoomApply( zoomIdx-1 )
             }
             if( zoomFactor < zoomMin )
                 zoomFit()
+        }
+
+        function zoomApply(idx) {
+            var w, h;
+            var wasFit = zoomFactor==0
+            if( idx >= 0 && idx < zoomValues.length ) {
+                zoomIdx    = idx
+                zoomFactor = zoomValues[zoomIdx]
+                zoomName   = zoomFactor * 100 + "%"
+            }
+            else {
+                zoomIdx    = -1
+                zoomFactor = 0
+                zoomName   = "fit"
+            }
+            if( zoomFactor ) {
+                w = theImage.sourceSize.width  * zoomFactor;
+                h = theImage.sourceSize.height * zoomFactor;
+            } else {
+                w = theFlickable.width;
+                h = theFlickable.height;
+            }
+            var c
+            if( wasFit )
+                c = Qt.point(0,0) // resizeContent() creates strange contentX/Y when zooming in from fit !?
+            else if( zoomName === "fit" )
+                c = Qt.point(0,0) // resizeContent() creates strange contentX/Y when zooming out to fit !?
+            else
+                c = Qt.point(theFlickable.contentX+theFlickable.width/2,theFlickable.contentY+theFlickable.height/2)
+            theFlickable.resizeContent( w, h, c )
+            theFlickable.returnToBounds()
         }
     }
 
@@ -63,14 +89,12 @@ Rectangle {
         anchors.centerIn:     parent
         width:                parent.width  - parent.width%4
         height:               parent.height - parent.height%4
-        contentWidth:         internal.zoomFactor==0 ? width  : theImage.sourceSize.width  * internal.zoomFactor
-        contentHeight:        internal.zoomFactor==0 ? height : theImage.sourceSize.height * internal.zoomFactor
         clip:                 true
         boundsBehavior:       Flickable.StopAtBounds
         maximumFlickVelocity: 300
 
-        onContentWidthChanged:  returnToBounds()
-        onContentHeightChanged: returnToBounds()
+        onWidthChanged:    internal.zoomApply(internal.zoomIdx)
+        onHeightChanged:   internal.zoomApply(internal.zoomIdx)
 
         rebound: Transition {
                 NumberAnimation {
@@ -125,7 +149,6 @@ Rectangle {
             source:       globalDevTaskStack.tasks.final ? globalDevTaskStack.tasks.final.images.underExposed : ""
             color:        "yellow"
             visible:      false
-            onSourceChanged: console.log("underexposed",source)
         }
 
         ColoredImage {
@@ -135,7 +158,6 @@ Rectangle {
             source:       globalDevTaskStack.tasks.final ? globalDevTaskStack.tasks.final.images.overExposed : ""
             color:        "red"
             visible:      false
-            onSourceChanged: console.log("overexposed",source)
         }
 
         ImageGrid {
@@ -171,18 +193,19 @@ Rectangle {
 
         InfoBadge {
             id: theGridBadge
-            text: "Grid: "+theGrid.gridType
+            text:    "Grid: "+theGrid.gridType
             visible: theGrid.gridType
         }
 
         InfoBadge {
             id: theRotateBadge
-            text: "Rotate..."
+            text:    "Rotate..."
             visible: internal.editRotate
         }
     }
 
     MouseArea {
+        id: theMouseArea
         anchors.fill: parent
         onPressed: {
             theImage.focus = true

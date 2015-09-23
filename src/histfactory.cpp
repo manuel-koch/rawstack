@@ -219,7 +219,7 @@ void HistFactory::setRed(const QVariantList &red)
     if( red == m_red )
         return;
     m_red = red;
-    redChanged( m_red );
+    emit redChanged( m_red );
 }
 
 void HistFactory::setGreen(const QVariantList &green)
@@ -227,7 +227,7 @@ void HistFactory::setGreen(const QVariantList &green)
     if( green == m_green )
         return;
     m_green = green;
-    greenChanged( m_green );
+    emit greenChanged( m_green );
 }
 
 void HistFactory::setBlue(const QVariantList &blue)
@@ -235,7 +235,7 @@ void HistFactory::setBlue(const QVariantList &blue)
     if( blue == m_blue )
         return;
     m_blue = blue;
-    blueChanged( m_blue );
+    emit blueChanged( m_blue );
 }
 
 void HistFactory::setLum(const QVariantList &lum)
@@ -243,5 +243,5 @@ void HistFactory::setLum(const QVariantList &lum)
     if( lum == m_lum )
         return;
     m_lum = lum;
-    lumChanged( m_lum );
+    emit lumChanged( m_lum );
 }

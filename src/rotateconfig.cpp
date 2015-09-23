@@ -62,6 +62,6 @@ void RotateConfig::setDegree(double degree)
 
     m_degree = degree;
     qDebug() << "RotateConfig::setDegree()" << m_degree;
-    degreeChanged( m_degree );
+    emit degreeChanged( m_degree );
     markDirty();
 }

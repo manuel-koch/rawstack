@@ -176,7 +176,10 @@ void HistFactory::onCycleChanged(int cycle)
 
     qDebug() << "HistFactory::onCycleChanged() create histogram data";
     GmHistVector histogram;
-    Magick::colorHistogram( &histogram, image );
+    if( image.isValid() )
+        Magick::colorHistogram( &histogram, image );
+    else
+        qWarning() << "HistFactory::onCycleChanged() invalid image";
 
     qDebug() << "HistFactory::onCycleChanged() channel data of" << histogram.size() << "colors";
     std::for_each( histogram.begin(), histogram.end(), [&](const GmHistPair &p)

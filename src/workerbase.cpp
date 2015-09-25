@@ -49,7 +49,7 @@ void WorkerBase::onDevelop(bool preview, WorkerBase *predecessor)
     if( m_imgHash != curHash )
     {
         m_img = predecessor ? predecessor->gmimage() : Magick::Image();
-        if( m_config->enabled() )
+        if( (!predecessor || m_img.isValid()) && m_config->enabled() )
             developImpl( preview, predecessor );
         m_imgHash = curHash;
     }

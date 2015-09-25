@@ -59,7 +59,6 @@ void RotateWorker::developImpl(bool preview, WorkerBase *predecessor)
 
     if( cfg->degree() )
     {
-        qDebug() << "RotateWorker::developImpl()" << this << m_img.isValid() << m_img.format().c_str();
         qDebug() << "RotateWorker::developImpl()" << this << cfg->degree();
         Magick::Geometry croppedGeomentry = largestRotatedGeometrie( m_img, cfg->degree() );
         m_img.rotate( cfg->degree() );

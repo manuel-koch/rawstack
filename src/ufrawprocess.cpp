@@ -8,6 +8,7 @@
 
 UfrawProcess::UfrawProcess(QObject *parent)
     : QProcess(parent)
+    , m_output("XXXXXX.tif")
     , m_shrink(1)
     , m_exposure(0)
     , m_colorSmoothing(true)
@@ -21,8 +22,7 @@ UfrawProcess::UfrawProcess(QObject *parent)
     connect( this, SIGNAL(started()),                            this, SLOT(onStarted()) );
     connect( this, SIGNAL(stateChanged(QProcess::ProcessState)), this, SLOT(onStateChanged(QProcess::ProcessState)) );
     connect( this, SIGNAL(error(QProcess::ProcessError)),        this, SLOT(onError(QProcess::ProcessError)) );
-    connect( this, SIGNAL(readyReadStandardOutput()),            this, SLOT(onOutData()) );
-    connect( this, SIGNAL(readyReadStandardError()),             this, SLOT(onErrData()) );
+    connect( this, SIGNAL(readyReadStandardOutput()),            this, SLOT(onConsole()) );
 }
 
 UfrawProcess::~UfrawProcess()
@@ -37,26 +37,20 @@ void UfrawProcess::run(bool probe)
         return;
     qDebug() << "UfrawProcess::run()" << (probe ? "probe" : "extract") <<  "...";
 
-    QTemporaryFile probeSettings("XXXXXX.tif");
-    probeSettings.open();
-
-    m_outData.clear();
-    m_errData.clear();
+    m_output.open();
+    m_console.clear();
 
     QStringList args;
-    buildArgs( probe ? probeSettings.fileName() : "", args );
+    buildArgs( probe, args );
     qDebug() << "UfrawProcess::run()" << args;
     setArguments( args );
+    setProcessChannelMode( QProcess::MergedChannels );
     start();
 
     if( probe )
     {
         waitForFinished(-1);
-        QString probePath = probeSettings.fileName();
-        probePath = probePath.left( probePath.length() - 3 ) + "ufraw";
-        QFile probeFile(probePath);
-        loadProbeSettings( probeFile );
-        probeFile.remove();
+        loadProbeSettings();
     }
 }
 
@@ -136,21 +130,13 @@ void UfrawProcess::onError(QProcess::ProcessError error)
     qDebug() << "UfrawProcess::onError()" << error;
 }
 
-void UfrawProcess::onOutData()
+void UfrawProcess::onConsole()
 {
-    m_outData.append( readAllStandardOutput() );
-    qDebug() << "UfrawProcess::onOutData()" << m_outData.size();
+    m_console.append( readAllStandardOutput() );
     emit progress();
 }
 
-void UfrawProcess::onErrData()
-{
-    qDebug() << "UfrawProcess::onErrData()";
-    m_errData.append( readAllStandardError() );
-    emit progress();
-}
-
-void UfrawProcess::buildArgs(QString probePath, QStringList &args)
+void UfrawProcess::buildArgs(bool probe, QStringList &args)
 {
     QString interpolate;
     switch( m_interpolate )
@@ -200,33 +186,39 @@ void UfrawProcess::buildArgs(QString probePath, QStringList &args)
     else
         args << "--wb=camera";
 
-    if( probePath.isEmpty() )
-        args << "--create-id=no" << "--output=-";
+    if( probe )
+        args << "--create-id=only";
     else
-        args << "--create-id=only" << QString("--output=%1").arg(probePath);
+        args << "--create-id=no";
 
+    args << QString("--output=%1").arg(m_output.fileName());
     args << m_raw;
 }
 
-void UfrawProcess::loadProbeSettings(QFile &file)
+void UfrawProcess::loadProbeSettings()
 {
-    qDebug() << "UfrawProcess::loadProbeSettings()" << file.fileName();
+    QString probePath = m_output.fileName();
+    probePath = probePath.left( probePath.length() - 3 ) + "ufraw";
+    QFile probeFile(probePath);
+    qDebug() << "UfrawProcess::loadProbeSettings()" << probeFile.fileName();
 
     m_wbTemperature = 0;
     m_wbGreen       = 0;
     m_info.clear();
 
-    if( !file.open( QFile::ReadOnly ) )
+    if( !probeFile.open( QFile::ReadOnly ) )
     {
         qDebug() << "UfrawProcess::loadProbeSettings() failed to read file";
+        probeFile.remove();
         return;
     }
 
     QDomDocument doc;
     QString err;
     int errLine, errCol;
-    bool res = doc.setContent(&file,true,&err,&errLine,&errCol);
-    file.close();
+    bool res = doc.setContent(&probeFile,true,&err,&errLine,&errCol);
+    probeFile.close();
+    probeFile.remove();
     if( !res )
     {
         qDebug() << "UfrawProcess::loadProbeSettings() error at line" << errLine << "col" << errCol << ":" << err;

@@ -5,6 +5,8 @@
 
 #include <QObject>
 
+class UfrawProcess;
+
 class UfrawWorker : public WorkerBase
 {
     Q_OBJECT
@@ -15,6 +17,8 @@ public:
     virtual ~UfrawWorker();
 
 private:
+
+    void run( UfrawProcess &ufraw, bool preview, int idx, int nof );
 
     // WorkerBase interface
     virtual void prepareImpl();

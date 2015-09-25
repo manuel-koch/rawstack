@@ -1,6 +1,8 @@
 #include "imagefactoryoverexposed.h"
 #include "workerbase.h"
 
+#include <QDebug>
+
 ImageFactoryOverExposed::ImageFactoryOverExposed(WorkerBase *worker)
     : ImageFactoryBase(worker)
 {
@@ -21,6 +23,7 @@ QImage ImageFactoryOverExposed::image()
     over.threshold( 0.99*MaxRGB );
     over.transparent( "black" );
     over.type( Magick::TrueColorMatteType );
+    over.write( "/Users/manuel/tmp/test_over.tif" );
     return WorkerBase::convert( over );
 }
 

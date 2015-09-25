@@ -3,7 +3,7 @@
 
 #include <QObject>
 #include <QProcess>
-#include <QFile>
+#include <QTemporaryFile>
 #include <QMap>
 
 class UfrawProcess : public QProcess
@@ -35,8 +35,8 @@ public:
 
     typedef QMap<QString,QString> InfoMap;
 
-    QByteArray &out() { return m_outData; }
-    QByteArray &err() { return m_errData; }
+    QString output() { return m_output.fileName(); }
+    QString &console() { return m_console; }
 
     void   run( bool probe );
     int    shrink() const { return m_shrink; }
@@ -72,19 +72,19 @@ private slots:
     void onStarted();
     void onStateChanged(QProcess::ProcessState newState);
     void onError(QProcess::ProcessError error);
-    void onOutData();
-    void onErrData();
+    void onConsole();
 
 private:
 
-    void buildArgs(QString probePath, QStringList &args);
-    void loadProbeSettings(QFile &file);
+    void buildArgs(bool probe, QStringList &args);
+    void loadProbeSettings();
 
 private:
+
+    QTemporaryFile m_output;
+    QString        m_console;
 
     QString     m_raw;
-    QByteArray  m_outData;
-    QByteArray  m_errData;
     int         m_shrink;
     double      m_exposure;
     bool        m_colorSmoothing;

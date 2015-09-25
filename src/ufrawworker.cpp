@@ -1,9 +1,13 @@
 #include "ufrawworker.h"
 #include "ufrawprocess.h"
 #include "ufrawconfig.h"
+#include "enfuseprocess.h"
+
+#include <vector>
 
 #include <QDebug>
 #include <QThread>
+#include <QTemporaryFile>
 
 UfrawWorker::UfrawWorker()
     : WorkerBase()
@@ -14,6 +18,43 @@ UfrawWorker::UfrawWorker()
 UfrawWorker::~UfrawWorker()
 {
     // EMPTY
+}
+
+void UfrawWorker::run( UfrawProcess &ufraw, bool preview, int idx, int nof )
+{
+    UfrawConfig *cfg = config<UfrawConfig>();
+    if( !cfg )
+        return;
+
+    double exposureShift = 1.5;
+    if( idx == 0 )
+        exposureShift = 0;
+    else
+        exposureShift *= (double)idx / (nof/2);
+    double exposure = cfg->exposure() + exposureShift;
+
+    ufraw.setProgram( "/opt/local/bin/ufraw-batch" );
+    ufraw.setRaw( cfg->raw() );
+    ufraw.setExposure( exposure );
+    ufraw.setWbTemperature( cfg->wbTemperature() );
+    ufraw.setWbGreen( cfg->wbGreen() );
+
+    if( idx < 0 )
+        ufraw.setRestore( UfrawProcess::RestoreHsv );
+    else if( idx > 0 )
+        ufraw.setClip( UfrawProcess::ClipDigital );
+    else
+        ufraw.setClip( UfrawProcess::ClipFilm );
+
+    if( preview )
+    {
+        ufraw.setInterpolate( UfrawProcess::InterpolateBilinear );
+        ufraw.setColorSmoothing( false );
+        ufraw.setShrink( 4 );
+    }
+
+    // extract the image
+    ufraw.run( false );
 }
 
 void UfrawWorker::prepareImpl()
@@ -56,32 +97,59 @@ void UfrawWorker::developImpl(bool preview, WorkerBase *predecessor)
         return;
     }
 
-    UfrawProcess ufraw;
-    ufraw.setProgram( "/opt/local/bin/ufraw-batch" );
-    ufraw.setRaw( cfg->raw() );
-    ufraw.setExposure( cfg->exposure() );
-    ufraw.setWbTemperature( cfg->wbTemperature() );
-    ufraw.setWbGreen( cfg->wbGreen() );
-    if( preview )
+    double progressPhaseA = 0.3;
+    double progressPhaseB = 0.6;
+
+    int nof = 7;
+    std::vector<Magick::Image> imgs(nof);
+    std::vector<UfrawProcess>  ufraw(nof);
+    int firstIdx = -(nof-1)/2;
+    int normalIdx = (nof-1)/2;
+    for( int i=0; i<nof; i++ )
     {
-        ufraw.setInterpolate( UfrawProcess::InterpolateBilinear );
-        ufraw.setColorSmoothing( false );
-        ufraw.setShrink( 4 );
+        setProgress( double(i)/nof*progressPhaseA );
+        run( ufraw[i], preview, firstIdx+i, nof );
+    }
+    for( int i=0; i<nof; i++ )
+    {
+        setProgress( progressPhaseA+double(i)/nof*progressPhaseB );
+        ufraw[i].waitForFinished(-1);
+        qDebug() << "UfrawWorker::developImpl()" << i << "finished with exitcode" << ufraw[i].exitCode() << ":" << ufraw[i].console();
+        if( ufraw[i].exitCode() == 0 )
+        {
+            qDebug() << "UfrawWorker::developImpl()" << i << "loading" << ufraw[i].output();
+            imgs[i].read( ufraw[i].output().toStdString().c_str() );
+        }
     }
 
-    // extract the image
-    ufraw.run( false );
-    ufraw.waitForStarted(-1);
-    setProgress(0.1);
-    ufraw.waitForFinished(-1);
-    setProgress(0.8);
-
-    qDebug() << "UfrawWorker::developImpl() finished with exitcode" << ufraw.exitCode() << ":" << QString::fromUtf8( ufraw.err() );
-    if( ufraw.exitCode() == 0 )
+    QStringList rawImages;
+    for( int i=0; i<nof; i++ )
     {
-        qDebug() << "UfrawWorker::developImpl() data" << ufraw.out().size();
-        Magick::Blob blob( ufraw.out().constData(), ufraw.out().size() );
-        m_img.magick("PPM");
-        m_img.read( blob );
+        rawImages << ufraw[i].output();
+        // FIXME: remove saving exposed images
+        imgs[i].write( QString("/Users/manuel/tmp/test_%1_%2.tif").arg(cfg->name()).arg(i).toStdString() );
+    }
+
+    if( nof > 1 )
+    {
+        EnfuseProcess enfuse;
+        enfuse.setProgram( "/opt/local/bin/enfuse" );
+        enfuse.setInputs( rawImages );
+        connect( &enfuse, &EnfuseProcess::progress, [&](double progress) {
+            setProgress( progressPhaseA + progressPhaseB + (1-progressPhaseA-progressPhaseB)*progress );
+        });
+        enfuse.run();
+        enfuse.waitForFinished(-1);
+        qDebug() << "UfrawWorker::developImpl() enfuse finished with exitcode" << enfuse.exitCode() << ":" << enfuse.console();
+        if( enfuse.exitCode() == 0 )
+        {
+            m_img.read( enfuse.output().toStdString().c_str() );
+            m_img.matte(false);
+            qDebug() << "UfrawWorker::developImpl() fused" << m_img.format().c_str();
+        }
+    }
+    else
+    {
+        m_img = imgs[0];
     }
 }

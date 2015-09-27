@@ -11,7 +11,7 @@ Item {
         if( force || theController.task.config.enabled )
             if( !now )
                 theAggregateTimer.restart()
-            else if( theController.task.config.dirty )
+            else if( theController.task.dirty )
                 globalDevTaskStack.develop()
     }
 
@@ -28,7 +28,7 @@ Item {
         id: theAggregateTimer
         repeat:      false
         interval:    300
-        onTriggered: if( theController.task.config.dirty ) globalDevTaskStack.develop()
+        onTriggered: if( theController.task.dirty ) globalDevTaskStack.develop()
     }
 }
 

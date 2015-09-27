@@ -14,8 +14,10 @@ class TaskBase : public QObject
     Q_PROPERTY(ConfigBase*   config   READ config   CONSTANT)
     Q_PROPERTY(ImageFactory* images   READ images   CONSTANT)
     Q_PROPERTY(double        progress READ progress NOTIFY progressChanged)
+    Q_PROPERTY(bool          dirty    READ dirty    NOTIFY dirtyChanged)
 
 public:
+
     explicit TaskBase(QObject *parent = NULL);
     virtual ~TaskBase();
 
@@ -23,6 +25,7 @@ public:
     ImageFactory* images() { return m_images; }
     WorkerBase*   worker() { return m_worker; }
     double        progress() const { return m_worker ? m_worker->progress() : 0; }
+    bool          dirty() { return m_worker ? m_worker->dirty() : false; }
 
     void setConfig( ConfigBase *config );
     void setWorker( WorkerBase *worker );
@@ -30,6 +33,7 @@ public:
 signals:
 
     void progressChanged(double progress);
+    void dirtyChanged(bool dirty);
 
     void started();
     void finished();

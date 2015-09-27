@@ -24,6 +24,23 @@ WorkerBase::~WorkerBase()
     // EMPTY
 }
 
+void WorkerBase::setConfig(ConfigBase *config)
+{
+    if( m_config )
+        disconnect( m_config, SIGNAL(hashChanged()), this, SLOT(onCfgHashChanged()) );
+
+    m_config = config;
+
+    if( m_config )
+        connect( m_config, SIGNAL(hashChanged()), this, SLOT(onCfgHashChanged()) );
+}
+
+void WorkerBase::onCfgHashChanged()
+{
+    QByteArray hash = m_config->hash();
+    setDirty( m_doneConfigHash != hash );
+}
+
 void WorkerBase::setProgress(double progress)
 {
     progress = std::min( progress, 1.0 );
@@ -35,6 +52,14 @@ void WorkerBase::setProgress(double progress)
     emit progressChanged(m_progress);
 }
 
+void WorkerBase::setDirty(bool dirty)
+{
+    if( m_dirty == dirty )
+        return;
+    qDebug() << "WorkerBase::setDirty()" << this << m_dirty;
+    emit dirtyChanged(m_dirty);
+}
+
 void WorkerBase::onDevelop(bool preview, WorkerBase *predecessor)
 {
     qDebug() << "WorkerBase::onDevelop()" << this << (preview ? "preview" : "HQ") << predecessor;
@@ -44,14 +69,16 @@ void WorkerBase::onDevelop(bool preview, WorkerBase *predecessor)
 
     prepareImpl();
 
-    QByteArray preHash = predecessor ? predecessor->hash() : QByteArray();
-    QByteArray curHash = m_config->hash( preHash );
-    if( m_imgHash != curHash )
+    QByteArray preImgHash = predecessor ? predecessor->hash() : QByteArray();
+    QByteArray curCfgHash = m_config->hash();
+    QByteArray curImgHash = m_config->hash( preImgHash );
+    if( m_doneImgHash != curImgHash )
     {
         m_img = predecessor ? predecessor->gmimage() : Magick::Image();
         if( (!predecessor || m_img.isValid()) && m_config->enabled() )
             developImpl( preview, predecessor );
-        m_imgHash = curHash;
+        m_doneConfigHash = curCfgHash;
+        m_doneImgHash    = curImgHash;
     }
     else
     {
@@ -73,7 +100,6 @@ void WorkerBase::onDevelop(bool preview, WorkerBase *predecessor)
         m_img = Magick::Image();
     }
 
-    m_config->resetDirty();
     setProgress(1);
     emit finished();
     nextCycle();

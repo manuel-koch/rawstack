@@ -13,17 +13,20 @@ class WorkerBase : public QObject
     Q_OBJECT
     Q_PROPERTY(double progress READ progress NOTIFY progressChanged)
     Q_PROPERTY(int    cycle    READ cycle    NOTIFY cycleChanged)
+    Q_PROPERTY(bool   dirty    READ dirty    NOTIFY dirtyChanged)
 
 public:
 
     explicit WorkerBase();
     virtual ~WorkerBase();
 
-    void setConfig(ConfigBase *config) { m_config = config; }
+    void setConfig(ConfigBase *config);
 
     double progress() const { return m_progress; }
     int    cycle()    const { return m_cycle; }
-    const QByteArray &hash() const { return m_imgHash; }
+    bool   dirty()    const { return m_dirty; }
+
+    const QByteArray &hash() const { return m_doneImgHash; }
 
     virtual const Magick::Image gmimage() { return m_img; }
     static QImage convert(Magick::Image image);
@@ -34,6 +37,7 @@ signals:
 
     void progressChanged(double progress);
     void cycleChanged(int cycle);
+    void dirtyChanged(bool dirty);
 
     void develop( bool preview, WorkerBase *predecessor );
     void started();
@@ -45,7 +49,9 @@ protected slots:
 
 private slots:
 
+    void setDirty( bool dirty );
     void onDevelop( bool preview, WorkerBase *predecessor );
+    void onCfgHashChanged();
 
 private:
 
@@ -61,8 +67,10 @@ private:
 
     double      m_progress;
     int         m_cycle;
+    bool        m_dirty;
     ConfigBase *m_config;
-    QByteArray  m_imgHash;
+    QByteArray  m_doneConfigHash;
+    QByteArray  m_doneImgHash;
 };
 
 #endif // WORKERBASE_H

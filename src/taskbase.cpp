@@ -30,8 +30,9 @@ void TaskBase::setWorker(WorkerBase *worker)
 {
     m_worker = worker;
     connect( m_worker, SIGNAL(started()),               this, SIGNAL(started()) );
-    connect( m_worker, SIGNAL(progressChanged(double)), this, SIGNAL(progressChanged(double)) );
     connect( m_worker, SIGNAL(finished()),              this, SIGNAL(finished()) );
+    connect( m_worker, SIGNAL(progressChanged(double)), this, SIGNAL(progressChanged(double)) );
+    connect( m_worker, SIGNAL(dirtyChanged(bool)),      this, SIGNAL(dirtyChanged(bool)) );
     m_images = new ImageFactory(worker,this);
 }
 
@@ -54,4 +55,3 @@ void TaskBase::onFinished()
 {
     qDebug() << "TaskBase::onFinished()" << this;
 }
-

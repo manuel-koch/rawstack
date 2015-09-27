@@ -10,7 +10,6 @@ class ConfigBase : public QObject
     Q_PROPERTY(QString name READ name NOTIFY nameChanged)
     Q_PROPERTY(bool enabled READ enabled WRITE setEnabled NOTIFY enabledChanged)
     Q_PROPERTY(bool canDisable READ canDisable NOTIFY canDisableChanged)
-    Q_PROPERTY(bool dirty READ dirty NOTIFY dirtyChanged)
 
 public:
 
@@ -20,7 +19,12 @@ public:
     QString name() const { return m_name; }
     bool    enabled() const { return m_enabled; }
     bool    canDisable() const { return m_canDisable; }
-    bool    dirty() const { return m_dirty; }
+
+    // trigger calculation hash of this configuration
+    void rehash();
+
+    // calculate hash of this configuration
+    virtual QByteArray hash();
 
     // calculate hash of this configuration incl given base hash
     virtual QByteArray hash( const QByteArray &baseHash );
@@ -32,22 +36,24 @@ public slots:
 
     void setEnabled(bool enabled);
     void setCanDisable(bool canDisable);
-    void markDirty();
-    void resetDirty();
 
 signals:
 
     void nameChanged(QString name);
     void enabledChanged(bool arg);
     void canDisableChanged(bool canDisable);
-    void dirtyChanged(bool dirty);
+    void hashChanged();
 
 private:
 
-    QString  m_name;
-    bool     m_enabled;
-    bool     m_canDisable;
-    bool     m_dirty;
+    void setHash( const QByteArray &hash );
+
+private:
+
+    QString    m_name;
+    bool       m_enabled;
+    bool       m_canDisable;
+    QByteArray m_hash;
 };
 
 #endif // CONFIGBASE_H

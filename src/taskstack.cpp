@@ -79,7 +79,7 @@ void TaskStack::removeTask(int idx)
 
 void TaskStack::develop()
 {
-    qDebug() << "TaskStack::develop()" << (m_preview ? "preview" : "HQ");
+    qDebug() << "TaskStack::develop()" << (m_preview ? "LQ" : "HQ");
     if( !m_tasks.empty() )
         m_tasks[0]->develop( m_preview );
 }
@@ -123,7 +123,7 @@ void TaskStack::loadFromFile(QUrl url)
     QFileInfo pathInfo(url.toLocalFile());
     if( !pathInfo.exists() )
     {
-        qDebug() << "TaskStack::loadFromFile() path not found";
+        qDebug() << "TaskStack::loadFromFile() path not found:" << pathInfo.filePath();
         return;
     }
 
@@ -131,6 +131,7 @@ void TaskStack::loadFromFile(QUrl url)
     if( cfgInfo.exists() && loadTasks(cfgInfo) )
         return;
 
+    setConfig( cfgInfo.filePath() );
     applyDefaultTasks( pathInfo );
 }
 
@@ -159,6 +160,7 @@ void TaskStack::clearTasks()
     while( m_tasks.size() )
         removeTask( m_tasks.size()-1 );
     endResetModel();
+    setConfig("");
 }
 
 bool TaskStack::loadTasks(const QFileInfo &file)
@@ -294,4 +296,3 @@ void TaskStack::setDeveloping(bool developing)
         emit developingChanged(m_developing);
     }
 }
-

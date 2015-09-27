@@ -277,7 +277,10 @@ void TaskStack::onTaskFinished()
     setProgress( p );
     int nextIdx = idx+1;
     if( nextIdx >= m_tasks.size() )
+    {
         setDeveloping( false );
+        saveToFile( m_config );
+    }
     else
         m_tasks[nextIdx]->develop( m_preview, m_tasks[idx] );
 }

@@ -7,6 +7,8 @@ Rectangle {
     height: 480
     color:  "silver"
 
+    property string title: theTaskStack.title
+
     GridLayout {
         id: theGrid
         rows:          3

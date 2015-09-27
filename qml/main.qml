@@ -8,7 +8,8 @@ import "Development" as Development
 import com.rawstack.types 1.0
 
 ApplicationWindow {
-    title: qsTr("Rawstack")
+    id: theAppWindow
+    title: "Rawstack"
     width: 640
     height: 480
     visible: true
@@ -27,6 +28,14 @@ ApplicationWindow {
     }
 
     Development.Main {
+        id: theDevMain
         anchors.fill: parent
+    }
+
+    Binding {
+        target:   theAppWindow
+        property: "title"
+        value:    theDevMain.title
+        when:     theDevMain.visible
     }
 }

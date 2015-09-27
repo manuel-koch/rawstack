@@ -41,7 +41,7 @@ bool ConfigBase::fromXML( QDomNode const &node )
     QDomElement e = node.toElement();
     if( e.tagName() != m_name )
         return false;
-    m_enabled = StringToolbox::toBool( e.attribute("enabled"), true );
+    setEnabled( StringToolbox::toBool( e.attribute("enabled"), true ) );
     return true;
 }
 

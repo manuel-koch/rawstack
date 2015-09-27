@@ -22,28 +22,28 @@ UfrawConfig::~UfrawConfig()
 
 QDomNode UfrawConfig::toXML( QDomNode &node ) const
 {
-    node = ConfigBase::toXML(node);
+    QDomNode ufrawNode = ConfigBase::toXML(node);
 
     qDebug() << "UfrawConfig::toXML()";
     QDomText t;
     QDomElement e;
 
-    e = node.ownerDocument().createElement("exposure");
-    t = node.ownerDocument().createTextNode(QString("%1").arg(m_exposure));
+    e = ufrawNode.ownerDocument().createElement("exposure");
+    t = ufrawNode.ownerDocument().createTextNode(QString("%1").arg(m_exposure));
     e.appendChild(t);
-    node.appendChild(e);
+    ufrawNode.appendChild(e);
 
-    e = node.ownerDocument().createElement("wbTemperature");
-    t = node.ownerDocument().createTextNode(QString("%1").arg(m_wbTemperature));
+    e = ufrawNode.ownerDocument().createElement("wbTemperature");
+    t = ufrawNode.ownerDocument().createTextNode(QString("%1").arg(m_wbTemperature));
     e.appendChild(t);
-    node.appendChild(e);
+    ufrawNode.appendChild(e);
 
-    e = node.ownerDocument().createElement("wbGreen");
-    t = node.ownerDocument().createTextNode(QString("%1").arg(m_wbGreen));
+    e = ufrawNode.ownerDocument().createElement("wbGreen");
+    t = ufrawNode.ownerDocument().createTextNode(QString("%1").arg(m_wbGreen));
     e.appendChild(t);
-    node.appendChild(e);
+    ufrawNode.appendChild(e);
 
-    return node;
+    return ufrawNode;
 }
 
 bool UfrawConfig::fromXML(QDomNode const &node )
@@ -57,7 +57,6 @@ bool UfrawConfig::fromXML(QDomNode const &node )
     setWbTemperature( StringToolbox::toDouble( node.firstChildElement("wbTemperature").text(), DefaultWbTemperature ) );
     setWbGreen( StringToolbox::toDouble( node.firstChildElement("wbGreen").text(), DefaultWbGreen ) );
 
-    resetDirty();
     return true;
 }
 
@@ -79,7 +78,7 @@ void UfrawConfig::setExposure(double exposure)
     m_exposure = exposure;
     qDebug() << "UfrawConfig::setExposure()" << m_exposure;
     emit exposureChanged(exposure);
-    markDirty();
+    rehash();
 }
 
 void UfrawConfig::setWbTemperature(int wbTemperature)
@@ -89,7 +88,7 @@ void UfrawConfig::setWbTemperature(int wbTemperature)
     m_wbTemperature = wbTemperature;
     qDebug() << "UfrawConfig::setWbTemperature()" << m_wbTemperature;
     emit wbTemperatureChanged(wbTemperature);
-    markDirty();
+    rehash();
 }
 
 void UfrawConfig::setWbGreen(double wbGreen)
@@ -99,7 +98,7 @@ void UfrawConfig::setWbGreen(double wbGreen)
     m_wbGreen = wbGreen;
     qDebug() << "UfrawConfig::setWbGreen()" << m_wbGreen;
     emit wbGreenChanged(wbGreen);
-    markDirty();
+    rehash();
 }
 
 void UfrawConfig::setRaw(QString raw)
@@ -109,6 +108,6 @@ void UfrawConfig::setRaw(QString raw)
     m_raw = raw;
     qDebug() << "UfrawConfig::setRaw()" << m_raw;
     emit rawChanged(raw);
-    markDirty();
+    rehash();
 }
 

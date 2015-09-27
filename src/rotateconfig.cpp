@@ -20,7 +20,7 @@ RotateConfig::~RotateConfig()
 
 QDomNode RotateConfig::toXML(QDomNode &node) const
 {
-    node = ConfigBase::toXML(node);
+    QDomNode rotateNode = ConfigBase::toXML(node);
 
     qDebug() << "RotateConfig::toXML()";
     QDomText t;
@@ -29,9 +29,9 @@ QDomNode RotateConfig::toXML(QDomNode &node) const
     e = node.ownerDocument().createElement("degree");
     t = node.ownerDocument().createTextNode(QString("%1").arg(m_degree));
     e.appendChild(t);
-    node.appendChild(e);
+    rotateNode.appendChild(e);
 
-    return node;
+    return rotateNode;
 }
 
 bool RotateConfig::fromXML(const QDomNode &node)
@@ -43,7 +43,6 @@ bool RotateConfig::fromXML(const QDomNode &node)
 
     setDegree( StringToolbox::toDouble( node.firstChildElement("degree").text(), DefaultDegree ) );
 
-    resetDirty();
     return true;
 }
 
@@ -63,5 +62,5 @@ void RotateConfig::setDegree(double degree)
     m_degree = degree;
     qDebug() << "RotateConfig::setDegree()" << m_degree;
     emit degreeChanged( m_degree );
-    markDirty();
+    rehash();
 }

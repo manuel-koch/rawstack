@@ -44,7 +44,7 @@ void TaskStack::addTask(TaskBase *task, int idx)
 
     qDebug() << "TaskStack::addTask()" << task << "at" << idx;
 
-    beginInsertRows( QModelIndex(), idx, 1 );
+    beginInsertRows( QModelIndex(), idx, idx );
 
     m_tasks.insert( idx, task );
     connect( task, SIGNAL(started()),               this, SLOT(onTaskStarted()) );

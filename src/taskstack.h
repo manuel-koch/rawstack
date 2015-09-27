@@ -54,8 +54,8 @@ public slots:
 public:
 
     // QAbstractItemModel interface
-    virtual int rowCount(const QModelIndex &parent) const;
-    virtual QVariant data(const QModelIndex &index, int role) const;
+    virtual int rowCount(const QModelIndex & parent = QModelIndex()) const;
+    virtual QVariant data(const QModelIndex & index, int role = Qt::DisplayRole) const;
     virtual QHash<int, QByteArray> roleNames() const { return m_rolemap; }
 
 signals:

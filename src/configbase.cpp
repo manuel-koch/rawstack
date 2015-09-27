@@ -31,7 +31,8 @@ QDomNode ConfigBase::toXML( QDomNode &node ) const
 {
     qDebug() << "ConfigBase::toXML()" << this;
     QDomElement e = node.ownerDocument().createElement(m_name);
-    e.setAttribute("enabled",m_enabled);
+    if( m_canDisable )
+        e.setAttribute("enabled",m_enabled);
     return node.appendChild( e );
 }
 

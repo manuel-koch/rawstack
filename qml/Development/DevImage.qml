@@ -20,7 +20,7 @@ Rectangle {
         property string zoomName:   "fit"
         property real   zoomFactor: 0
         property real   zoomIdx:    -1
-        property var    zoomValues: [ 0.25, 0.5, 0.75, 1.0, 1.25, 1.5, 2, 3, 4, 5, 7.5, 10 ]
+        property var    zoomValues: [ 0.2, 0.4, 0.6, 0.8, 1.0, 1.2, 1.4, 1.6, 2, 2.5, 3, 4, 5, 7.5, 10 ]
         property real   zoomMin:    theFlickable.width / theImage.sourceSize.width
 
         function zoomFit() {

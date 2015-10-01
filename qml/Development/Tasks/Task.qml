@@ -27,12 +27,14 @@ Item {
             width:           parent.width
             onToggleEnabled: controller.toggleEnabled()
         }
+
         Binding {
             target:   theHeader
             property: "enabled"
             value:    controller && controller.task ? controller.task.config.enabled : false
             when:     controller && controller.task
         }
+
         Binding {
             target:   theHeader
             property: "canDisable"

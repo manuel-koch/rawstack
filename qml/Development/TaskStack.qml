@@ -83,16 +83,12 @@ Rectangle {
         onCountChanged: console.log("nof tasks",count)
     }
 
-    Connections {
-        target: globalDevTaskStack
-        onRowsInserted:  console.log("onRowsInserted",theList.count)
-        onRowsRemoved:   console.log("onRowsRemoved",theList.count)
-        onLayoutChanged: console.log("onLayoutChanged",theList.count)
-        onModelReset:    {
-            console.log("onModelReset",theList.count)
-            theList.forceLayout()
-        }
+    Connections
+    {
+        target:          globalDevTaskStack
+        onConfigChanged: globalDevTaskStack.develop()
     }
 
+    Component.onCompleted: globalDevTaskStack.develop()
 }
 

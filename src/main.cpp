@@ -19,6 +19,8 @@
 #include <QQmlApplicationEngine>
 #include <QtQml>
 #include <QUrl>
+#include <QImageReader>
+#include <QByteArray>
 
 void register_types()
 {
@@ -39,6 +41,13 @@ int main(int argc, char *argv[])
 
     register_types();
     qSetMessagePattern("%{time} %{threadid} %{type}: %{message}");
+
+    qDebug() << "Supported image formats:";
+    QList<QByteArray> imgFormats = QImageReader::supportedImageFormats();
+    foreach( QByteArray fmt, imgFormats )
+    {
+        qDebug() << fmt.toStdString().c_str();
+    }
 
     ImageFactoryRegistry imageFactoryRegistry;
     ImageFactoryRegistry::setInstance( &imageFactoryRegistry );

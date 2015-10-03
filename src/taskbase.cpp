@@ -20,6 +20,7 @@ TaskBase::~TaskBase()
 
 void TaskBase::setConfig(ConfigBase *config)
 {
+    qDebug() << "TaskBase::setConfig()" << this << config;
     m_config = config;
     if( m_config )
         m_config->setParent(this);

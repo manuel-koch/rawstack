@@ -108,7 +108,7 @@ Rectangle {
             id: theImage
             anchors.fill: parent
             fillMode:     Image.PreserveAspectFit
-            source:       globalDevTaskStack.tasks.final ? globalDevTaskStack.tasks.final.images.image : ""
+            source:       globalDevTaskStack.tasks.image
             Keys.onPressed: {
                 if( event.key === Qt.Key_G ) {
                     theGrid.toggleGrid()

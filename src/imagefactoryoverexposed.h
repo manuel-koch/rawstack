@@ -1,9 +1,9 @@
 #ifndef IMAGEFACTORYOVEREXPOSED_H
 #define IMAGEFACTORYOVEREXPOSED_H
 
-#include "imagefactorybase.h"
+#include "imagefactoryworker.h"
 
-class ImageFactoryOverExposed : public ImageFactoryBase
+class ImageFactoryOverExposed : public ImageFactoryWorker
 {
     Q_OBJECT
 
@@ -12,10 +12,8 @@ public:
     explicit ImageFactoryOverExposed(WorkerBase *worker);
     virtual ~ImageFactoryOverExposed();
 
-public:
-
     // ImageFactoryBase interface
-    virtual QImage image();
+    virtual QImage image() override;
 };
 
 #endif // IMAGEFACTORYOVEREXPOSED_H

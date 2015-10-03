@@ -69,11 +69,21 @@ void TaskStack::removeTask(int idx)
     qDebug() << "TaskStack::removeTask()" << idx;
 
     beginRemoveRows( QModelIndex(), idx, idx );
-
     TaskBase *task = m_tasks.takeAt(idx);
-    delete task;
-
     endRemoveRows();
+
+    disconnect( task, SIGNAL(started()),               this, SLOT(onTaskStarted()) );
+    disconnect( task, SIGNAL(progressChanged(double)), this, SLOT(onTaskProgress(double)) );
+    disconnect( task, SIGNAL(finished()),              this, SLOT(onTaskFinished()) );
+
+    if( m_tasks.empty() )
+        m_commonTasks->setFinal( NULL );
+    else
+        m_commonTasks->setFinal( m_tasks.back() );
+    if( task->config()->name() == "ufraw" )
+        m_commonTasks->setUfraw(NULL);
+
+    delete task;
 
     qDebug() << "TaskStack::removeTask() nof tasks" << m_tasks.size();
 }
@@ -81,7 +91,6 @@ void TaskStack::removeTask(int idx)
 void TaskStack::develop()
 {
     qDebug() << "TaskStack::develop()" << (m_preview ? "LQ" : "HQ");
-    if( !m_tasks.empty() )
     if( !m_tasks.empty() && !m_developing )
         m_tasks[0]->develop( m_preview );
 }
@@ -130,11 +139,10 @@ void TaskStack::loadFromFile(QUrl url)
     }
 
     QFileInfo cfgInfo( pathInfo.dir(), pathInfo.completeBaseName() + ".rawstack" );
-    if( cfgInfo.exists() && loadTasks(cfgInfo) )
-        return;
+    if( !cfgInfo.exists() || !loadTasks(cfgInfo) )
+        applyDefaultTasks( pathInfo );
 
     setConfig( cfgInfo.filePath() );
-    applyDefaultTasks( pathInfo );
 }
 
 void TaskStack::setProgress(double progress)
@@ -175,19 +183,16 @@ bool TaskStack::loadTasks(const QFileInfo &file)
     });
     connect( &loader, &ConfigFileLoader::config, [&] (ConfigBase *cfg) {
         qDebug() << "TaskStack::loadTasks()" << cfg;
+        if( cfg->name() == "ufraw" && settings.contains("raw") )
+            cfg->setProperty("raw",settings["raw"]);
         addTask( TaskFactory::getInstance()->create(cfg) );
     });
-    if( loader.load(file.absoluteFilePath()) )
-    {
-        if( settings.contains("raw") )
-            m_commonTasks->ufraw()->config()->setProperty("raw",settings["raw"]);
-        return true;
-    }
-    else
+    bool loaded = loader.load(file.absoluteFilePath());
+    if( !loaded )
     {
         qDebug() << "TaskStack::loadTasks() failed";
-        return false;
     }
+    return loaded;
 }
 
 void TaskStack::applyDefaultTasks(const QFileInfo &file)

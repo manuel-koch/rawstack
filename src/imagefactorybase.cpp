@@ -15,13 +15,11 @@ QString create_uuid()
     return uuid;
 }
 
-ImageFactoryBase::ImageFactoryBase(WorkerBase *worker)
+ImageFactoryBase::ImageFactoryBase()
     : QObject(NULL)
-    , m_worker(worker)
     , m_id(create_uuid())
 {
     ImageFactoryRegistry::getInstance()->registerFactory(this);
-    connect( m_worker, SIGNAL(cycleChanged(int)), this, SLOT(onCycleChanged(int)) );
 }
 
 ImageFactoryBase::~ImageFactoryBase()
@@ -31,16 +29,10 @@ ImageFactoryBase::~ImageFactoryBase()
 
 QImage ImageFactoryBase::image()
 {
-    if( m_worker->gmimage().isValid() )
-    {
-        qDebug() << "ImageFactoryBase::image()" << m_worker->gmimage().size().width() << "x" << m_worker->gmimage().size().height();
-        return WorkerBase::convert( m_worker->gmimage() );
-    }
-    else
-        return QImage();
+    return QImage();
 }
 
-void ImageFactoryBase::onCycleChanged(int cycle)
+void ImageFactoryBase::setUrl(int cycle)
 {
     QUrl url;
     url.setScheme("image");
@@ -52,7 +44,7 @@ void ImageFactoryBase::onCycleChanged(int cycle)
     if( url != m_url )
     {
         m_url = url;
-        qDebug() << "ImageFactoryBase::onCycleChanged()" << m_url;
+        qDebug() << "ImageFactoryBase::setUrl()" << this << m_url;
         emit urlChanged(m_url);
     }
 }

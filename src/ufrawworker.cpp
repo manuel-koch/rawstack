@@ -54,7 +54,34 @@ void UfrawWorker::run( UfrawProcess &ufraw, bool preview, int idx, int nof )
     }
 
     // extract the image
-    ufraw.run( false );
+    ufraw.run( UfrawProcess::OutputImage );
+}
+
+const Magick::Image UfrawWorker::gmpreview()
+{
+    if( m_preview.isValid() )
+        return m_preview;
+
+    UfrawConfig *cfg = config<UfrawConfig>();
+    if( !cfg || cfg->raw().isEmpty() )
+    {
+        qWarning() << "UfrawWorker::gmpreview() invalid config";
+        return Magick::Image();
+    }
+
+    UfrawProcess ufraw;
+    ufraw.setProgram( "/opt/local/bin/ufraw-batch" );
+    ufraw.setRaw( cfg->raw() );
+
+    // extract the thumbnail image
+    ufraw.run( UfrawProcess::OutputThumbnail );
+    m_preview.read( ufraw.output().toStdString().c_str() );
+    m_preview.magick("JPEG");
+    m_preview.quality(92);
+    m_preview.matte(false);
+    qDebug() << "UfrawWorker::gmpreview()" << m_preview.format().c_str();
+
+    return m_preview;
 }
 
 void UfrawWorker::prepareImpl()
@@ -79,7 +106,7 @@ void UfrawWorker::prepareImpl()
     ufraw.setShrink( 4 );
 
     // probe for other settings first...
-    ufraw.run( true );
+    ufraw.run( UfrawProcess::OutputProbe );
     if( cfg->wbTemperature() == UfrawConfig::DefaultWbTemperature )
         cfg->setWbTemperature( ufraw.wbTemperature() );
     if( cfg->wbGreen() == UfrawConfig::DefaultWbGreen )

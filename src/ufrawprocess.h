@@ -33,12 +33,18 @@ public:
         RestoreHsv
     };
 
+    enum Output {
+        OutputProbe,
+        OutputImage,
+        OutputThumbnail
+    };
+
     typedef QMap<QString,QString> InfoMap;
 
     QString output() { return m_output.fileName(); }
     QString &console() { return m_console; }
 
-    void   run( bool probe );
+    void   run(Output output );
     int    shrink() const { return m_shrink; }
     double exposure() const { return m_exposure; }
     bool colorSmoothing() const { return m_colorSmoothing; }
@@ -76,7 +82,7 @@ private slots:
 
 private:
 
-    void buildArgs(bool probe, QStringList &args);
+    void buildArgs(Output output, QStringList &args);
     void loadProbeSettings();
 
 private:

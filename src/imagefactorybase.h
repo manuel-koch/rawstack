@@ -1,5 +1,5 @@
-#ifndef IMAGEFACTORYNORMAL_H
-#define IMAGEFACTORYNORMAL_H
+#ifndef IMAGEFACTORYBASE_H
+#define IMAGEFACTORYBASE_H
 
 #include <QObject>
 #include <QUrl>
@@ -14,7 +14,7 @@ class ImageFactoryBase : public QObject
 
 public:
 
-    explicit ImageFactoryBase(WorkerBase *worker);
+    explicit ImageFactoryBase();
     virtual ~ImageFactoryBase();
 
     QString id() const { return m_id; }
@@ -25,13 +25,9 @@ signals:
 
     void urlChanged(QUrl url);
 
-private slots:
-
-    void onCycleChanged(int cycle);
-
 protected:
 
-    WorkerBase *m_worker;
+    void setUrl(int cycle);
 
 private:
 

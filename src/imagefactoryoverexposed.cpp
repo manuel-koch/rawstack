@@ -4,7 +4,7 @@
 #include <QDebug>
 
 ImageFactoryOverExposed::ImageFactoryOverExposed(WorkerBase *worker)
-    : ImageFactoryBase(worker)
+    : ImageFactoryWorker(worker)
 {
     // EMPTY
 }

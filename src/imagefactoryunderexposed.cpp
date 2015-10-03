@@ -2,7 +2,7 @@
 #include "workerbase.h"
 
 ImageFactoryUnderExposed::ImageFactoryUnderExposed(WorkerBase *worker)
-    : ImageFactoryBase(worker)
+    : ImageFactoryWorker(worker)
 {
     // EMPTY
 }

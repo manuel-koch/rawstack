@@ -18,12 +18,12 @@ public:
 
 private:
 
-    void run( UfrawProcess &ufraw, bool preview, int idx, int nof );
+    void run(UfrawProcess &ufraw, bool lowQuality, int idx, int nof);
 
     // WorkerBase interface
-    virtual void prepareImpl();
-    virtual void developImpl(bool preview, WorkerBase *predecessor);
-
+    virtual const Magick::Image gmpreview() override;
+    virtual void prepareImpl() override;
+    virtual void developImpl(bool preview, WorkerBase *predecessor) override;
 };
 
 #endif // UFRAWWORKER_H

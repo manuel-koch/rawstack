@@ -8,7 +8,7 @@
 
 UfrawProcess::UfrawProcess(QObject *parent)
     : QProcess(parent)
-    , m_output("XXXXXX.tif")
+    , m_output()
     , m_shrink(1)
     , m_exposure(0)
     , m_colorSmoothing(true)
@@ -31,27 +31,30 @@ UfrawProcess::~UfrawProcess()
         waitForFinished();
 }
 
-void UfrawProcess::run(bool probe)
+void UfrawProcess::run(Output output)
 {
     if( state() == QProcess::Running )
         return;
-    qDebug() << "UfrawProcess::run()" << (probe ? "probe" : "extract") <<  "...";
+    qDebug() << "UfrawProcess::run()" << output;
 
+    if( output == OutputThumbnail )
+        m_output.setFileTemplate("XXXXXX.jpg");
+    else
+        m_output.setFileTemplate("XXXXXX.tif");
     m_output.open();
     m_console.clear();
 
     QStringList args;
-    buildArgs( probe, args );
+    buildArgs( output, args );
     qDebug() << "UfrawProcess::run()" << args;
     setArguments( args );
     setProcessChannelMode( QProcess::MergedChannels );
     start();
 
-    if( probe )
-    {
+    if( output != OutputImage )
         waitForFinished(-1);
+    if( output == OutputProbe )
         loadProbeSettings();
-    }
 }
 
 void UfrawProcess::setRaw(QString raw)
@@ -136,7 +139,7 @@ void UfrawProcess::onConsole()
     emit progress();
 }
 
-void UfrawProcess::buildArgs(bool probe, QStringList &args)
+void UfrawProcess::buildArgs(Output output, QStringList &args)
 {
     QString interpolate;
     switch( m_interpolate )
@@ -167,26 +170,35 @@ void UfrawProcess::buildArgs(bool probe, QStringList &args)
     }
 
     args.clear();
-    args << "--overwrite" << "--zip"<< "--noexif"
-         << "--out-depth=16" << "--out-type=ppm"
-         << "--lensfun=auto"
-         << "--auto-crop"
-         << "--rotate=camera"
-         << QString("--shrink=%1").arg(m_shrink)
-         << QString("--exposure=%1").arg(m_exposure)
-         << QString("--interpolation=%1").arg(interpolate)
-         << QString("--restore=%1").arg(restore)
-         << QString("--clip=%1").arg(clip);
 
-    if( m_colorSmoothing )
-         args << "--color-smoothing";
+    args << "--overwrite" << "--zip"<< "--noexif";
 
-    if( m_wbTemperature && m_wbGreen )
-        args << QString("--temperature=%1").arg(m_wbTemperature) << QString("--green=%1").arg(m_wbGreen);
+    if( output == OutputThumbnail )
+    {
+        args << "--embedded-image";
+    }
     else
-        args << "--wb=camera";
+    {
+        args << "--out-depth=16" << "--out-type=ppm"
+             << "--lensfun=auto"
+             << "--auto-crop"
+             << "--rotate=camera"
+             << QString("--shrink=%1").arg(m_shrink)
+             << QString("--exposure=%1").arg(m_exposure)
+             << QString("--interpolation=%1").arg(interpolate)
+             << QString("--restore=%1").arg(restore)
+             << QString("--clip=%1").arg(clip);
 
-    if( probe )
+        if( m_colorSmoothing )
+             args << "--color-smoothing";
+
+        if( m_wbTemperature && m_wbGreen )
+            args << QString("--temperature=%1").arg(m_wbTemperature) << QString("--green=%1").arg(m_wbGreen);
+        else
+            args << "--wb=camera";
+    }
+
+    if( output == OutputProbe )
         args << "--create-id=only";
     else
         args << "--create-id=no";

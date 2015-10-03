@@ -6,7 +6,7 @@
 QImage WorkerBase::convert(Magick::Image image)
 {
     Magick::Blob blob;
-    image.write( &blob, "tif" );
+    image.write( &blob );
     return QImage::fromData( QByteArray( static_cast<const char*>(blob.data()), blob.length() ) );
 }
 

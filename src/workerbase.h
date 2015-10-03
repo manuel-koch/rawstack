@@ -29,6 +29,7 @@ public:
     const QByteArray &hash() const { return m_doneImgHash; }
 
     virtual const Magick::Image gmimage() { return m_img; }
+    virtual const Magick::Image gmpreview() { return m_preview; }
     static QImage convert(Magick::Image image);
 
     template <typename T> T *config() { return qobject_cast<T*>(m_config); }
@@ -62,6 +63,7 @@ private:
 protected:
 
     Magick::Image m_img;
+    Magick::Image m_preview;
 
 private:
 

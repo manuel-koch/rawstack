@@ -15,6 +15,7 @@
 TaskStack::TaskStack(bool preview, QObject *parent)
     : QAbstractListModel(parent)
     , m_commonTasks(NULL)
+    , m_developing(false)
     , m_progress(0)
     , m_preview(preview)
 {
@@ -81,6 +82,7 @@ void TaskStack::develop()
 {
     qDebug() << "TaskStack::develop()" << (m_preview ? "LQ" : "HQ");
     if( !m_tasks.empty() )
+    if( !m_tasks.empty() && !m_developing )
         m_tasks[0]->develop( m_preview );
 }
 

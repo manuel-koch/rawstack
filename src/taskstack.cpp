@@ -209,8 +209,9 @@ void TaskStack::applyDefaultTasks(const QFileInfo &file)
         return;
     }
 
-    addTask( TaskFactory::getInstance()->create( TaskFactory::getInstance()->create("ufraw") ) );
-    m_commonTasks->ufraw()->config()->setProperty("raw",file.absoluteFilePath());
+    ConfigBase *cfg = TaskFactory::getInstance()->create("ufraw");
+    cfg->setProperty("raw",file.absoluteFilePath());
+    addTask( TaskFactory::getInstance()->create( cfg ) );
 
     addTask( TaskFactory::getInstance()->create( TaskFactory::getInstance()->create("rotate") ) );
 }

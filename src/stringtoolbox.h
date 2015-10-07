@@ -28,6 +28,18 @@ public:
         return defValue;
     }
 
+    /// Convert given string to int, use default value for empty or invalid string
+    static int toInt( QString str, int defValue )
+    {
+        if( str.isEmpty() )
+            return defValue;
+        bool ok;
+        int v = str.toInt(&ok);
+        if( ok )
+            return v;
+        return defValue;
+    }
+
 private:
 
     StringToolbox();

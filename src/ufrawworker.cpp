@@ -20,6 +20,8 @@ UfrawWorker::~UfrawWorker()
     // EMPTY
 }
 
+// Argument idx is in range of -n ... n, e.g. -3 ... 3
+// Argument nof is the total number of used indices, e.g. 7
 void UfrawWorker::run( UfrawProcess &ufraw, bool preview, int idx, int nof )
 {
     UfrawConfig *cfg = config<UfrawConfig>();
@@ -127,11 +129,10 @@ void UfrawWorker::developImpl(bool preview, WorkerBase *predecessor)
     double progressPhaseA = 0.3;
     double progressPhaseB = 0.6;
 
-    int nof = 7;
+    int nof = cfg->fuse();
     std::vector<Magick::Image> imgs(nof);
     std::vector<UfrawProcess>  ufraw(nof);
     int firstIdx = -(nof-1)/2;
-    int normalIdx = (nof-1)/2;
     for( int i=0; i<nof; i++ )
     {
         setProgress( double(i)/nof*progressPhaseA );

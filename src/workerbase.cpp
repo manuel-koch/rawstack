@@ -63,6 +63,7 @@ void WorkerBase::setDirty(bool dirty)
 {
     if( m_dirty == dirty )
         return;
+    m_dirty = dirty;
     qDebug() << "WorkerBase::setDirty()" << this << m_dirty;
     emit dirtyChanged(m_dirty);
 }

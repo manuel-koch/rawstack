@@ -23,11 +23,8 @@ public:
     // trigger calculation hash of this configuration
     void rehash();
 
-    // calculate hash of this configuration
-    virtual QByteArray hash();
-
     // calculate hash of this configuration incl given base hash
-    virtual QByteArray hash( const QByteArray &baseHash );
+    virtual QByteArray hash( const QByteArray &baseHash = QByteArray() );
 
     virtual QDomNode toXML(QDomNode &node ) const;
     virtual bool fromXML(QDomNode const &node );

@@ -23,19 +23,12 @@ void ConfigBase::rehash()
     setHash( hash() );
 }
 
-QByteArray ConfigBase::hash()
-{
-    QCryptographicHash h(QCryptographicHash::Md5);
-    h.addData( m_name.toLocal8Bit() );
-    h.addData( reinterpret_cast<char*>(&m_enabled), sizeof(m_enabled) );
-    return h.result();
-}
-
 QByteArray ConfigBase::hash(const QByteArray &baseHash)
 {
     QCryptographicHash h(QCryptographicHash::Md5);
     h.addData( baseHash );
-    h.addData( m_hash );
+    h.addData( m_name.toLocal8Bit() );
+    h.addData( reinterpret_cast<char*>(&m_enabled), sizeof(m_enabled) );
     return h.result();
 }
 

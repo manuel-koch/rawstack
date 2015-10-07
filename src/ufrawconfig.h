@@ -22,9 +22,9 @@ public:
     virtual ~UfrawConfig();
 
     // ConfigBase interface
-    virtual QDomNode toXML(QDomNode &node ) const;
-    virtual bool fromXML( QDomNode const &node );
-    virtual QByteArray hash( const QByteArray &baseHash );
+    virtual QDomNode toXML(QDomNode &node ) const override;
+    virtual bool fromXML( QDomNode const &node ) override;
+    virtual QByteArray hash( const QByteArray &baseHash = QByteArray() ) override;
 
     QString raw() const { return m_raw; }
     double  exposure() const { return m_exposure; }

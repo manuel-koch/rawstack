@@ -51,6 +51,7 @@ QByteArray RotateConfig::hash(const QByteArray &baseHash)
     QCryptographicHash h(QCryptographicHash::Md5);
     h.addData( ConfigBase::hash(baseHash) );
     h.addData( reinterpret_cast<char*>(&m_degree), sizeof(m_degree) );
+    qDebug() << "RotateConfig::hash()" << m_degree;
     return h.result();
 }
 

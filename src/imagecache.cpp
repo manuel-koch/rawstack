@@ -9,7 +9,7 @@ ImageCache::ImageCache( QObject *parent )
     : QObject(parent)
     , m_tmpDir("cached_")
     , m_sizeMb(0)
-    , m_maxSizeMb(16)
+    , m_maxSizeMb(128)
 {
     if( !m_tmpDir.isValid() )
         qWarning() << "ImageCache::ImageCache() invalid temp dir";

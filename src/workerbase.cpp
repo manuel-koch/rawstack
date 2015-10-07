@@ -1,5 +1,6 @@
 #include "workerbase.h"
 #include "configbase.h"
+#include "imagecachebase.h"
 
 #include <QDebug>
 
@@ -12,6 +13,7 @@ QImage WorkerBase::convert(Magick::Image image)
 
 WorkerBase::WorkerBase()
     : QObject(NULL)
+    , m_cache(NULL)
     , m_progress(0)
     , m_cycle(0)
     , m_config(NULL)
@@ -33,6 +35,11 @@ void WorkerBase::setConfig(ConfigBase *config)
 
     if( m_config )
         connect( m_config, SIGNAL(hashChanged()), this, SLOT(onCfgHashChanged()) );
+}
+
+void WorkerBase::setCache(ImageCacheBase *cache)
+{
+    m_cache = cache;
 }
 
 void WorkerBase::onCfgHashChanged()
@@ -69,20 +76,27 @@ void WorkerBase::onDevelop(bool preview, WorkerBase *predecessor)
 
     prepareImpl();
 
+    bool imgCached = false;
     QByteArray preImgHash = predecessor ? predecessor->hash() : QByteArray();
     QByteArray curCfgHash = m_config->hash();
     QByteArray curImgHash = m_config->hash( preImgHash );
     if( m_doneImgHash != curImgHash )
     {
-        m_img = predecessor ? predecessor->gmimage() : Magick::Image();
-        if( (!predecessor || m_img.isValid()) && m_config->enabled() )
-            developImpl( preview, predecessor );
+        if( m_cache )
+        {
+            m_img = m_cache->retrieve( curImgHash.toHex().toStdString() );
+            imgCached = m_img.isValid();
+        }
+        if( !imgCached )
+        {
+            m_img = predecessor ? predecessor->gmimage() : Magick::Image();
+            if( (!predecessor || m_img.isValid()) && m_config->enabled() )
+                developImpl( preview, predecessor );
+            if( m_cache )
+                m_cache->store( curImgHash.toHex().toStdString(), m_img );
+        }
         m_doneConfigHash = curCfgHash;
         m_doneImgHash    = curImgHash;
-    }
-    else
-    {
-        qDebug() << "WorkerBase::onDevelop()" << this << "same hash, using current image";
     }
 
     if( m_img.isValid() )

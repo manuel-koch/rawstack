@@ -57,7 +57,8 @@ SOURCES += \
     src/rotateworker.cpp \
     src/enfuseprocess.cpp \
     src/imagefactoryworker.cpp \
-    src/imagefactorypreview.cpp
+    src/imagefactorypreview.cpp \
+    src/imagecache.cpp
 
 RESOURCES += qml.qrc
 
@@ -101,4 +102,6 @@ HEADERS += \
     src/rotateworker.h \
     src/enfuseprocess.h \
     src/imagefactoryworker.h \
-    src/imagefactorypreview.h
+    src/imagefactorypreview.h \
+    src/imagecache.h \
+    src/imagecachebase.h

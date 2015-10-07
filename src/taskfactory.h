@@ -9,6 +9,7 @@ class TaskBuilderBase;
 class ConfigBuilderBase;
 class TaskBase;
 class ConfigBase;
+class ImageCacheBase;
 
 class TaskFactory : public QObject
 {
@@ -42,6 +43,7 @@ private:
     QThread                         *m_thread;        /// worker thread for tasks
     QMap<QString,TaskBuilderBase*>   m_taskBuilder;   /// map of registered task builders
     QMap<QString,ConfigBuilderBase*> m_configBuilder; /// map of registered config builders
+    ImageCacheBase                  *m_imgCache;      /// caching generated images of workers
 };
 
 #endif // TASKFACTORY_H

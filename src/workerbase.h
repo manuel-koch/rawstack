@@ -7,6 +7,7 @@
 #include <QImage>
 
 class ConfigBase;
+class ImageCacheBase;
 
 class WorkerBase : public QObject
 {
@@ -21,6 +22,7 @@ public:
     virtual ~WorkerBase();
 
     void setConfig(ConfigBase *config);
+    void setCache(ImageCacheBase *cache);
 
     double progress() const { return m_progress; }
     int    cycle()    const { return m_cycle; }
@@ -62,8 +64,9 @@ private:
 
 protected:
 
-    Magick::Image m_img;
-    Magick::Image m_preview;
+    ImageCacheBase *m_cache;
+    Magick::Image   m_img;
+    Magick::Image   m_preview;
 
 private:
 

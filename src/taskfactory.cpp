@@ -3,6 +3,7 @@
 #include "configbuilderbase.h"
 #include "configbase.h"
 #include "taskbase.h"
+#include "imagecache.h"
 
 #include <QDebug>
 #include <QThread>
@@ -12,6 +13,7 @@ TaskFactory *TaskFactory::ms_instance = NULL;
 TaskFactory::TaskFactory(QObject *parent)
     : QObject(parent)
 {
+    m_imgCache = new ImageCache(this);
     m_thread = new QThread(this);
     m_thread->start();
 }
@@ -86,6 +88,7 @@ TaskBase *TaskFactory::create(ConfigBase *config)
     TaskBase *task = builder->create(this,m_thread);
     qDebug() << "TaskFactory::create()" << task;
     task->setConfig( config );
+    task->worker()->setCache( m_imgCache );
     return task;
 }
 

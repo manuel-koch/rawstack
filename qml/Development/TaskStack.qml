@@ -72,7 +72,7 @@ Rectangle {
         maximumFlickVelocity:    300
         boundsBehavior:          Flickable.StopAtBounds
         delegate:                taskDelegate
-        spacing:                 3
+        spacing:                 2
         focus:                   true
         clip:                    true
         onCurrentIndexChanged: {

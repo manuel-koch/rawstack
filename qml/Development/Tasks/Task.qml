@@ -17,7 +17,6 @@ Item {
             top:         parent.top
             left:        parent.left
             right:       parent.right
-            topMargin:   theTask.spacing
             leftMargin:  theTask.spacing
             rightMargin: theTask.spacing
         }

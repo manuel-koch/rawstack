@@ -45,7 +45,9 @@ void WorkerBase::setCache(ImageCacheBase *cache)
 void WorkerBase::onCfgHashChanged()
 {
     QByteArray hash = m_config->hash();
-    setDirty( m_doneConfigHash != hash );
+    bool dirty = m_doneConfigHash != hash;
+    qDebug() << "WorkerBase::onCfgHashChanged()" << this << (dirty?"dirty":"clean");
+    setDirty( dirty );
 }
 
 void WorkerBase::setProgress(double progress)
@@ -98,6 +100,7 @@ void WorkerBase::onDevelop(bool preview, WorkerBase *predecessor)
         }
         m_doneConfigHash = curCfgHash;
         m_doneImgHash    = curImgHash;
+        onCfgHashChanged(); // re-evaluate dirty flag based on current config
     }
 
     if( m_img.isValid() )

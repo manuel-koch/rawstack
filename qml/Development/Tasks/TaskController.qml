@@ -7,12 +7,12 @@ Item {
     property TaskBase task
 
     function triggerDevelop(now,force) {
-        console.trace()
-        if( force || theController.task.config.enabled )
-            if( !now )
-                theAggregateTimer.restart()
-            else if( theController.task.dirty )
-                globalDevTaskStack.develop()
+//        console.trace()
+//        if( force || theController.task.config.enabled )
+//            if( !now )
+//                theAggregateTimer.restart()
+//            else if( theController.task.dirty )
+//                globalDevTaskStack.develop()
     }
 
     function toggleEnabled() {

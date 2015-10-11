@@ -16,6 +16,7 @@ TaskStack::TaskStack(bool preview, QObject *parent)
     : QAbstractListModel(parent)
     , m_commonTasks(NULL)
     , m_developing(false)
+    , m_dirty(false)
     , m_progress(0)
     , m_preview(preview)
 {
@@ -51,10 +52,13 @@ void TaskStack::addTask(TaskBase *task, int idx)
     connect( task, SIGNAL(started()),               this, SLOT(onTaskStarted()) );
     connect( task, SIGNAL(progressChanged(double)), this, SLOT(onTaskProgress(double)) );
     connect( task, SIGNAL(finished()),              this, SLOT(onTaskFinished()) );
+    connect( task, SIGNAL(dirtyChanged(bool)),      this, SLOT(onTaskDirty(bool)) );
 
     m_commonTasks->setFinal( m_tasks.back() );
     if( task->config()->name() == "ufraw" )
         m_commonTasks->setUfraw(task);
+
+    setDirty( anyTaskDirty() );
 
     endInsertRows();
 
@@ -70,11 +74,11 @@ void TaskStack::removeTask(int idx)
 
     beginRemoveRows( QModelIndex(), idx, idx );
     TaskBase *task = m_tasks.takeAt(idx);
-    endRemoveRows();
 
     disconnect( task, SIGNAL(started()),               this, SLOT(onTaskStarted()) );
     disconnect( task, SIGNAL(progressChanged(double)), this, SLOT(onTaskProgress(double)) );
     disconnect( task, SIGNAL(finished()),              this, SLOT(onTaskFinished()) );
+    disconnect( task, SIGNAL(dirtyChanged(bool)),      this, SLOT(onTaskDirty(bool)) );
 
     if( m_tasks.empty() )
         m_commonTasks->setFinal( NULL );
@@ -83,7 +87,10 @@ void TaskStack::removeTask(int idx)
     if( task->config()->name() == "ufraw" )
         m_commonTasks->setUfraw(NULL);
 
+    setDirty( anyTaskDirty() );
+
     delete task;
+    endRemoveRows();
 
     qDebug() << "TaskStack::removeTask() nof tasks" << m_tasks.size();
 }
@@ -163,6 +170,15 @@ void TaskStack::setConfig(QString config)
     emit configChanged(m_config);
 }
 
+void TaskStack::setDirty(bool dirty)
+{
+    if( m_dirty == dirty )
+        return;
+    m_dirty = dirty;
+    qDebug() << "TaskStack::setDirty()" << m_dirty;
+    emit dirtyChanged(m_dirty);
+}
+
 void TaskStack::clearTasks()
 {
     qDebug() << "TaskStack::clearTasks()";
@@ -214,6 +230,17 @@ void TaskStack::applyDefaultTasks(const QFileInfo &file)
     addTask( TaskFactory::getInstance()->create( cfg ) );
 
     addTask( TaskFactory::getInstance()->create( TaskFactory::getInstance()->create("rotate") ) );
+}
+
+bool TaskStack::anyTaskDirty()
+{
+    bool dirty = false;
+    std::for_each( m_tasks.begin(), m_tasks.end(), [&] (TaskBase *task)
+    {
+        if( task->dirty() )
+            dirty = true;
+    });
+    return dirty;
 }
 
 int TaskStack::rowCount(const QModelIndex &parent) const
@@ -283,6 +310,18 @@ void TaskStack::onTaskFinished()
     if( idx == -1 )
         return;
     qDebug() << "TaskStack::onTaskFinished()" << task << idx;
+
+    for( int i=0; i<=idx; i++ )
+    {
+        if( m_tasks[i]->dirty() )
+        {
+            qDebug() << "TaskStack::onTaskFinished()" << i << "is dirty, redo...";
+            setDeveloping( false );
+            develop();
+            return;
+        }
+    }
+
     double p = (double)(idx+1) / m_tasks.size();
     setProgress( p );
     int nextIdx = idx+1;
@@ -293,6 +332,20 @@ void TaskStack::onTaskFinished()
     }
     else
         m_tasks[nextIdx]->develop( m_preview, m_tasks[idx] );
+}
+
+void TaskStack::onTaskDirty(bool dirty)
+{
+    TaskBase *task = qobject_cast<TaskBase*>( sender() );
+    int idx = m_tasks.indexOf( task );
+    if( idx == -1 )
+        return;
+
+    qDebug() << "TaskStack::onTaskDirty()" << task << idx << (dirty?"dirty":"clean");
+
+    setDirty( anyTaskDirty() );
+    if( m_dirty && !m_developing )
+        develop();
 }
 
 void TaskStack::setDeveloping(bool developing)

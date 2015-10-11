@@ -7,6 +7,7 @@
 #include "configbase.h"
 #include "imagefactoryregistry.h"
 #include "imageprovider.h"
+#include "loghandler.h"
 
 #include "configbase.h"
 #include "ufrawconfig.h"
@@ -21,6 +22,7 @@
 #include <QUrl>
 #include <QImageReader>
 #include <QByteArray>
+
 
 void register_types()
 {
@@ -39,8 +41,12 @@ int main(int argc, char *argv[])
     QApplication app( argc, argv );
     Magick::InitializeMagick( argv[0] );
 
-    register_types();
     qSetMessagePattern("%{time} %{threadid} %{type}: %{message}");
+
+    LogHandler logHandler;
+    logHandler.start( "/Users/manuel/tmp/rawstack/debug.log" );
+
+    register_types();
 
     qDebug() << "Supported image formats:";
     QList<QByteArray> imgFormats = QImageReader::supportedImageFormats();

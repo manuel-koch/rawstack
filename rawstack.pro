@@ -58,7 +58,8 @@ SOURCES += \
     src/enfuseprocess.cpp \
     src/imagefactoryworker.cpp \
     src/imagefactorypreview.cpp \
-    src/imagecache.cpp
+    src/imagecache.cpp \
+    src/loghandler.cpp
 
 RESOURCES += qml.qrc
 
@@ -104,4 +105,5 @@ HEADERS += \
     src/imagefactoryworker.h \
     src/imagefactorypreview.h \
     src/imagecache.h \
-    src/imagecachebase.h
+    src/imagecachebase.h \
+    src/loghandler.h

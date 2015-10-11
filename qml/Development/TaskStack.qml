@@ -56,7 +56,8 @@ Rectangle {
     Component {
         id: highlightDelegate
         Rectangle {
-            color:  "#f0f0f0";
+            border { width: 1; color: "yellow" }
+            color:  "#c0c0c0";
             radius: theStack.radius
         }
     }

@@ -11,8 +11,9 @@ Task {
     TaskSetting {
         label:   "Degree"
         SpinBox {
-            Layout.alignment:      Qt.AlignRight
-            Layout.preferredWidth: parent.width/2
+            Layout.alignment:  Qt.AlignRight
+            Layout.fillWidth:  true
+            font.pointSize:    10
             decimals:          2
             maximumValue:      360
             minimumValue:      -360

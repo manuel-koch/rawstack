@@ -9,10 +9,11 @@ Task {
     controller: UfrawController { }
 
     TaskSetting {
-        label:   "Fuse"
+        label: "Fuse"
         SpinBox {
-            Layout.alignment:      Qt.AlignRight
-            Layout.preferredWidth: parent.width/2
+            Layout.alignment:  Qt.AlignRight
+            Layout.fillWidth:  true
+            font.pointSize:    10
             decimals:          0
             maximumValue:      9
             minimumValue:      1
@@ -23,10 +24,11 @@ Task {
     }
 
     TaskSetting {
-        label:   "Exposure"
+        label: "Exposure"
         SpinBox {
-            Layout.alignment:      Qt.AlignRight
-            Layout.preferredWidth: parent.width/2
+            Layout.alignment:  Qt.AlignRight
+            Layout.fillWidth:  true
+            font.pointSize:    10
             decimals:          2
             maximumValue:      8
             minimumValue:      -8
@@ -34,6 +36,37 @@ Task {
             suffix:            "EV"
             value:             controller.exposure
             onEditingFinished: controller.setExposure( value )
+        }
+    }
+
+    TaskSetting {
+        label: "White Balance Temperature"
+        SpinBox {
+            Layout.alignment:  Qt.AlignRight
+            Layout.fillWidth:  true
+            font.pointSize:    10
+            decimals:          0
+            maximumValue:      8000
+            minimumValue:      0
+            stepSize:          50
+            suffix:            "°K"
+            value:             controller.wbTemperature
+            onEditingFinished: controller.setWbTemperature( value )
+        }
+    }
+
+    TaskSetting {
+        label: "White Balance Green"
+        SpinBox {
+            Layout.alignment:  Qt.AlignRight
+            Layout.fillWidth:  true
+            font.pointSize:    10
+            decimals:          3
+            maximumValue:      5
+            minimumValue:      0
+            stepSize:          0.05
+            value:             controller.wbGreen
+            onEditingFinished: controller.setWbGreen( value )
         }
     }
 }

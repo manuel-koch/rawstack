@@ -10,6 +10,8 @@ RowLayout {
     Text {
         id: theLabel
         text: "???"
+        font.pointSize: 10
+        Layout.preferredWidth: parent.width * 2.5/4
     }
 }
 

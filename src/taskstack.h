@@ -7,6 +7,7 @@
 
 class TaskBase;
 class CommonTasks;
+class CommonConfig;
 
 class TaskStack : public QAbstractListModel
 {
@@ -94,11 +95,15 @@ private:
     /// Returns true when one of the tasks is dirty
     bool anyTaskDirty();
 
+    /// Use new common config instance
+    void setCommonConfig( CommonConfig *common );
+
 private:
 
     RoleMap           m_rolemap;
     QList<TaskBase*>  m_tasks;
     CommonTasks      *m_commonTasks;
+    CommonConfig     *m_commonConfig;
     bool              m_developing;
     bool              m_dirty;
     double            m_progress;

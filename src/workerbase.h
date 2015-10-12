@@ -7,6 +7,7 @@
 #include <QImage>
 
 class ConfigBase;
+class CommonConfig;
 class ImageCacheBase;
 
 class WorkerBase : public QObject
@@ -21,6 +22,7 @@ public:
     explicit WorkerBase();
     virtual ~WorkerBase();
 
+    void setCommonConfig(CommonConfig *common) { m_common = common; }
     void setConfig(ConfigBase *config);
     void setCache(ImageCacheBase *cache);
 
@@ -34,6 +36,7 @@ public:
     virtual const Magick::Image gmpreview() { return m_preview; }
     static QImage convert(Magick::Image image);
 
+    CommonConfig *common() { return m_common; }
     template <typename T> T *config() { return qobject_cast<T*>(m_config); }
 
 signals:
@@ -64,18 +67,19 @@ private:
 
 protected:
 
+    CommonConfig   *m_common;
     ImageCacheBase *m_cache;
     Magick::Image   m_img;
     Magick::Image   m_preview;
 
 private:
 
-    double      m_progress;
-    int         m_cycle;
-    bool        m_dirty;
-    ConfigBase *m_config;
-    QByteArray  m_doneConfigHash;
-    QByteArray  m_doneImgHash;
+    double        m_progress;
+    int           m_cycle;
+    bool          m_dirty;
+    ConfigBase   *m_config;
+    QByteArray    m_doneConfigHash;
+    QByteArray    m_doneImgHash;
 };
 
 #endif // WORKERBASE_H

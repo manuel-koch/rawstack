@@ -71,7 +71,6 @@ QByteArray UfrawConfig::hash(const QByteArray &baseHash)
 {
     QCryptographicHash h(QCryptographicHash::Md5);
     h.addData( ConfigBase::hash(baseHash) );
-    h.addData( m_raw.toLocal8Bit() );
     h.addData( reinterpret_cast<char*>(&m_fuse),          sizeof(m_fuse) );
     h.addData( reinterpret_cast<char*>(&m_exposure),      sizeof(m_exposure) );
     h.addData( reinterpret_cast<char*>(&m_wbTemperature), sizeof(m_wbTemperature) );
@@ -106,16 +105,6 @@ void UfrawConfig::setWbGreen(double wbGreen)
     m_wbGreen = wbGreen;
     qDebug() << "UfrawConfig::setWbGreen()" << m_wbGreen;
     emit wbGreenChanged(wbGreen);
-    rehash();
-}
-
-void UfrawConfig::setRaw(QString raw)
-{
-    if( m_raw == raw )
-        return;
-    m_raw = raw;
-    qDebug() << "UfrawConfig::setRaw()" << m_raw;
-    emit rawChanged(raw);
     rehash();
 }
 

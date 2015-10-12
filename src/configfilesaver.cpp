@@ -1,5 +1,6 @@
 #include "configfilesaver.h"
 
+#include <QDebug>
 #include <QTextStream>
 
 ConfigFileSaver::ConfigFileSaver(QObject *parent)
@@ -20,6 +21,7 @@ void ConfigFileSaver::save(QString path)
     {
         QTextStream stream(&file);
         doc().save(stream,QDomNode::EncodingFromDocument);
+        qDebug() << "ConfigFileSaver::save()" << path << doc().toString();
     }
 }
 

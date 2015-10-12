@@ -2,6 +2,7 @@
 #include "taskbase.h"
 #include "configbase.h"
 #include "commontasks.h"
+#include "commonconfig.h"
 #include "configfilesaver.h"
 #include "configfileloader.h"
 #include "taskfactory.h"
@@ -15,6 +16,7 @@
 TaskStack::TaskStack(bool preview, QObject *parent)
     : QAbstractListModel(parent)
     , m_commonTasks(NULL)
+    , m_commonConfig(NULL)
     , m_developing(false)
     , m_dirty(false)
     , m_progress(0)
@@ -34,6 +36,7 @@ TaskStack::~TaskStack()
 {
     clearTasks();
     delete m_commonTasks;
+    delete m_commonConfig;
 }
 
 void TaskStack::addTask(TaskBase *task, int idx)
@@ -57,6 +60,8 @@ void TaskStack::addTask(TaskBase *task, int idx)
     m_commonTasks->setFinal( m_tasks.back() );
     if( task->config()->name() == "ufraw" )
         m_commonTasks->setUfraw(task);
+
+    task->setCommonConfig( m_commonConfig );
 
     setDirty( anyTaskDirty() );
 
@@ -87,6 +92,8 @@ void TaskStack::removeTask(int idx)
     if( task->config()->name() == "ufraw" )
         m_commonTasks->setUfraw(NULL);
 
+    task->setCommonConfig( NULL );
+
     setDirty( anyTaskDirty() );
 
     delete task;
@@ -107,8 +114,7 @@ void TaskStack::saveToFile(QString path)
     if( m_tasks.empty() )
         return;
 
-    ConfigBase *ufraw = m_commonTasks->ufraw()->config();
-    QFileInfo rawInfo( ufraw->property("raw").toString() );
+    QFileInfo rawInfo( m_commonConfig->raw() );
     qDebug() << "TaskStack::saveToFile()" << rawInfo.absoluteFilePath();
 
     QFileInfo cfgInfo;
@@ -125,7 +131,7 @@ void TaskStack::saveToFile(QString path)
     setConfig( cfgInfo.absoluteFilePath() );
     qDebug() << "TaskStack::saveToFile()" << m_config;
     ConfigFileSaver fileSaver;
-    fileSaver.add("raw",rawInfo.absoluteFilePath());
+    fileSaver.add( m_commonConfig );
     std::for_each( m_tasks.begin(), m_tasks.end(), [&] (TaskBase *task) {
         fileSaver.add( task->config() );
     });
@@ -191,24 +197,28 @@ void TaskStack::clearTasks()
 
 bool TaskStack::loadTasks(const QFileInfo &file)
 {
-    QMap<QString,QString> settings;
     ConfigFileLoader loader;
-    connect( &loader, &ConfigFileLoader::setting, [&] (QString key, QString value) {
-        qDebug() << "TaskStack::loadTasks()" << key << value;
-        settings[key] = value;
-    });
     connect( &loader, &ConfigFileLoader::config, [&] (ConfigBase *cfg) {
         qDebug() << "TaskStack::loadTasks()" << cfg;
-        if( cfg->name() == "ufraw" && settings.contains("raw") )
-            cfg->setProperty("raw",settings["raw"]);
-        addTask( TaskFactory::getInstance()->create(cfg) );
+        if( cfg->name() == "common" )
+            setCommonConfig( reinterpret_cast<CommonConfig*>(cfg) );
+        else
+            addTask( TaskFactory::getInstance()->create(cfg) );
     });
     bool loaded = loader.load(file.absoluteFilePath());
     if( !loaded )
     {
         qDebug() << "TaskStack::loadTasks() failed";
     }
-    return loaded;
+
+    // Check that RAW image really exists,
+    // fix RAW directory by current config directory if RAW can't be found.
+    QFileInfo raw(m_commonConfig->raw());
+    if( !raw.exists() )
+        raw = QFileInfo(file.absoluteDir(),raw.fileName());
+    if( raw.exists() )
+        m_commonConfig->setRaw( raw.absoluteFilePath() );
+    return raw.exists();
 }
 
 void TaskStack::applyDefaultTasks(const QFileInfo &file)
@@ -225,10 +235,9 @@ void TaskStack::applyDefaultTasks(const QFileInfo &file)
         return;
     }
 
-    ConfigBase *cfg = TaskFactory::getInstance()->create("ufraw");
-    cfg->setProperty("raw",file.absoluteFilePath());
-    addTask( TaskFactory::getInstance()->create( cfg ) );
-
+    setCommonConfig( new CommonConfig() );
+    m_commonConfig->setRaw( file.absoluteFilePath() );
+    addTask( TaskFactory::getInstance()->create( TaskFactory::getInstance()->create("ufraw") ) );
     addTask( TaskFactory::getInstance()->create( TaskFactory::getInstance()->create("rotate") ) );
 }
 
@@ -241,6 +250,29 @@ bool TaskStack::anyTaskDirty()
             dirty = true;
     });
     return dirty;
+}
+
+void TaskStack::setCommonConfig(CommonConfig *common)
+{
+    if( m_commonConfig )
+    {
+        std::for_each( m_tasks.begin(), m_tasks.end(), [&] (TaskBase *task)
+        {
+            task->setCommonConfig( NULL );
+        });
+    }
+
+    delete m_commonConfig;
+    common->setParent(this);
+    m_commonConfig = common;
+
+    if( m_commonConfig )
+    {
+        std::for_each( m_tasks.begin(), m_tasks.end(), [&] (TaskBase *task)
+        {
+            task->setCommonConfig( m_commonConfig );
+        });
+    }
 }
 
 int TaskStack::rowCount(const QModelIndex &parent) const

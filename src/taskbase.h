@@ -2,6 +2,7 @@
 #define TASKBASE_H
 
 #include "configbase.h"
+#include "commonconfig.h"
 #include "workerbase.h"
 #include "imagefactory.h"
 
@@ -21,12 +22,14 @@ public:
     explicit TaskBase(QObject *parent = NULL);
     virtual ~TaskBase();
 
+    CommonConfig* common() { return m_worker ? m_worker->common() : NULL; }
     ConfigBase*   config() { return m_config; }
     ImageFactory* images() { return m_images; }
     WorkerBase*   worker() { return m_worker; }
     double        progress() const { return m_worker ? m_worker->progress() : 0; }
     bool          dirty() { return m_worker ? m_worker->dirty() : false; }
 
+    void setCommonConfig( CommonConfig *common ) { m_worker->setCommonConfig(common); }
     void setConfig( ConfigBase *config );
     void setWorker( WorkerBase *worker );
 

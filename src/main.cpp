@@ -60,6 +60,7 @@ int main(int argc, char *argv[])
 
     TaskFactory taskFactory;
     TaskFactory::setInstance( &taskFactory );
+    taskFactory.add( new ConfigBuilder<CommonConfig>("common") );
     taskFactory.add( new TaskBuilder<UfrawTask>("ufraw") );
     taskFactory.add( new ConfigBuilder<UfrawConfig>("ufraw") );
     taskFactory.add( new TaskBuilder<RotateTask>("rotate") );

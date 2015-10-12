@@ -16,9 +16,6 @@ public:
 
 signals:
 
-    /// A setting was found in configuration
-    void setting(QString key, QString value);
-
     /// A task config was found in configuration
     void config(ConfigBase *config);
 };

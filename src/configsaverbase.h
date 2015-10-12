@@ -15,7 +15,6 @@ public:
     explicit ConfigSaverBase(QObject *parent = NULL);
     virtual ~ConfigSaverBase();
 
-    virtual void add(QString key, QString value);
     virtual void add(ConfigBase *config);
 };
 

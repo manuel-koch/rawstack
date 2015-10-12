@@ -1,6 +1,7 @@
 #include "ufrawworker.h"
 #include "ufrawprocess.h"
 #include "ufrawconfig.h"
+#include "commonconfig.h"
 #include "enfuseprocess.h"
 
 #include <vector>
@@ -25,7 +26,7 @@ UfrawWorker::~UfrawWorker()
 void UfrawWorker::run( UfrawProcess &ufraw, bool preview, int idx, int nof )
 {
     UfrawConfig *cfg = config<UfrawConfig>();
-    if( !cfg )
+    if( !cfg || !m_common )
         return;
 
     double exposureShift = 1.5;
@@ -36,7 +37,7 @@ void UfrawWorker::run( UfrawProcess &ufraw, bool preview, int idx, int nof )
     double exposure = cfg->exposure() + exposureShift;
 
     ufraw.setProgram( "/opt/local/bin/ufraw-batch" );
-    ufraw.setRaw( cfg->raw() );
+    ufraw.setRaw( m_common->raw() );
     ufraw.setExposure( exposure );
     ufraw.setWbTemperature( cfg->wbTemperature() );
     ufraw.setWbGreen( cfg->wbGreen() );
@@ -65,7 +66,7 @@ const Magick::Image UfrawWorker::gmpreview()
         return m_preview;
 
     UfrawConfig *cfg = config<UfrawConfig>();
-    if( !cfg || cfg->raw().isEmpty() )
+    if( !cfg || !m_common || m_common->raw().isEmpty() )
     {
         qWarning() << "UfrawWorker::gmpreview() invalid config";
         return Magick::Image();
@@ -73,7 +74,7 @@ const Magick::Image UfrawWorker::gmpreview()
 
     UfrawProcess ufraw;
     ufraw.setProgram( "/opt/local/bin/ufraw-batch" );
-    ufraw.setRaw( cfg->raw() );
+    ufraw.setRaw( m_common->raw() );
 
     // extract the thumbnail image
     ufraw.run( UfrawProcess::OutputThumbnail );
@@ -91,24 +92,32 @@ void UfrawWorker::prepareImpl()
     qDebug() << "UfrawWorker::prepareImpl()" << this;
 
     UfrawConfig *cfg = config<UfrawConfig>();
-    if( !cfg || cfg->raw().isEmpty() )
+    if( !cfg  || !m_common || m_common->raw().isEmpty() )
     {
         qWarning() << "UfrawWorker::prepareImpl() invalid config";
         return;
     }
 
-    if( cfg->wbTemperature() != UfrawConfig::DefaultWbTemperature &&
-        cfg->wbGreen()       != UfrawConfig::DefaultWbGreen )
+    if( !m_common->exif().isEmpty() )
         return;
 
     UfrawProcess ufraw;
     ufraw.setProgram( "/opt/local/bin/ufraw-batch" );
-    ufraw.setRaw( cfg->raw() );
+    ufraw.setRaw( m_common->raw() );
     ufraw.setExposure( cfg->exposure() );
     ufraw.setShrink( 4 );
 
     // probe for other settings first...
     ufraw.run( UfrawProcess::OutputProbe );
+
+    UfrawProcess::InfoMap info = ufraw.info();
+    QVariantMap exif;
+    for( auto it = info.begin(); it != info.end(); it++ )
+    {
+        exif[it.key()] = it.value();
+    }
+    m_common->setExif( exif );
+
     if( cfg->wbTemperature() == UfrawConfig::DefaultWbTemperature )
         cfg->setWbTemperature( ufraw.wbTemperature() );
     if( cfg->wbGreen() == UfrawConfig::DefaultWbGreen )
@@ -120,7 +129,7 @@ void UfrawWorker::developImpl(bool preview, WorkerBase *predecessor)
     qDebug() << "UfrawWorker::developImpl()" << this << predecessor;
 
     UfrawConfig *cfg = config<UfrawConfig>();
-    if( !cfg || cfg->raw().isEmpty() )
+    if( !cfg  || !m_common || m_common->raw().isEmpty() )
     {
         qWarning() << "UfrawWorker::developImpl() invalid config";
         return;

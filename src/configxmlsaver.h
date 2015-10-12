@@ -20,15 +20,12 @@ public:
     QDomDocument const &doc() { return m_doc; }
 
     // ConfigSaverBase interface
-    virtual void add(QString key, QString value);
     virtual void add(ConfigBase *config);
 
 private:
 
     QDomDocument m_doc;
-    QDomNode     m_settings;
     QDomNode     m_tasks;
-
 };
 
 #endif // CONFIGJSONSAVER_H

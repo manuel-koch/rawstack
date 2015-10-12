@@ -13,6 +13,7 @@ QImage WorkerBase::convert(Magick::Image image)
 
 WorkerBase::WorkerBase()
     : QObject(NULL)
+    , m_common(NULL)
     , m_cache(NULL)
     , m_progress(0)
     , m_cycle(0)

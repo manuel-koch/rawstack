@@ -59,7 +59,8 @@ SOURCES += \
     src/imagefactoryworker.cpp \
     src/imagefactorypreview.cpp \
     src/imagecache.cpp \
-    src/loghandler.cpp
+    src/loghandler.cpp \
+    src/commonconfig.cpp
 
 RESOURCES += qml.qrc
 
@@ -106,4 +107,5 @@ HEADERS += \
     src/imagefactorypreview.h \
     src/imagecache.h \
     src/imagecachebase.h \
-    src/loghandler.h
+    src/loghandler.h \
+    src/commonconfig.h

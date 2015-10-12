@@ -16,7 +16,6 @@ public:
     virtual ~ConfigFileSaver();
 
     virtual void save(QString path);
-
 };
 
 #endif // CONFIGFILESAVER_H

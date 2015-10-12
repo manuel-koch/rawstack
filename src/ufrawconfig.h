@@ -6,7 +6,6 @@
 class UfrawConfig : public ConfigBase
 {
     Q_OBJECT
-    Q_PROPERTY(QString raw           READ raw           WRITE setRaw           NOTIFY rawChanged)
     Q_PROPERTY(int     fuse          READ fuse          WRITE setFuse          NOTIFY fuseChanged)
     Q_PROPERTY(double  exposure      READ exposure      WRITE setExposure      NOTIFY exposureChanged)
     Q_PROPERTY(int     wbTemperature READ wbTemperature WRITE setWbTemperature NOTIFY wbTemperatureChanged)
@@ -28,7 +27,6 @@ public:
     virtual bool fromXML( QDomNode const &node ) override;
     virtual QByteArray hash( const QByteArray &baseHash = QByteArray() ) override;
 
-    QString raw() const { return m_raw; }
     int     fuse() const { return m_fuse; }
     double  exposure() const { return m_exposure; }
     int     wbTemperature() const { return m_wbTemperature; }
@@ -36,7 +34,6 @@ public:
 
 public slots:
 
-    void setRaw(QString raw);
     void setFuse(int fuse);
     void setExposure(double exposure);
     void setWbTemperature(int wbTemperature);
@@ -44,7 +41,6 @@ public slots:
 
 signals:
 
-    void rawChanged(QString raw);
     void fuseChanged(int fuse);
     void exposureChanged(double exposure);
     void wbTemperatureChanged(int wbTemperature);
@@ -52,7 +48,6 @@ signals:
 
 private:
 
-    QString m_raw;
     int     m_fuse;
     double  m_exposure;
     int     m_wbTemperature;

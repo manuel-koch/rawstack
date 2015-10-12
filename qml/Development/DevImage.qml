@@ -20,14 +20,16 @@ Rectangle {
         property string zoomName:   "fit"
         property real   zoomFactor: 0
         property real   zoomIdx:    -1
-        property var    zoomValues: [ 0.2, 0.4, 0.6, 0.8, 1.0, 1.2, 1.4, 1.6, 2, 2.5, 3, 4, 5, 7.5, 10 ]
-        property real   zoomMin:    theFlickable.width / theImage.sourceSize.width
+        property var    zoomValues: [ 0.2, 0.4, 0.6, 0.8, 1.0, 1.2, 1.4, 1.6, 1.8, 2, 2.25, 2.5, 3, 4, 5, 7.5, 10 ]
+        property real   zoomMin:    Math.min( theFlickable.height / theImage.sourceSize.height, theFlickable.width / theImage.sourceSize.width )
 
         function zoomFit() {
+            console.log("Zoom fit")
             zoomApply(-1)
         }
 
         function zoomIn() {
+            console.log("Zoom in: min",zoomMin)
             if( theImage.status!=Image.Ready )
                 return
             if( zoomFactor && zoomIdx+1 < zoomValues.length )
@@ -35,14 +37,16 @@ Rectangle {
             else if ( !zoomFactor ) {
                 var idx = -1;
                 for( var i=zoomValues.length-1; i>=0; i-- ) {
-                    if( zoomValues[i] > zoomMin )
+                    if( zoomValues[i] > zoomMin ) {
                         idx = i;
+                    }
                 }
                 zoomApply( idx )
             }
         }
 
         function zoomOut() {
+            console.log("Zoom in: min",zoomMin)
             if( theImage.status!=Image.Ready )
                 return
             if( zoomFactor && zoomIdx > 0 ) {
@@ -53,6 +57,7 @@ Rectangle {
         }
 
         function zoomApply(idx) {
+            console.log("Zoom apply:",idx)
             var w, h;
             var wasFit = zoomFactor==0
             if( idx >= 0 && idx < zoomValues.length ) {

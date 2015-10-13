@@ -11,10 +11,15 @@ message(GRAPHICSMAGICK_CXXFLAGS = $$GRAPHICSMAGICK_CXXFLAGS)
 message(GRAPHICSMAGICK_LFLAGS = $$GRAPHICSMAGICK_LFLAGS)
 message(GRAPHICSMAGICK_LIBS = $$GRAPHICSMAGICK_LIBS)
 
+EXIV2_LIBS = -lexiv2
+
 # Add switches for GraphicsMagick to make variables
 QMAKE_LIBS     += $$GRAPHICSMAGICK_LIBS
 QMAKE_CXXFLAGS += $$GRAPHICSMAGICK_CXXFLAGS
-QMAKE_LFLAGS   += $$GRAPHICSMAGICK_LFLAGS
+QMAKE_LFLAGS   += $$GRAPHICSMAGICK_LFLAGS $$EXIV2_LIBS
+
+# Add path to mac ports includes
+QMAKE_CXXFLAGS += -I/opt/local/include
 
 # Need to tell Qt which Xcode SDK is installed
 # See https://forum.qt.io/topic/58926/solved-xcode-7-and-qt-error/3
@@ -60,7 +65,8 @@ SOURCES += \
     src/imagefactorypreview.cpp \
     src/imagecache.cpp \
     src/loghandler.cpp \
-    src/commonconfig.cpp
+    src/commonconfig.cpp \
+    src/exportimage.cpp
 
 RESOURCES += qml.qrc
 
@@ -108,4 +114,5 @@ HEADERS += \
     src/imagecache.h \
     src/imagecachebase.h \
     src/loghandler.h \
-    src/commonconfig.h
+    src/commonconfig.h \
+    src/exportimage.h

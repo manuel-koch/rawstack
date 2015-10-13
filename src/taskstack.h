@@ -1,6 +1,8 @@
 #ifndef TASKSTACK_H
 #define TASKSTACK_H
 
+#include <Magick++.h>
+
 #include <QAbstractListModel>
 #include <QUrl>
 #include <QFileInfo>
@@ -17,7 +19,7 @@ class TaskStack : public QAbstractListModel
     Q_PROPERTY(CommonTasks* tasks      READ tasks      CONSTANT)
     Q_PROPERTY(QString      config     READ config     NOTIFY configChanged)
     Q_PROPERTY(bool         dirty      READ dirty      NOTIFY dirtyChanged)
-
+    Q_PROPERTY(QString      raw        READ raw        NOTIFY rawChanged)
 public:
 
     typedef QHash<int, QByteArray> RoleMap;
@@ -40,7 +42,9 @@ public:
     bool    developing() const { return m_developing; }
     double  progress() const { return m_progress; }
     QString config() const { return m_config; }
+    QString raw() const;
     bool    dirty() const { return m_dirty; }
+    Magick::Image gmimage();
 
 public slots:
 
@@ -66,6 +70,7 @@ signals:
     void developingChanged(bool arg);
     void progressChanged(double progress);
     void configChanged(QString config);
+    void rawChanged(QString raw);
     void dirtyChanged(bool dirty);
 
 private slots:

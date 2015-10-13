@@ -102,6 +102,19 @@ void TaskStack::removeTask(int idx)
     qDebug() << "TaskStack::removeTask() nof tasks" << m_tasks.size();
 }
 
+QString TaskStack::raw() const
+{
+    return m_commonConfig ? m_commonConfig->raw() : "";
+}
+
+Magick::Image TaskStack::gmimage()
+{
+    if( !m_dirty && m_tasks.size() )
+        return m_tasks.back()->worker()->gmimage();
+    else
+        return Magick::Image();
+}
+
 void TaskStack::develop()
 {
     qDebug() << "TaskStack::develop()" << (m_preview ? "LQ" : "HQ");
@@ -256,6 +269,7 @@ void TaskStack::setCommonConfig(CommonConfig *common)
 {
     if( m_commonConfig )
     {
+        disconnect( m_commonConfig, SIGNAL(rawChanged(QString)), this, SIGNAL(rawChanged(QString)) );
         std::for_each( m_tasks.begin(), m_tasks.end(), [&] (TaskBase *task)
         {
             task->setCommonConfig( NULL );
@@ -268,6 +282,7 @@ void TaskStack::setCommonConfig(CommonConfig *common)
 
     if( m_commonConfig )
     {
+        connect( m_commonConfig, SIGNAL(rawChanged(QString)), this, SIGNAL(rawChanged(QString)) );
         std::for_each( m_tasks.begin(), m_tasks.end(), [&] (TaskBase *task)
         {
             task->setCommonConfig( m_commonConfig );

@@ -12,7 +12,7 @@ ExportImage::ExportImage(QObject *parent)
     , m_imgQuality(95)
     , m_imgType(JPG)
 {
-    m_stack = new TaskStack(true,this);
+    m_stack = new TaskStack(false,this);
     connect(m_stack, SIGNAL(progressChanged(double)), this, SIGNAL(progressChanged(double)) );
     connect(m_stack, SIGNAL(configChanged(QString)), this, SIGNAL(configChanged(QString)) );
     connect(m_stack, SIGNAL(developingChanged(bool)), this, SLOT(onDeveloped(bool)) );
@@ -74,6 +74,23 @@ void ExportImage::setImgPath(QString imgPath)
     emit imgPathChanged(m_imgPath);
 }
 
+void removeExifKey( Exiv2::ExifData &exifData, const std::string &name )
+{
+    Exiv2::ExifKey key(name);
+    Exiv2::ExifMetadata::iterator pos = exifData.findKey(key);
+    if( pos != exifData.end() )
+       exifData.erase(pos);
+}
+
+template <typename T>
+void changeExistingExifKey( Exiv2::ExifData &exifData, const std::string &name, const T &val )
+{
+    Exiv2::ExifKey key(name);
+    Exiv2::ExifMetadata::iterator pos = exifData.findKey(key);
+    if( pos != exifData.end() )
+       pos->setValue( val );
+}
+
 void ExportImage::onDeveloped(bool developing)
 {
     if( developing )
@@ -101,6 +118,7 @@ void ExportImage::onDeveloped(bool developing)
             img.magick( "TIF" );
             img.compressType( Magick::ZipCompression );
             img.quality( m_imgQuality );
+            break;
         }
         case PNG:
         {
@@ -108,6 +126,7 @@ void ExportImage::onDeveloped(bool developing)
             ext = ".png";
             img.magick( "PNG" );
             img.quality( m_imgQuality );
+            break;
         }
         case JPG:
         default:
@@ -116,6 +135,7 @@ void ExportImage::onDeveloped(bool developing)
             ext = ".jpg";
             img.magick( "JPG" );
             img.quality( m_imgQuality );
+            break;
         }
     }
 
@@ -123,7 +143,7 @@ void ExportImage::onDeveloped(bool developing)
     qDebug() << "ExportImage::onDeveloped() write" << m_imgPath;
     img.write( m_imgPath.toStdString() );
 
-    qDebug() << "ExportImage::onDeveloped() copying EXIF...";
+    qDebug() << "ExportImage::onDeveloped() applying EXIF...";
     QString raw = m_stack->raw();
     try {
         Exiv2::Image::AutoPtr exivRaw = Exiv2::ImageFactory::open(raw.toStdString());
@@ -134,33 +154,67 @@ void ExportImage::onDeveloped(bool developing)
             Exiv2::Image::AutoPtr exivImg = Exiv2::ImageFactory::open(m_imgPath.toStdString());
             exivImg->setMetadata( *exivRaw );
 
-            Exiv2::ExifData imgExif = exivImg->exifData();
+            Exiv2::ExifData &exifData = exivImg->exifData();
 
-            qDebug() << "ExportImage::onDeveloped() removing orientation...";
-            Exiv2::ExifKey orientationKey = Exiv2::ExifKey("Exif.Image.Orientation");
-            Exiv2::ExifMetadata::iterator pos = imgExif.findKey(orientationKey);
-            if( pos != imgExif.end() )
-                imgExif.erase(pos);
+            qDebug() << "ExportImage::onDeveloped() fixing orientation...";
+            changeExistingExifKey( exifData, "Exif.Image.Orientation", "1" ); /* 1 = Normal orientation */
 
-            qDebug() << "ExportImage::onDeveloped() removing thumbnail...";
-            Exiv2::ExifThumb thumb( imgExif );
+            qDebug() << "ExportImage::onDeveloped() removing thumbnail data...";
+
+            // Remove thumbnail keys
+            Exiv2::ExifThumb thumb( exifData );
             thumb.erase();
+            removeExifKey(exifData,"Exif.Thumbnail.Compression");
+            removeExifKey(exifData,"Exif.Thumbnail.XResolution");
+            removeExifKey(exifData,"Exif.Thumbnail.YResolution");
+            removeExifKey(exifData,"Exif.Thumbnail.ResolutionUnit");
+            removeExifKey(exifData,"Exif.Thumbnail.JPEGInterchangeFormat");
+            removeExifKey(exifData,"Exif.Thumbnail.JPEGInterchangeFormatLength");
+            removeExifKey(exifData,"Exif.Nikon3.Preview");
+            removeExifKey(exifData,"Exif.NikonPreview.JPEGInterchangeFormat");
+            removeExifKey(exifData,"Exif.Pentax.PreviewResolution");
+            removeExifKey(exifData,"Exif.Pentax.PreviewLength");
+            removeExifKey(exifData,"Exif.Pentax.PreviewOffset");
+            removeExifKey(exifData,"Exif.Minolta.Thumbnail");
+            removeExifKey(exifData,"Exif.Minolta.ThumbnailOffset");
+            removeExifKey(exifData,"Exif.Minolta.ThumbnailLength");
+            removeExifKey(exifData,"Exif.Olympus.Thumbnail");
+            removeExifKey(exifData,"Exif.Olympus.ThumbnailOffset");
+            removeExifKey(exifData,"Exif.Olympus.ThumbnailLength");
 
-            // Remove thumbnail
-            Exiv2::ExifData::iterator it;
-            if((it = imgExif.findKey(Exiv2::ExifKey("Exif.Thumbnail.Compression"))) != imgExif.end())
-               imgExif.erase(it);
-            if((it = imgExif.findKey(Exiv2::ExifKey("Exif.Thumbnail.XResolution"))) != imgExif.end())
-               imgExif.erase(it);
-            if((it = imgExif.findKey(Exiv2::ExifKey("Exif.Thumbnail.YResolution"))) != imgExif.end())
-               imgExif.erase(it);
-            if((it = imgExif.findKey(Exiv2::ExifKey("Exif.Thumbnail.ResolutionUnit"))) != imgExif.end())
-               imgExif.erase(it);
-            if((it = imgExif.findKey(Exiv2::ExifKey("Exif.Thumbnail.JPEGInterchangeFormat"))) != imgExif.end())
-               imgExif.erase(it);
-            if((it = imgExif.findKey(Exiv2::ExifKey("Exif.Thumbnail.JPEGInterchangeFormatLength"))) != imgExif.end())
-               imgExif.erase(it);
+            qDebug() << "ExportImage::onDeveloped() removing irrelevant keys...";
 
+            // Delete original TIFF data, which is irrelevant
+            removeExifKey(exifData,"Exif.Image.ImageWidth");
+            removeExifKey(exifData,"Exif.Image.ImageLength");
+            removeExifKey(exifData,"Exif.Image.BitsPerSample");
+            removeExifKey(exifData,"Exif.Image.Compression");
+            removeExifKey(exifData,"Exif.Image.PhotometricInterpretation");
+            removeExifKey(exifData,"Exif.Image.FillOrder");
+            removeExifKey(exifData,"Exif.Image.SamplesPerPixel");
+            removeExifKey(exifData,"Exif.Image.StripOffsets");
+            removeExifKey(exifData,"Exif.Image.RowsPerStrip");
+            removeExifKey(exifData,"Exif.Image.StripByteCounts");
+            removeExifKey(exifData,"Exif.Image.XResolution");
+            removeExifKey(exifData,"Exif.Image.YResolution");
+            removeExifKey(exifData,"Exif.Image.PlanarConfiguration");
+            removeExifKey(exifData,"Exif.Image.ResolutionUnit");
+            removeExifKey(exifData,"Exif.Photo.PixelXDimension");
+            removeExifKey(exifData,"Exif.Photo.PixelYDimension");
+
+            // Delete various MakerNote fields only applicable to the raw file
+            removeExifKey(exifData,"Exif.Image.DNGVersion");
+            removeExifKey(exifData,"Exif.Image.DNGPrivateData");
+
+            qDebug() << "ExportImage::onDeveloped() applying processing software...";
+
+            // Add tool name as processing software
+            exifData["Exif.Image.ProcessingSoftware"] = "rawstack";
+
+            qDebug() << "ExportImage::onDeveloped() saving metadata...";
+
+            // Save changes to EXIF data
+            exifData.sortByKey();
             exivImg->writeMetadata();
         }
     }

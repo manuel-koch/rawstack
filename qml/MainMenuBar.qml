@@ -11,13 +11,13 @@ MenuBar {
         title: qsTr("&File")
 
         MenuItem {
-            text:        qsTr("&Open")
+            text:        qsTr("Open")
             shortcut:    "Ctrl+O"
             onTriggered: openImage()
         }
 
         MenuItem {
-            text:        qsTr("&Quit")
+            text:        qsTr("Quit")
             shortcut:    "Ctrl+Q"
             onTriggered: Qt.quit();
         }
@@ -28,11 +28,13 @@ MenuBar {
 
         MenuItem {
             text:        qsTr("Development")
+            shortcut:    "Ctrl+1"
             onTriggered: showDevelop()
         }
 
         MenuItem {
             text:        qsTr("Export")
+            shortcut:    "Ctrl+2"
             onTriggered: showExport()
         }
     }

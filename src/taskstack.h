@@ -45,6 +45,7 @@ public:
     QString raw() const;
     bool    dirty() const { return m_dirty; }
     Magick::Image gmimage();
+    void releaseImages();
 
 public slots:
 

@@ -115,6 +115,14 @@ Magick::Image TaskStack::gmimage()
         return Magick::Image();
 }
 
+void TaskStack::releaseImages()
+{
+    foreach( TaskBase *task, m_tasks )
+    {
+        task->worker()->releaseImages();
+    }
+}
+
 void TaskStack::develop()
 {
     qDebug() << "TaskStack::develop()" << (m_preview ? "LQ" : "HQ");

@@ -34,6 +34,7 @@ public:
 
     virtual const Magick::Image gmimage() { return m_img; }
     virtual const Magick::Image gmpreview() { return m_preview; }
+    virtual void releaseImages();
     static QImage convert(Magick::Image image);
 
     CommonConfig *common() { return m_common; }

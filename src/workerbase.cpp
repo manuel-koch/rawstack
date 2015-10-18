@@ -43,6 +43,12 @@ void WorkerBase::setCache(ImageCacheBase *cache)
     m_cache = cache;
 }
 
+void WorkerBase::releaseImages()
+{
+    m_img     = Magick::Image();
+    m_preview = Magick::Image();
+}
+
 void WorkerBase::onCfgHashChanged()
 {
     QByteArray hash = m_config->hash();

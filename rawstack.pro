@@ -66,7 +66,9 @@ SOURCES += \
     src/imagecache.cpp \
     src/loghandler.cpp \
     src/commonconfig.cpp \
-    src/exportimage.cpp
+    src/exportimage.cpp \
+    src/exportsetting.cpp \
+    src/exportqueue.cpp
 
 RESOURCES += qml.qrc
 
@@ -115,4 +117,6 @@ HEADERS += \
     src/imagecachebase.h \
     src/loghandler.h \
     src/commonconfig.h \
-    src/exportimage.h
+    src/exportimage.h \
+    src/exportsetting.h \
+    src/exportqueue.h

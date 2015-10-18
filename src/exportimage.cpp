@@ -1,4 +1,5 @@
 #include "exportimage.h"
+#include "exportsetting.h"
 #include "taskstack.h"
 
 #include <exiv2/exiv2.hpp>
@@ -7,25 +8,26 @@
 #include <QDir>
 #include <QFileInfo>
 
-ExportImage::ExportImage(QObject *parent)
+ExportImage::ExportImage(QThread *workerThread, ExportSetting *setting, QObject *parent)
     : QObject(parent)
-    , m_imgQuality(95)
-    , m_imgType(JPG)
+    , m_stack(NULL)
+    , m_setting(NULL)
+    , m_exporting(false)
 {
+    m_setting = setting;
+    m_setting->setParent(this);
+    qDebug() << "ExportImage::ExportImage()" << m_setting->config();
+
     m_stack = new TaskStack(false,this);
     connect(m_stack, SIGNAL(progressChanged(double)), this, SIGNAL(progressChanged(double)) );
-    connect(m_stack, SIGNAL(configChanged(QString)), this, SIGNAL(configChanged(QString)) );
     connect(m_stack, SIGNAL(developingChanged(bool)), this, SLOT(onDeveloped(bool)) );
+    m_stack->setWorkerThread( workerThread );
+    m_stack->loadFromFile( QUrl::fromLocalFile(m_setting->config()) );
 }
 
 ExportImage::~ExportImage()
 {
     // EMPTY
-}
-
-QString ExportImage::config() const
-{
-    return m_stack->config();
 }
 
 double ExportImage::progress() const
@@ -38,40 +40,13 @@ void ExportImage::exportImage()
     m_stack->develop();
 }
 
-void ExportImage::setConfig(QString config)
+void ExportImage::setExporting(bool exporting)
 {
-    return m_stack->loadFromFile( QUrl::fromLocalFile(config) );
-}
-
-void ExportImage::setImgQuality(int imgQuality)
-{
-    imgQuality = std::min( 100, std::max( 1, imgQuality) );
-    if( m_imgQuality == imgQuality )
+    if( m_exporting == exporting )
         return;
-
-    m_imgQuality = imgQuality;
-    qDebug() << "ExportImage::setImgQuality()" << m_imgQuality;
-    emit imgQualityChanged(m_imgQuality);
-}
-
-void ExportImage::setImgType(ExportImage::ImageType imgType)
-{
-    if( m_imgType == imgType )
-        return;
-
-    m_imgType = imgType;
-    qDebug() << "ExportImage::setImgType()" << m_imgType;
-    emit imgTypeChanged(m_imgType);
-}
-
-void ExportImage::setImgPath(QString imgPath)
-{
-    if( m_imgPath == imgPath )
-        return;
-
-    m_imgPath = imgPath;
-    qDebug() << "ExportImage::setImgPath()" << m_imgPath;
-    emit imgPathChanged(m_imgPath);
+    m_exporting = exporting;
+    qDebug() << "ExportImage::setExporting()" << m_exporting;
+    emit exportingChanged(m_exporting);
 }
 
 void removeExifKey( Exiv2::ExifData &exifData, const std::string &name )
@@ -94,9 +69,12 @@ void changeExistingExifKey( Exiv2::ExifData &exifData, const std::string &name, 
 void ExportImage::onDeveloped(bool developing)
 {
     if( developing )
+    {
+        setExporting(true);
         return;
+    }
 
-    qDebug() << "ExportImage::onDeveloped()" << config();
+    qDebug() << "ExportImage::onDeveloped()" << m_setting->config();
 
     Magick::Image img = m_stack->gmimage();
     if( !img.isValid() )
@@ -107,41 +85,35 @@ void ExportImage::onDeveloped(bool developing)
              << "width:"  << img.size().width()
              << "height:" << img.size().height();
 
-    QFileInfo path( m_imgPath );
-    QString ext;
-    switch( m_imgType )
+    switch( m_setting->imgType() )
     {
-        case TIF:
+        case ExportSetting::TIF:
         {
             qDebug() << "ExportImage::onDeveloped() tif";
-            ext = ".tif";
             img.magick( "TIF" );
             img.compressType( Magick::ZipCompression );
-            img.quality( m_imgQuality );
+            img.quality( m_setting->imgQuality() );
             break;
         }
-        case PNG:
+        case ExportSetting::PNG:
         {
             qDebug() << "ExportImage::onDeveloped() png";
-            ext = ".png";
             img.magick( "PNG" );
-            img.quality( m_imgQuality );
+            img.quality( m_setting->imgQuality() );
             break;
         }
-        case JPG:
+        case ExportSetting::JPG:
         default:
         {
             qDebug() << "ExportImage::onDeveloped() jpg";
-            ext = ".jpg";
             img.magick( "JPG" );
-            img.quality( m_imgQuality );
+            img.quality( m_setting->imgQuality() );
             break;
         }
     }
 
-    setImgPath( QFileInfo( path.dir(), path.completeBaseName() + ext ).absoluteFilePath() );
-    qDebug() << "ExportImage::onDeveloped() write" << m_imgPath;
-    img.write( m_imgPath.toStdString() );
+    qDebug() << "ExportImage::onDeveloped() write" << m_setting->imgPath();
+    img.write( m_setting->imgPath().toStdString() );
 
     qDebug() << "ExportImage::onDeveloped() applying EXIF...";
     QString raw = m_stack->raw();
@@ -151,7 +123,7 @@ void ExportImage::onDeveloped(bool developing)
         qDebug() << "ExportImage::onDeveloped() raw metadata is" << (exivRaw->good()?"good":"invalid");
         if( exivRaw->good() )
         {
-            Exiv2::Image::AutoPtr exivImg = Exiv2::ImageFactory::open(m_imgPath.toStdString());
+            Exiv2::Image::AutoPtr exivImg = Exiv2::ImageFactory::open(m_setting->imgPath().toStdString());
             exivImg->setMetadata( *exivRaw );
 
             Exiv2::ExifData &exifData = exivImg->exifData();
@@ -224,4 +196,12 @@ void ExportImage::onDeveloped(bool developing)
     }
 
     qDebug() << "ExportImage::onDeveloped() Done";
+    m_stack->releaseImages();
+    setExporting(false);
+    emit exported();
+}
+
+void ExportImage::onConfigChanged(QString config)
+{
+    m_stack->loadFromFile( QUrl::fromLocalFile(config) );
 }

@@ -4,64 +4,46 @@
 #include <QObject>
 
 class TaskStack;
+class ExportSetting;
 
 class ExportImage : public QObject
 {
     Q_OBJECT
-    Q_PROPERTY(QString   config     READ config     WRITE setConfig       NOTIFY configChanged)
-    Q_PROPERTY(int       imgQuality READ imgQuality WRITE setImgQuality   NOTIFY imgQualityChanged)
-    Q_PROPERTY(ImageType imgType    READ imgType    WRITE setImgType      NOTIFY imgTypeChanged)
-    Q_PROPERTY(QString   imgPath    READ imgPath    WRITE setImgPath      NOTIFY imgPathChanged)
-    Q_PROPERTY(double    progress   READ progress                         NOTIFY progressChanged)
-    Q_ENUMS(ImageType)
+    Q_PROPERTY(ExportSetting* setting   READ setting   CONSTANT)
+    Q_PROPERTY(bool           exporting READ exporting NOTIFY exportingChanged)
+    Q_PROPERTY(double         progress  READ progress  NOTIFY progressChanged)
 
 public:
 
-    explicit ExportImage(QObject *parent = 0);
+    explicit ExportImage(QThread *workerThread, ExportSetting *setting, QObject *parent = 0);
     virtual ~ExportImage();
 
-    enum ImageType
-    {
-        JPG,
-        TIF,
-        PNG
-    };
-
-    QString   config() const;
-    double    progress() const;
-
-    int       imgQuality() const { return m_imgQuality; }
-    ImageType imgType() const { return m_imgType; }
-    QString   imgPath() const { return m_imgPath; }
+    ExportSetting* setting() const { return m_setting; }
+    bool           exporting() const { return m_exporting; }
+    double         progress() const;
 
 signals:
 
-    void configChanged(QString config);
+    void exportingChanged(bool exporting);
     void progressChanged(double progress);
-
-    void imgQualityChanged(int imgQuality);
-    void imgTypeChanged(ImageType imgType);
-    void imgPathChanged(QString imgPath);
+    void exported();
 
 public slots:
 
     void exportImage();
 
-    void setConfig(QString config);
-    void setImgQuality(int imgQuality);
-    void setImgType(ImageType imgType);
-    void setImgPath(QString imgPath);
-
 private slots:
 
+    void setExporting(bool exporting);
+
     void onDeveloped(bool developing);
+    void onConfigChanged(QString config);
 
 private:
 
-    TaskStack *m_stack;
-    int        m_imgQuality;  // quality of exported image, i.e. JPG quality/compression
-    ImageType  m_imgType;     // type of exported image
-    QString    m_imgPath;     // output path of exported image
+    TaskStack     *m_stack;
+    ExportSetting *m_setting;
+    bool           m_exporting;
 };
 
 #endif // EXPORTIMAGE_H

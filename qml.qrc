@@ -21,5 +21,7 @@
         <file>qml/Development/Tasks/RotateController.qml</file>
         <file>qml/Development/Tasks/RotateTask.qml</file>
         <file>qml/Development/RotateOverlay.qml</file>
+        <file>qml/Export/Main.qml</file>
+        <file>qml/Export/ExportQueue.qml</file>
     </qresource>
 </RCC>

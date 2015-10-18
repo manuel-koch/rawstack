@@ -163,8 +163,6 @@ void UfrawWorker::developImpl(bool preview, WorkerBase *predecessor)
     for( int i=0; i<nof; i++ )
     {
         rawImages << ufraw[i].output();
-        // FIXME: remove saving exposed images
-        imgs[i].write( QString("/Users/manuel/tmp/test_%1_%2.tif").arg(cfg->name()).arg(i).toStdString() );
     }
 
     if( nof > 1 )

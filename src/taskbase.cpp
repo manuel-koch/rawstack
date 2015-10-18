@@ -15,7 +15,8 @@ TaskBase::TaskBase(QObject *parent)
 
 TaskBase::~TaskBase()
 {
-    // EMPTY
+    qDebug() << "TaskBase::~TaskBase()" << this;
+    delete m_worker;
 }
 
 void TaskBase::setConfig(ConfigBase *config)

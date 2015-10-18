@@ -24,7 +24,7 @@ WorkerBase::WorkerBase()
 
 WorkerBase::~WorkerBase()
 {
-    // EMPTY
+    qDebug() << "WorkerBase::~WorkerBase()" << this;
 }
 
 void WorkerBase::setConfig(ConfigBase *config)

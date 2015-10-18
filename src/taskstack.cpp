@@ -15,6 +15,7 @@
 
 TaskStack::TaskStack(bool preview, QObject *parent)
     : QAbstractListModel(parent)
+    , m_workerThread(NULL)
     , m_commonTasks(NULL)
     , m_commonConfig(NULL)
     , m_developing(false)
@@ -224,7 +225,7 @@ bool TaskStack::loadTasks(const QFileInfo &file)
         if( cfg->name() == "common" )
             setCommonConfig( reinterpret_cast<CommonConfig*>(cfg) );
         else
-            addTask( TaskFactory::getInstance()->create(cfg) );
+            addTask( TaskFactory::getInstance()->create(cfg,m_workerThread) );
     });
     bool loaded = loader.load(file.absoluteFilePath());
     if( !loaded )
@@ -258,8 +259,13 @@ void TaskStack::applyDefaultTasks(const QFileInfo &file)
 
     setCommonConfig( new CommonConfig() );
     m_commonConfig->setRaw( file.absoluteFilePath() );
-    addTask( TaskFactory::getInstance()->create( TaskFactory::getInstance()->create("ufraw") ) );
-    addTask( TaskFactory::getInstance()->create( TaskFactory::getInstance()->create("rotate") ) );
+
+    QStringList tasks;
+    tasks << "ufraw" << "rotate";
+    foreach( QString task, tasks )
+    {
+        addTask( TaskFactory::getInstance()->create( TaskFactory::getInstance()->create(task), m_workerThread ) );
+    }
 }
 
 bool TaskStack::anyTaskDirty()
@@ -376,6 +382,10 @@ void TaskStack::onTaskFinished()
             return;
         }
     }
+
+    int releaseIdx = idx-1;
+    if( !m_preview && releaseIdx >= 0 )
+        m_tasks[releaseIdx]->worker()->releaseImages();
 
     double p = (double)(idx+1) / m_tasks.size();
     setProgress( p );

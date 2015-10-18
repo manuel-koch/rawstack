@@ -14,14 +14,15 @@ TaskFactory::TaskFactory(QObject *parent)
     : QObject(parent)
 {
     m_imgCache = new ImageCache(this);
-    m_thread = new QThread(this);
-    m_thread->start();
+    m_workerThread = new QThread(this);
+    m_workerThread->setObjectName("TaskFactory-WorkerThread");
+    m_workerThread->start();
 }
 
 TaskFactory::~TaskFactory()
 {
-    m_thread->quit();
-    m_thread->wait();
+    m_workerThread->quit();
+    m_workerThread->wait();
     while( !m_taskBuilder.empty() )
     {
         delete m_taskBuilder.first();
@@ -75,7 +76,7 @@ ConfigBase *TaskFactory::create(QString config)
     return cfg;
 }
 
-TaskBase *TaskFactory::create(ConfigBase *config)
+TaskBase *TaskFactory::create(ConfigBase *config, QThread *workerThread)
 {
     auto it = m_taskBuilder.find(config->name());
     if( it == m_taskBuilder.end() )
@@ -84,11 +85,13 @@ TaskBase *TaskFactory::create(ConfigBase *config)
         return NULL;
     }
 
+    if( !workerThread )
+        workerThread = m_workerThread;
+
     TaskBuilderBase *builder = (*it);
-    TaskBase *task = builder->create(this,m_thread);
+    TaskBase *task = builder->create( this, workerThread );
     qDebug() << "TaskFactory::create()" << task;
     task->setConfig( config );
     task->worker()->setCache( m_imgCache );
     return task;
 }
-

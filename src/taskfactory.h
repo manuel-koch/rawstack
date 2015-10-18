@@ -24,23 +24,24 @@ public:
 
 public slots:
 
-    /// Add an instance that can create a task instance, factory takes ownership of builder
+    /// Add an instance that can create a task instance, factory takes ownership of builder.
     bool add(TaskBuilderBase *builder);
 
-    /// Add an instance that can create a config instance, factory takes ownership of builder
+    /// Add an instance that can create a config instance, factory takes ownership of builder.
     bool add(ConfigBuilderBase *builder);
 
-    /// Create config by name
+    /// Create config by name, caller takes owership of configuration.
     ConfigBase *create(QString name);
 
-    /// Create task for given config
-    TaskBase *create(ConfigBase *config);
+    /// Create task for given config, worker of task will be hosted in given task or default task.
+    /// Caller takes ownership of task.
+    TaskBase *create(ConfigBase *config, QThread *workerThread = NULL);
 
 private:
 
     static TaskFactory *ms_instance;
 
-    QThread                         *m_thread;        /// worker thread for tasks
+    QThread                         *m_workerThread;  /// default worker thread for tasks
     QMap<QString,TaskBuilderBase*>   m_taskBuilder;   /// map of registered task builders
     QMap<QString,ConfigBuilderBase*> m_configBuilder; /// map of registered config builders
     ImageCacheBase                  *m_imgCache;      /// caching generated images of workers

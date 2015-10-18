@@ -36,6 +36,8 @@ public:
     explicit TaskStack( bool preview, QObject *parent = NULL );
     virtual ~TaskStack();
 
+    void    setWorkerThread( QThread *workerThread ) { m_workerThread = workerThread; }
+
     void    addTask(TaskBase *task, int idx = -1 );
     void    removeTask(int idx);
     bool    preview() const { return m_preview; }
@@ -107,14 +109,15 @@ private:
 private:
 
     RoleMap           m_rolemap;
-    QList<TaskBase*>  m_tasks;
-    CommonTasks      *m_commonTasks;
-    CommonConfig     *m_commonConfig;
-    bool              m_developing;
-    bool              m_dirty;
-    double            m_progress;
-    QString           m_config;
-    bool              m_preview; // whether developing is using preview quality
+    QThread          *m_workerThread;   // hosting task worker in given thread
+    QList<TaskBase*>  m_tasks;          // list of all tasks in stack
+    CommonTasks      *m_commonTasks;    // helper to access named common tasks
+    CommonConfig     *m_commonConfig;   // common configuration usable by all tasks
+    bool              m_developing;     // whether stack is currently developing
+    bool              m_dirty;          // whether stack is currently dirty, i.e. needs to develop
+    double            m_progress;       // current develop progress of stack ( 0...1 )
+    QString           m_config;         // tasks configured by given configuration file path
+    bool              m_preview;        // whether developing is using preview quality
 };
 
 #endif // TASKSTACK_H

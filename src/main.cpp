@@ -8,6 +8,9 @@
 #include "imagefactoryregistry.h"
 #include "imageprovider.h"
 #include "loghandler.h"
+#include "exportqueue.h"
+#include "exportimage.h"
+#include "exportsetting.h"
 
 #include "configbase.h"
 #include "ufrawconfig.h"
@@ -34,6 +37,9 @@ void register_types()
     qRegisterMetaType<ImageFactoryBase*>("ImageFactoryBase");
     qRegisterMetaType<HistFactory*>("HistFactory");
     qmlRegisterType<TaskBase>("com.rawstack.types", 1, 0, "TaskBase");
+    qRegisterMetaType<ExportSetting*>("ExportSetting");
+    qRegisterMetaType<ExportImage*>("ExportImage");
+    qRegisterMetaType<ExportQueue*>("ExportQueue");
 }
 
 int main(int argc, char *argv[])
@@ -69,6 +75,8 @@ int main(int argc, char *argv[])
     QQmlImageProviderBase *imageProvider     = static_cast<QQmlImageProviderBase*>( new ImageProvider() );
     QString                imageProviderName = ImageProvider::name;
 
+    ExportQueue exportQueue;
+
     TaskStack taskStack(true);
     if( argc > 1 )
         taskStack.loadFromFile( QUrl::fromLocalFile(argv[1]) );
@@ -79,6 +87,7 @@ int main(int argc, char *argv[])
 
     QQmlContext *rootContext = engine.rootContext();
     rootContext->setContextProperty( "globalDevTaskStack", &taskStack );
+    rootContext->setContextProperty( "globalExportQueue",  &exportQueue );
 
     engine.load(QUrl(QStringLiteral("qrc:/qml/Main.qml")));
 

@@ -64,13 +64,13 @@ void EnfuseProcess::onConsole()
     m_console.append( d );
 
     int nofLoaded     = getNofLoaded();
-    int nofTotalLevel = getTotalLevels();
+    int nofTotalLevel = 16;
     int nofLevel      = getNofLevels();
 
     double loaded = (double)nofLoaded / m_inputs.size();
     double levels = 0;
     if( nofTotalLevel )
-        levels = nofLevel / nofTotalLevel / 2;
+        levels = (double)nofLevel / nofTotalLevel;
 
     emit progress( (loaded + levels) / 2 );
 }

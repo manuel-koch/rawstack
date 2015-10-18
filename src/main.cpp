@@ -76,7 +76,6 @@ int main(int argc, char *argv[])
     QString                imageProviderName = ImageProvider::name;
 
     ExportQueue exportQueue;
-
     TaskStack taskStack(true);
     if( argc > 1 )
         taskStack.loadFromFile( QUrl::fromLocalFile(argv[1]) );

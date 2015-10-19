@@ -4,6 +4,7 @@
 #include <Magick++.h>
 
 #include <QObject>
+#include <QMutex>
 #include <QImage>
 
 class ConfigBase;
@@ -75,12 +76,13 @@ protected:
 
 private:
 
-    double        m_progress;
-    int           m_cycle;
-    bool          m_dirty;
-    ConfigBase   *m_config;
-    QByteArray    m_doneConfigHash;
-    QByteArray    m_doneImgHash;
+    QMutex         m_mutex;
+    double         m_progress;
+    int            m_cycle;
+    bool           m_dirty;
+    ConfigBase    *m_config;
+    QByteArray     m_doneConfigHash;
+    QByteArray     m_doneImgHash;
 };
 
 #endif // WORKERBASE_H

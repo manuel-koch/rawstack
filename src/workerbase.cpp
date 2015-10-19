@@ -3,6 +3,7 @@
 #include "imagecachebase.h"
 
 #include <QDebug>
+#include <QMutexLocker>
 
 QImage WorkerBase::convert(Magick::Image image)
 {
@@ -15,6 +16,7 @@ WorkerBase::WorkerBase()
     : QObject(NULL)
     , m_common(NULL)
     , m_cache(NULL)
+    , m_mutex(QMutex::Recursive)
     , m_progress(0)
     , m_cycle(0)
     , m_config(NULL)
@@ -24,6 +26,7 @@ WorkerBase::WorkerBase()
 
 WorkerBase::~WorkerBase()
 {
+    QMutexLocker lock(&m_mutex);
     qDebug() << "WorkerBase::~WorkerBase()" << this;
 }
 
@@ -45,12 +48,16 @@ void WorkerBase::setCache(ImageCacheBase *cache)
 
 void WorkerBase::releaseImages()
 {
+    QMutexLocker lock(&m_mutex);
+
     m_img     = Magick::Image();
     m_preview = Magick::Image();
 }
 
 void WorkerBase::onCfgHashChanged()
 {
+    QMutexLocker lock(&m_mutex);
+
     QByteArray hash = m_config->hash();
     bool dirty = m_doneConfigHash != hash;
     qDebug() << "WorkerBase::onCfgHashChanged()" << this << (dirty?"dirty":"clean");
@@ -59,6 +66,8 @@ void WorkerBase::onCfgHashChanged()
 
 void WorkerBase::setProgress(double progress)
 {
+    QMutexLocker lock(&m_mutex);
+
     progress = std::min( progress, 1.0 );
     progress = std::max( progress, 0.0 );
     if (m_progress == progress)
@@ -70,6 +79,8 @@ void WorkerBase::setProgress(double progress)
 
 void WorkerBase::setDirty(bool dirty)
 {
+    QMutexLocker lock(&m_mutex);
+
     if( m_dirty == dirty )
         return;
     m_dirty = dirty;
@@ -79,6 +90,8 @@ void WorkerBase::setDirty(bool dirty)
 
 void WorkerBase::onDevelop(bool preview, WorkerBase *predecessor)
 {
+    QMutexLocker lock(&m_mutex);
+
     qDebug() << "WorkerBase::onDevelop()" << this << (preview ? "preview" : "HQ") << predecessor;
 
     emit started();
@@ -143,6 +156,8 @@ void WorkerBase::developImpl(bool preview, WorkerBase *predecessor)
 
 void WorkerBase::nextCycle()
 {
+    QMutexLocker lock(&m_mutex);
+
     m_cycle++;
     qDebug() << "WorkerBase::nextCycle()" << this << m_cycle;
     emit cycleChanged(m_cycle);

@@ -23,6 +23,9 @@ void ExportSetting::setConfig(QString config)
     m_config = config;
     qDebug() << "ExportSetting::setConfig()" << m_config;
     emit configChanged(config);
+
+    if( m_imgPath.isEmpty() )
+        setImgPath( m_config );
 }
 
 void ExportSetting::setImgPath(QString imgPath)

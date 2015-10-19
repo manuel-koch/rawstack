@@ -20,7 +20,7 @@ ExportImage::ExportImage(QThread *workerThread, ExportSetting *setting, QObject 
 
     m_stack = new TaskStack(false,this);
     connect(m_stack, SIGNAL(progressChanged(double)), this, SIGNAL(progressChanged(double)) );
-    connect(m_stack, SIGNAL(developingChanged(bool)), this, SLOT(onDeveloped(bool)) );
+    connect(m_stack, SIGNAL(developingChanged(bool)), this, SLOT(onDeveloping(bool)) );
     m_stack->setWorkerThread( workerThread );
     m_stack->loadFromFile( QUrl::fromLocalFile(m_setting->config()) );
 }
@@ -28,6 +28,11 @@ ExportImage::ExportImage(QThread *workerThread, ExportSetting *setting, QObject 
 ExportImage::~ExportImage()
 {
     // EMPTY
+}
+
+void ExportImage::onConfigChanged(QString config)
+{
+    m_stack->loadFromFile( QUrl::fromLocalFile(config) );
 }
 
 double ExportImage::progress() const
@@ -66,7 +71,7 @@ void changeExistingExifKey( Exiv2::ExifData &exifData, const std::string &name, 
        pos->setValue( val );
 }
 
-void ExportImage::onDeveloped(bool developing)
+void ExportImage::onDeveloping(bool developing)
 {
     if( developing )
     {
@@ -76,11 +81,29 @@ void ExportImage::onDeveloped(bool developing)
 
     qDebug() << "ExportImage::onDeveloped()" << m_setting->config();
 
+    if( saveImage() )
+        applyExif();
+
+    m_stack->releaseImages();
+    setExporting(false);
+    emit exported();
+
+    qDebug() << "ExportImage::onDeveloped() exported";
+}
+
+bool ExportImage::saveImage()
+{
+    if( m_setting->imgPath().isEmpty() )
+    {
+        qWarning() << "ExportImage::saveImage() empty output path";
+        return false;
+    }
+
     Magick::Image img = m_stack->gmimage();
     if( !img.isValid() )
-        return;
+        return false;
 
-    qDebug() << "ExportImage::onDeveloped()"
+    qDebug() << "ExportImage::saveImage()"
              << "result image:" << img.format().c_str()
              << "width:"  << img.size().width()
              << "height:" << img.size().height();
@@ -89,7 +112,7 @@ void ExportImage::onDeveloped(bool developing)
     {
         case ExportSetting::TIF:
         {
-            qDebug() << "ExportImage::onDeveloped() tif";
+            qDebug() << "ExportImage::saveImage() tif";
             img.magick( "TIF" );
             img.compressType( Magick::ZipCompression );
             img.quality( m_setting->imgQuality() );
@@ -97,7 +120,7 @@ void ExportImage::onDeveloped(bool developing)
         }
         case ExportSetting::PNG:
         {
-            qDebug() << "ExportImage::onDeveloped() png";
+            qDebug() << "ExportImage::saveImage() png";
             img.magick( "PNG" );
             img.quality( m_setting->imgQuality() );
             break;
@@ -105,22 +128,46 @@ void ExportImage::onDeveloped(bool developing)
         case ExportSetting::JPG:
         default:
         {
-            qDebug() << "ExportImage::onDeveloped() jpg";
+            qDebug() << "ExportImage::saveImage() jpg";
             img.magick( "JPG" );
             img.quality( m_setting->imgQuality() );
             break;
         }
     }
 
-    qDebug() << "ExportImage::onDeveloped() write" << m_setting->imgPath();
-    img.write( m_setting->imgPath().toStdString() );
+    QFileInfo output(m_setting->imgPath());
+    QDir      outDir(output.dir());
+    if( !outDir.exists() )
+    {
+        if( !outDir.mkpath(".") )
+        {
+            qWarning() << "ExportImage::saveImage() failed to create output directory" << outDir.canonicalPath();
+            return false;
+        }
+    }
 
-    qDebug() << "ExportImage::onDeveloped() applying EXIF...";
+    qDebug() << "ExportImage::saveImage() write" << output.absoluteFilePath();
+    try
+    {
+        img.write( m_setting->imgPath().toStdString() );
+    }
+    catch( Magick::ErrorFileOpen &e )
+    {
+        qWarning() << "ExportImage::saveImage() write failed:" << e.what();
+        return false;
+    }
+
+    return true;
+}
+
+void ExportImage::applyExif()
+{
+    qDebug() << "ExportImage::applyExif() applying EXIF...";
     QString raw = m_stack->raw();
     try {
         Exiv2::Image::AutoPtr exivRaw = Exiv2::ImageFactory::open(raw.toStdString());
         exivRaw->readMetadata();
-        qDebug() << "ExportImage::onDeveloped() raw metadata is" << (exivRaw->good()?"good":"invalid");
+        qDebug() << "ExportImage::applyExif() raw metadata is" << (exivRaw->good()?"good":"invalid");
         if( exivRaw->good() )
         {
             Exiv2::Image::AutoPtr exivImg = Exiv2::ImageFactory::open(m_setting->imgPath().toStdString());
@@ -128,10 +175,10 @@ void ExportImage::onDeveloped(bool developing)
 
             Exiv2::ExifData &exifData = exivImg->exifData();
 
-            qDebug() << "ExportImage::onDeveloped() fixing orientation...";
+            qDebug() << "ExportImage::applyExif() fixing orientation...";
             changeExistingExifKey( exifData, "Exif.Image.Orientation", "1" ); /* 1 = Normal orientation */
 
-            qDebug() << "ExportImage::onDeveloped() removing thumbnail data...";
+            qDebug() << "ExportImage::applyExif() removing thumbnail data...";
 
             // Remove thumbnail keys
             Exiv2::ExifThumb thumb( exifData );
@@ -154,7 +201,7 @@ void ExportImage::onDeveloped(bool developing)
             removeExifKey(exifData,"Exif.Olympus.ThumbnailOffset");
             removeExifKey(exifData,"Exif.Olympus.ThumbnailLength");
 
-            qDebug() << "ExportImage::onDeveloped() removing irrelevant keys...";
+            qDebug() << "ExportImage::applyExif() removing irrelevant keys...";
 
             // Delete original TIFF data, which is irrelevant
             removeExifKey(exifData,"Exif.Image.ImageWidth");
@@ -178,12 +225,12 @@ void ExportImage::onDeveloped(bool developing)
             removeExifKey(exifData,"Exif.Image.DNGVersion");
             removeExifKey(exifData,"Exif.Image.DNGPrivateData");
 
-            qDebug() << "ExportImage::onDeveloped() applying processing software...";
+            qDebug() << "ExportImage::applyExif() applying processing software...";
 
             // Add tool name as processing software
             exifData["Exif.Image.ProcessingSoftware"] = "rawstack";
 
-            qDebug() << "ExportImage::onDeveloped() saving metadata...";
+            qDebug() << "ExportImage::applyExif() saving metadata...";
 
             // Save changes to EXIF data
             exifData.sortByKey();
@@ -192,16 +239,6 @@ void ExportImage::onDeveloped(bool developing)
     }
     catch( Exiv2::Error& e )
     {
-        qWarning() << "ExportImage::onDeveloped() exif failed:" << e.what();
+        qWarning() << "ExportImage::applyExif() exif failed:" << e.what();
     }
-
-    qDebug() << "ExportImage::onDeveloped() Done";
-    m_stack->releaseImages();
-    setExporting(false);
-    emit exported();
-}
-
-void ExportImage::onConfigChanged(QString config)
-{
-    m_stack->loadFromFile( QUrl::fromLocalFile(config) );
 }

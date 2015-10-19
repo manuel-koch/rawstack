@@ -36,8 +36,11 @@ private slots:
 
     void setExporting(bool exporting);
 
-    void onDeveloped(bool developing);
+    void onDeveloping(bool developing);
     void onConfigChanged(QString config);
+
+    bool saveImage();
+    void applyExif();
 
 private:
 

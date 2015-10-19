@@ -19,9 +19,7 @@ public:
 
     enum Roles
     {
-        ImageRole = Qt::UserRole+1,
-        ConfigRole,
-        ProgressRole
+        ExportRole = Qt::UserRole+1,
     };
 
     explicit ExportQueue( QObject *parent = NULL );

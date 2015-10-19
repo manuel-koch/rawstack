@@ -10,9 +10,7 @@ ExportQueue::ExportQueue(QObject *parent)
     , m_progress(0)
 {
     m_rolemap = QAbstractListModel::roleNames();
-    m_rolemap[ImageRole]    = "image";
-    m_rolemap[ConfigRole]   = "config";
-    m_rolemap[ProgressRole] = "progress";
+    m_rolemap[ExportRole] = "export";
 
     m_workerThread.setObjectName("ExportQueue-WorkerThread");
     m_workerThread.start();
@@ -117,18 +115,13 @@ QVariant ExportQueue::data(const QModelIndex &index, int role) const
     qDebug() << "ExportQueue::data()" << index.row() << m_rolemap[role];
     switch( role )
     {
-        case ImageRole:
-        {
-            return QVariant::fromValue<QObject*>( m_exports[index.row()] );
-        }
         case Qt::DisplayRole:
-        case ConfigRole:
         {
             return m_exports[index.row()]->setting()->config();
         }
-        case ProgressRole:
+        case ExportRole:
         {
-            return m_exports[index.row()]->progress();
+            return QVariant::fromValue<QObject*>( m_exports[index.row()] );
         }
     }
     return QVariant();

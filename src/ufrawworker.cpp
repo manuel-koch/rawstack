@@ -134,8 +134,8 @@ void UfrawWorker::developImpl(bool preview, WorkerBase *predecessor)
         return;
     }
 
-    double progressPhaseA = 0.3;
-    double progressPhaseB = 0.6;
+    double progressPhaseA = 0.1;
+    double progressPhaseB = 0.5;
 
     int nof = cfg->fuse();
     std::vector<Magick::Image> imgs(nof);
@@ -143,12 +143,12 @@ void UfrawWorker::developImpl(bool preview, WorkerBase *predecessor)
     int firstIdx = -(nof-1)/2;
     for( int i=0; i<nof; i++ )
     {
-        setProgress( double(i)/nof*progressPhaseA );
+        setProgress( double(i) / nof * progressPhaseA );
         run( ufraw[i], preview, firstIdx+i, nof );
     }
     for( int i=0; i<nof; i++ )
     {
-        setProgress( progressPhaseA+double(i)/nof*progressPhaseB );
+        setProgress( progressPhaseA + double(i) / nof * progressPhaseB );
         ufraw[i].waitForFinished(-1);
         qDebug() << "UfrawWorker::developImpl()" << i << "finished with exitcode" << ufraw[i].exitCode() << ":" << ufraw[i].console();
         if( ufraw[i].exitCode() == 0 )

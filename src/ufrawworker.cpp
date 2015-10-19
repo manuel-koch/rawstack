@@ -98,9 +98,6 @@ void UfrawWorker::prepareImpl()
         return;
     }
 
-    if( !m_common->exif().isEmpty() )
-        return;
-
     UfrawProcess ufraw;
     ufraw.setProgram( "/opt/local/bin/ufraw-batch" );
     ufraw.setRaw( m_common->raw() );
@@ -118,10 +115,12 @@ void UfrawWorker::prepareImpl()
     }
     m_common->setExif( exif );
 
-    if( cfg->wbTemperature() == UfrawConfig::DefaultWbTemperature )
+    if( cfg->wbTemperature() == UfrawConfig::DefaultWbTemperature ||
+        cfg->wbGreen()       == UfrawConfig::DefaultWbGreen          )
+    {
         cfg->setWbTemperature( ufraw.wbTemperature() );
-    if( cfg->wbGreen() == UfrawConfig::DefaultWbGreen )
         cfg->setWbGreen( ufraw.wbGreen() );
+    }
 }
 
 void UfrawWorker::developImpl(bool preview, WorkerBase *predecessor)

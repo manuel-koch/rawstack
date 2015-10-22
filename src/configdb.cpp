@@ -23,7 +23,11 @@ ConfigDb::~ConfigDb()
 
 void ConfigDb::add(const QUrl &url)
 {
-    addFromPath( QFileInfo(url.toLocalFile()).canonicalFilePath() );
+    QFileInfo path(url.toLocalFile());
+    if( path.exists() )
+        addFromPath( path.absoluteFilePath() );
+    else
+        qWarning() << "ConfigDb::add() invalid:" << path.absoluteFilePath();
 }
 
 void ConfigDb::remove(int idx)

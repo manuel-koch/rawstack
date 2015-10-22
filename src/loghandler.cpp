@@ -43,8 +43,10 @@ void LogHandler::onLogImpl(QtMsgType type, const QMessageLogContext &context, co
     {
         QTextStream ts(&m_log);
         ts << txt << endl;
+        ts.flush();
     }
 
     fprintf(stderr, "%s\n",txt.toStdString().c_str());
+    fflush(stderr);
 }
 

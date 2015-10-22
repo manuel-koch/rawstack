@@ -48,6 +48,9 @@ void ImageCache::store(const std::string &key, Magick::Image img)
         m_cached.removeOne(k);
     }
 
+    if( !img.isValid() )
+        return;
+
     m_cached.append(k);
     img.write( path.filePath().toStdString() );
     m_sizeMb += path.size() / MByte;

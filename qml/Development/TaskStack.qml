@@ -8,7 +8,7 @@ Rectangle {
     color:  "#a0a0a0"
     radius: 4
 
-    property string   title:     "Development "+globalDevTaskStack.config
+    property string   title:     "Development " + (globalDevTaskStack.config ? globalDevTaskStack.config.config : "")
     property TaskBase activeTask
 
     onActiveTaskChanged: console.log("activeTask",activeTask)

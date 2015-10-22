@@ -1,31 +1,20 @@
 #include "exportsetting.h"
+#include "configdbentry.h"
 
 #include <QDebug>
 #include <QDir>
 #include <QFileInfo>
 
-ExportSetting::ExportSetting(QObject *parent)
+ExportSetting::ExportSetting(ConfigDbEntry *config, QObject *parent)
     : QObject(parent)
+    , m_config(config)
 {
-    // EMPTY
+    setImgPath( m_config->config() );
 }
 
 ExportSetting::~ExportSetting()
 {
     // EMPTY
-}
-
-void ExportSetting::setConfig(QString config)
-{
-    if( m_config == config )
-        return;
-
-    m_config = config;
-    qDebug() << "ExportSetting::setConfig()" << m_config;
-    emit configChanged(config);
-
-    if( m_imgPath.isEmpty() )
-        setImgPath( m_config );
 }
 
 void ExportSetting::setImgPath(QString imgPath)
@@ -85,12 +74,6 @@ QString ExportSetting::adjustedImgPath(QString path)
             break;
         }
     }
-
-    QString adjusted = QFileInfo( info.dir(), info.completeBaseName() + ext ).absoluteFilePath();
-
-    qDebug() << "ExportSetting::adjustedImgPath()" << path;
-    qDebug() << "ExportSetting::adjustedImgPath()" << adjusted;
-
-    return adjusted;
+    return QFileInfo( info.dir(), info.completeBaseName() + ext ).absoluteFilePath();
 }
 

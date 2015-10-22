@@ -7,6 +7,7 @@
 #include <QUrl>
 #include <QFileInfo>
 
+class ConfigDbEntry;
 class TaskBase;
 class CommonTasks;
 class CommonConfig;
@@ -14,12 +15,11 @@ class CommonConfig;
 class TaskStack : public QAbstractListModel
 {
     Q_OBJECT
-    Q_PROPERTY(bool         developing READ developing NOTIFY developingChanged)
-    Q_PROPERTY(double       progress   READ progress   NOTIFY progressChanged)
-    Q_PROPERTY(CommonTasks* tasks      READ tasks      CONSTANT)
-    Q_PROPERTY(QString      config     READ config     NOTIFY configChanged)
-    Q_PROPERTY(bool         dirty      READ dirty      NOTIFY dirtyChanged)
-    Q_PROPERTY(QString      raw        READ raw        NOTIFY rawChanged)
+    Q_PROPERTY(bool           developing READ developing NOTIFY developingChanged)
+    Q_PROPERTY(double         progress   READ progress   NOTIFY progressChanged)
+    Q_PROPERTY(CommonTasks*   tasks      READ tasks      CONSTANT)
+    Q_PROPERTY(ConfigDbEntry* config     READ config     NOTIFY configChanged)
+    Q_PROPERTY(bool           dirty      READ dirty      NOTIFY dirtyChanged)
 public:
 
     typedef QHash<int, QByteArray> RoleMap;
@@ -38,28 +38,23 @@ public:
 
     void    setWorkerThread( QThread *workerThread ) { m_workerThread = workerThread; }
 
-    void    addTask(TaskBase *task, int idx = -1 );
-    void    removeTask(int idx);
-    bool    preview() const { return m_preview; }
-    bool    developing() const { return m_developing; }
-    double  progress() const { return m_progress; }
-    QString config() const { return m_config; }
-    QString raw() const;
-    bool    dirty() const { return m_dirty; }
-    Magick::Image gmimage();
-    void releaseImages();
+    void           addTask(TaskBase *task, int idx = -1 );
+    void           removeTask(int idx);
+    bool           preview() const { return m_preview; }
+    bool           developing() const { return m_developing; }
+    double         progress() const { return m_progress; }
+    ConfigDbEntry *config() const { return m_config; }
+    bool           dirty() const { return m_dirty; }
+    Magick::Image  gmimage();
+    void           releaseImages();
 
 public slots:
 
     /// Start developing the image with stacked tasks
     Q_INVOKABLE void develop();
 
-    /// Save current stack config to select file
-    Q_INVOKABLE void saveToFile( QString path );
-
-    /// Load current stack config from select file.
-    /// Selected path can be a RAW image or a rawstack configuration.
-    Q_INVOKABLE void loadFromFile( QUrl url );
+    /// Load current stack config from selected configuration .
+    Q_INVOKABLE void loadConfig( ConfigDbEntry *config );
 
 public:
 
@@ -72,8 +67,7 @@ signals:
 
     void developingChanged(bool arg);
     void progressChanged(double progress);
-    void configChanged(QString config);
-    void rawChanged(QString raw);
+    void configChanged(ConfigDbEntry *config);
     void dirtyChanged(bool dirty);
 
 private slots:
@@ -82,23 +76,24 @@ private slots:
     void onTaskProgress(double progress);
     void onTaskFinished();
     void onTaskDirty(bool dirty);
+    void onConfigDestroyed();
+    void onRawChanged();
 
 private:
 
     void setDeveloping(bool developing);
     void setProgress(double progress);
-    void setConfig( QString config );
     void setDirty( bool dirty );
     CommonTasks *tasks() { return m_commonTasks; }
 
     /// Clear list of tasks for current raw image
     void clearTasks();
 
-    /// Load tasks from given raw image or saved task configuration
-    bool loadTasks( QFileInfo const &file );
+    /// Load tasks from current configuration
+    bool loadTasks();
 
-    /// Apply default tasks for given raw image
-    void applyDefaultTasks( QFileInfo const &file );
+    /// Apply default tasks for current raw image
+    void applyDefaultTasks();
 
     /// Returns true when one of the tasks is dirty
     bool anyTaskDirty();
@@ -116,7 +111,7 @@ private:
     bool              m_developing;     // whether stack is currently developing
     bool              m_dirty;          // whether stack is currently dirty, i.e. needs to develop
     double            m_progress;       // current develop progress of stack ( 0...1 )
-    QString           m_config;         // tasks configured by given configuration file path
+    ConfigDbEntry    *m_config;         // tasks configured by given configuration
     bool              m_preview;        // whether developing is using preview quality
 };
 

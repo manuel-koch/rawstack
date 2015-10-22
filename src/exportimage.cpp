@@ -1,5 +1,6 @@
 #include "exportimage.h"
 #include "exportsetting.h"
+#include "configdbentry.h"
 #include "taskstack.h"
 
 #include <exiv2/exiv2.hpp>
@@ -22,17 +23,12 @@ ExportImage::ExportImage(QThread *workerThread, ExportSetting *setting, QObject 
     connect(m_stack, SIGNAL(progressChanged(double)), this, SIGNAL(progressChanged(double)) );
     connect(m_stack, SIGNAL(developingChanged(bool)), this, SLOT(onDeveloping(bool)) );
     m_stack->setWorkerThread( workerThread );
-    m_stack->loadFromFile( QUrl::fromLocalFile(m_setting->config()) );
+    m_stack->loadConfig( m_setting->config() );
 }
 
 ExportImage::~ExportImage()
 {
     // EMPTY
-}
-
-void ExportImage::onConfigChanged(QString config)
-{
-    m_stack->loadFromFile( QUrl::fromLocalFile(config) );
 }
 
 double ExportImage::progress() const
@@ -163,7 +159,7 @@ bool ExportImage::saveImage()
 void ExportImage::applyExif()
 {
     qDebug() << "ExportImage::applyExif() applying EXIF...";
-    QString raw = m_stack->raw();
+    QString raw = m_setting->config()->raw();
     try {
         Exiv2::Image::AutoPtr exivRaw = Exiv2::ImageFactory::open(raw.toStdString());
         exivRaw->readMetadata();

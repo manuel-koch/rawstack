@@ -6,6 +6,8 @@
 #include "configfilesaver.h"
 #include "configfileloader.h"
 #include "taskfactory.h"
+#include "configdbentry.h"
+#include "fileinfotoolbox.h"
 
 #include <QDebug>
 #include <QFileInfo>
@@ -52,6 +54,7 @@ void TaskStack::addTask(TaskBase *task, int idx)
 
     beginInsertRows( QModelIndex(), idx, idx );
 
+    task->setCommonConfig( m_commonConfig );
     m_tasks.insert( idx, task );
     connect( task, SIGNAL(started()),               this, SLOT(onTaskStarted()) );
     connect( task, SIGNAL(progressChanged(double)), this, SLOT(onTaskProgress(double)) );
@@ -61,8 +64,6 @@ void TaskStack::addTask(TaskBase *task, int idx)
     m_commonTasks->setFinal( m_tasks.back() );
     if( task->config()->name() == "ufraw" )
         m_commonTasks->setUfraw(task);
-
-    task->setCommonConfig( m_commonConfig );
 
     setDirty( anyTaskDirty() );
 
@@ -103,11 +104,6 @@ void TaskStack::removeTask(int idx)
     qDebug() << "TaskStack::removeTask() nof tasks" << m_tasks.size();
 }
 
-QString TaskStack::raw() const
-{
-    return m_commonConfig ? m_commonConfig->raw() : "";
-}
-
 Magick::Image TaskStack::gmimage()
 {
     if( !m_dirty && m_tasks.size() )
@@ -131,53 +127,61 @@ void TaskStack::develop()
         m_tasks[0]->develop( m_preview );
 }
 
-void TaskStack::saveToFile(QString path)
+//void TaskStack::saveToFile(QString path)
+//{
+//    if( m_tasks.empty() )
+//        return;
+
+//    QFileInfo rawInfo( m_commonConfig->raw() );
+//    qDebug() << "TaskStack::saveToFile()" << rawInfo.absoluteFilePath();
+
+//    QFileInfo cfgInfo;
+//    if( path.isEmpty() )
+//    {
+//        cfgInfo = QFileInfo( rawInfo.dir(), rawInfo.completeBaseName() + ".rawstack" );
+//    }
+//    else
+//    {
+//        QFileInfo pathInfo(path);
+//        cfgInfo = QFileInfo( pathInfo.dir(), pathInfo.completeBaseName() + ".rawstack" );
+//    }
+
+//    setConfig( cfgInfo.absoluteFilePath() );
+//    qDebug() << "TaskStack::saveToFile()" << m_config;
+//    ConfigFileSaver fileSaver;
+//    fileSaver.add( m_commonConfig );
+//    std::for_each( m_tasks.begin(), m_tasks.end(), [&] (TaskBase *task) {
+//        fileSaver.add( task->config() );
+//    });
+//    fileSaver.save(m_config);
+//}
+
+void TaskStack::loadConfig(ConfigDbEntry *config)
 {
-    if( m_tasks.empty() )
+    if( m_config == config || (m_config && m_config->equals(config)) )
         return;
 
-    QFileInfo rawInfo( m_commonConfig->raw() );
-    qDebug() << "TaskStack::saveToFile()" << rawInfo.absoluteFilePath();
-
-    QFileInfo cfgInfo;
-    if( path.isEmpty() )
-    {
-        cfgInfo = QFileInfo( rawInfo.dir(), rawInfo.completeBaseName() + ".rawstack" );
-    }
-    else
-    {
-        QFileInfo pathInfo(path);
-        cfgInfo = QFileInfo( pathInfo.dir(), pathInfo.completeBaseName() + ".rawstack" );
-    }
-
-    setConfig( cfgInfo.absoluteFilePath() );
-    qDebug() << "TaskStack::saveToFile()" << m_config;
-    ConfigFileSaver fileSaver;
-    fileSaver.add( m_commonConfig );
-    std::for_each( m_tasks.begin(), m_tasks.end(), [&] (TaskBase *task) {
-        fileSaver.add( task->config() );
-    });
-    fileSaver.save(m_config);
-}
-
-void TaskStack::loadFromFile(QUrl url)
-{
-    qDebug() << "TaskStack::loadFromFile()" << url;
+    qDebug() << "TaskStack::loadFromFile()" << (config ? config->config() : "unload");
 
     clearTasks();
 
-    QFileInfo pathInfo(url.toLocalFile());
-    if( !pathInfo.exists() )
+    if( m_config )
     {
-        qDebug() << "TaskStack::loadFromFile() path not found:" << pathInfo.filePath();
-        return;
+        disconnect( m_config, SIGNAL(rawChanged(QString)), this, SLOT(onRawChanged()) );
+        disconnect( m_config, SIGNAL(destroyed(QObject*)), this, SLOT(onConfigDestroyed()) );
+    }
+    m_config = config;
+
+    if( m_config )
+    {
+        connect( m_config, SIGNAL(rawChanged(QString)), this, SLOT(onRawChanged()) );
+        connect( m_config, SIGNAL(destroyed(QObject*)), this, SLOT(onConfigDestroyed()) );
+        onRawChanged();
+        if( !loadTasks() )
+            applyDefaultTasks();
     }
 
-    QFileInfo cfgInfo( pathInfo.dir(), pathInfo.completeBaseName() + ".rawstack" );
-    if( !cfgInfo.exists() || !loadTasks(cfgInfo) )
-        applyDefaultTasks( pathInfo );
-
-    setConfig( cfgInfo.filePath() );
+    emit configChanged(m_config);
 }
 
 void TaskStack::setProgress(double progress)
@@ -187,15 +191,6 @@ void TaskStack::setProgress(double progress)
     m_progress = progress;
     qDebug() << "TaskStack::setProgress()" << m_progress;
     emit progressChanged(progress);
-}
-
-void TaskStack::setConfig(QString config)
-{
-    if( m_config == config )
-        return;
-    m_config = config;
-    qDebug() << "TaskStack::setConfig()" << m_config;
-    emit configChanged(m_config);
 }
 
 void TaskStack::setDirty(bool dirty)
@@ -214,10 +209,9 @@ void TaskStack::clearTasks()
     while( m_tasks.size() )
         removeTask( m_tasks.size()-1 );
     endResetModel();
-    setConfig("");
 }
 
-bool TaskStack::loadTasks(const QFileInfo &file)
+bool TaskStack::loadTasks()
 {
     ConfigFileLoader loader;
     connect( &loader, &ConfigFileLoader::config, [&] (ConfigBase *cfg) {
@@ -227,38 +221,38 @@ bool TaskStack::loadTasks(const QFileInfo &file)
         else
             addTask( TaskFactory::getInstance()->create(cfg,m_workerThread) );
     });
-    bool loaded = loader.load(file.absoluteFilePath());
+
+    bool loaded = loader.load(m_config->config());
     if( !loaded )
     {
-        qDebug() << "TaskStack::loadTasks() failed";
+        qDebug() << "TaskStack::loadTasks() failed to load" << m_config->config();
     }
 
     // Check that RAW image really exists,
     // fix RAW directory by current config directory if RAW can't be found.
-    QFileInfo raw(m_commonConfig->raw());
+    QFileInfo cfg(m_config->config());
+    QFileInfo raw(m_config->raw());
     if( !raw.exists() )
-        raw = QFileInfo(file.absoluteDir(),raw.fileName());
+        raw = QFileInfo(cfg.absoluteDir(),cfg.fileName());
     if( raw.exists() )
-        m_commonConfig->setRaw( raw.absoluteFilePath() );
+        m_config->setRaw( raw.absoluteFilePath() );
+    else
+        m_config->setRaw( "" );
     return raw.exists();
 }
 
-void TaskStack::applyDefaultTasks(const QFileInfo &file)
+void TaskStack::applyDefaultTasks()
 {
-    qDebug() << "TaskStack::applyDefaultTasks()" << file.absoluteFilePath();
-    QMimeDatabase mime;
-    QMimeType mimeType = mime.mimeTypeForFile(file);
-    QStringList validTypes;
-    validTypes << "image/x-canon-cr2";
-    qDebug() << "TaskStack::applyDefaultTasks()" << mimeType.name();
-    if( validTypes.indexOf(mimeType.name()) == -1 )
+    qDebug() << "TaskStack::applyDefaultTasks()" << m_config->raw();
+
+    if( !m_config->isValidRaw() )
     {
-        qDebug() << "TaskStack::applyDefaultTasks() unsupported file";
+        qDebug() << "TaskStack::applyDefaultTasks() unsupported raw";
         return;
     }
 
     setCommonConfig( new CommonConfig() );
-    m_commonConfig->setRaw( file.absoluteFilePath() );
+    m_commonConfig->setRaw( m_config->raw() );
 
     QStringList tasks;
     tasks << "ufraw" << "rotate";
@@ -283,7 +277,6 @@ void TaskStack::setCommonConfig(CommonConfig *common)
 {
     if( m_commonConfig )
     {
-        disconnect( m_commonConfig, SIGNAL(rawChanged(QString)), this, SIGNAL(rawChanged(QString)) );
         std::for_each( m_tasks.begin(), m_tasks.end(), [&] (TaskBase *task)
         {
             task->setCommonConfig( NULL );
@@ -296,7 +289,6 @@ void TaskStack::setCommonConfig(CommonConfig *common)
 
     if( m_commonConfig )
     {
-        connect( m_commonConfig, SIGNAL(rawChanged(QString)), this, SIGNAL(rawChanged(QString)) );
         std::for_each( m_tasks.begin(), m_tasks.end(), [&] (TaskBase *task)
         {
             task->setCommonConfig( m_commonConfig );
@@ -392,7 +384,7 @@ void TaskStack::onTaskFinished()
     int nextIdx = idx+1;
     if( nextIdx >= m_tasks.size() )
     {
-        saveToFile( m_config );
+        //FIXME: saveConfig();
         setDeveloping( false );
     }
     else
@@ -411,6 +403,17 @@ void TaskStack::onTaskDirty(bool dirty)
     setDirty( anyTaskDirty() );
     if( m_dirty && !m_developing )
         develop();
+}
+
+void TaskStack::onConfigDestroyed()
+{
+    loadConfig( NULL );
+}
+
+void TaskStack::onRawChanged()
+{
+    if( m_commonConfig && m_config )
+        m_commonConfig->setRaw( m_config->raw() );
 }
 
 void TaskStack::setDeveloping(bool developing)

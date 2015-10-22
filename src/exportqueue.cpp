@@ -1,6 +1,7 @@
 #include "exportqueue.h"
 #include "exportsetting.h"
 #include "exportimage.h"
+#include "configdbentry.h"
 
 #include <QDebug>
 
@@ -117,7 +118,7 @@ QVariant ExportQueue::data(const QModelIndex &index, int role) const
     {
         case Qt::DisplayRole:
         {
-            return m_exports[index.row()]->setting()->config();
+            return m_exports[index.row()]->setting()->config()->config();
         }
         case ExportRole:
         {

@@ -31,16 +31,34 @@ ApplicationWindow {
     }
 
     FileDialog {
-        id: openImageFileDialog
-        title: "Please choose an image file or rawstack configuration"
+        id: openFileDialog
+        title: "Please choose image file(s) or rawstack configuration(s)"
+        selectExisting: true
+        selectMultiple: true
         onAccepted: {
-            console.log(openImageFileDialog,openImageFileDialog.fileUrls[0])
-            globalDevTaskStack.loadFromFile( openImageFileDialog.fileUrls[0] )
+            for( var i=0; i<openFileDialog.fileUrls.length; i++ )
+            {
+                globalConfigDb.add( openFileDialog.fileUrls[i] )
+            }
+        }
+    }
+
+    FileDialog {
+        id: openDirDialog
+        title: "Please choose directory containing image file(s) or rawstack configuration(s)"
+        selectExisting: true
+        selectFolder:   true
+        onAccepted: {
+            for( var i=0; i<openDirDialog.fileUrls.length; i++ )
+            {
+                globalConfigDb.add( openDirDialog.fileUrls[i] )
+            }
         }
     }
 
     menuBar: MainMenuBar {
-        onOpenImage:   openImageFileDialog.open()
+        onOpenFile:    openFileDialog.open()
+        onOpenDir:     openDirDialog.open()
         onShowDevelop: internal.showView(theDevMain)
         onShowExport:  internal.showView(theExportMain)
     }

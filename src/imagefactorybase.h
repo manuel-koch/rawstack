@@ -28,6 +28,7 @@ signals:
 protected:
 
     void setUrl(int cycle);
+    void setUrl(const QByteArray &hash);
 
 private:
 
@@ -35,4 +36,4 @@ private:
     QUrl       m_url;
 };
 
-#endif // IMAGEFACTORYNORMAL_H
+#endif // IMAGEFACTORYBASE_H

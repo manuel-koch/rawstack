@@ -32,19 +32,36 @@ QImage ImageFactoryBase::image()
     return QImage();
 }
 
-void ImageFactoryBase::setUrl(int cycle)
+void ImageFactoryBase::setUrl(int hash)
 {
     QUrl url;
     url.setScheme("image");
     url.setHost( ImageProvider::name );
     url.setPath(QString("/%1").arg(m_id));
     QUrlQuery query;
-    query.addQueryItem("cycle",QString("%1").arg(cycle));
+    query.addQueryItem("hash",QString("%1").arg(hash));
     url.setQuery(query);
     if( url != m_url )
     {
         m_url = url;
         qDebug() << "ImageFactoryBase::setUrl()" << this << m_url;
+        emit urlChanged(m_url);
+    }
+}
+
+void ImageFactoryBase::setUrl(const QByteArray &hash)
+{
+    QUrl url;
+    url.setScheme("image");
+    url.setHost( ImageProvider::name );
+    url.setPath(QString("/%1").arg(m_id));
+    QUrlQuery query;
+    query.addQueryItem("hash",QString("%1").arg(QString::fromUtf8(hash.toHex())));
+    url.setQuery(query);
+    if( url != m_url )
+    {
+        m_url = url;
+        qDebug() << "ImageFactoryBase::setUrl()" << this << hash.toHex();
         emit urlChanged(m_url);
     }
 }

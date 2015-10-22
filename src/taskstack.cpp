@@ -203,10 +203,14 @@ void TaskStack::setDirty(bool dirty)
 void TaskStack::clearTasks()
 {
     qDebug() << "TaskStack::clearTasks()";
+
     beginResetModel();
     while( m_tasks.size() )
         removeTask( m_tasks.size()-1 );
     endResetModel();
+
+    setDirty( false );
+    setDeveloping( false );
 }
 
 bool TaskStack::loadTasks()
@@ -396,7 +400,7 @@ void TaskStack::onTaskDirty(bool dirty)
     if( idx == -1 )
         return;
 
-    qDebug() << "TaskStack::onTaskDirty()" << task << idx << (dirty?"dirty":"clean");
+    qDebug() << "TaskStack::onTaskDirty()" << task << idx << (dirty?"dirty":"clean") << "while" << (m_developing?"developing":"idle");
 
     setDirty( anyTaskDirty() );
     if( m_dirty && !m_developing )

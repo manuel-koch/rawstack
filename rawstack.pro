@@ -68,7 +68,10 @@ SOURCES += \
     src/commonconfig.cpp \
     src/exportimage.cpp \
     src/exportsetting.cpp \
-    src/exportqueue.cpp
+    src/exportqueue.cpp \
+    src/configdb.cpp \
+    src/configdbentry.cpp \
+    src/imagefactorythumbnail.cpp
 
 RESOURCES += qml.qrc
 
@@ -119,4 +122,8 @@ HEADERS += \
     src/commonconfig.h \
     src/exportimage.h \
     src/exportsetting.h \
-    src/exportqueue.h
+    src/exportqueue.h \
+    src/configdb.h \
+    src/fileinfotoolbox.h \
+    src/configdbentry.h \
+    src/imagefactorythumbnail.h

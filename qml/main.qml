@@ -47,7 +47,6 @@ ApplicationWindow {
 
     Development.Main {
         id: theDevMain
-        visible: false
         anchors.fill: parent
     }
 
@@ -60,6 +59,7 @@ ApplicationWindow {
 
     Export.Main {
         id: theExportMain
+        visible:      false
         anchors.fill: parent
     }
 

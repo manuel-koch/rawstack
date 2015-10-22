@@ -11,6 +11,8 @@
 #include "exportqueue.h"
 #include "exportimage.h"
 #include "exportsetting.h"
+#include "configdb.h"
+#include "configdbentry.h"
 
 #include "configbase.h"
 #include "ufrawconfig.h"
@@ -40,6 +42,8 @@ void register_types()
     qRegisterMetaType<ExportSetting*>("ExportSetting");
     qRegisterMetaType<ExportImage*>("ExportImage");
     qRegisterMetaType<ExportQueue*>("ExportQueue");
+    qRegisterMetaType<ConfigDb*>("ConfigDb");
+    qRegisterMetaType<ConfigDbEntry*>("ConfigDbEntry");
 }
 
 int main(int argc, char *argv[])
@@ -75,16 +79,20 @@ int main(int argc, char *argv[])
     QQmlImageProviderBase *imageProvider     = static_cast<QQmlImageProviderBase*>( new ImageProvider() );
     QString                imageProviderName = ImageProvider::name;
 
+    QQmlApplicationEngine engine;
+    engine.addImageProvider( imageProviderName, imageProvider );
+
+    ConfigDb configDb;
     ExportQueue exportQueue;
     TaskStack taskStack(true);
+
+    configDb.add( QUrl::fromLocalFile("/Users/manuel/tmp/rawstack") );
+
     if( argc > 1 )
         taskStack.loadFromFile( QUrl::fromLocalFile(argv[1]) );
 
-    QQmlApplicationEngine engine;
-
-    engine.addImageProvider( imageProviderName, imageProvider );
-
     QQmlContext *rootContext = engine.rootContext();
+    rootContext->setContextProperty( "globalConfigDb",     &configDb );
     rootContext->setContextProperty( "globalDevTaskStack", &taskStack );
     rootContext->setContextProperty( "globalExportQueue",  &exportQueue );
 

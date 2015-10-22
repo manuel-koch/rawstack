@@ -23,5 +23,6 @@
         <file>qml/Development/RotateOverlay.qml</file>
         <file>qml/Export/Main.qml</file>
         <file>qml/Export/ExportQueue.qml</file>
+        <file>qml/ConfigDb/HorizontalList.qml</file>
     </qresource>
 </RCC>

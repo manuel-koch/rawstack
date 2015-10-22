@@ -27,7 +27,7 @@ signals:
 
 protected:
 
-    void setUrl(int cycle);
+    void setUrl(int hash);
     void setUrl(const QByteArray &hash);
 
 private:

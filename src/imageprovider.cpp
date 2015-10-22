@@ -5,7 +5,7 @@
 #include <QDebug>
 #include <QUrl>
 
-const QString ImageProvider::name("worker");
+const QString ImageProvider::name("rawstack");
 
 ImageProvider::ImageProvider()
     : QQuickImageProvider(QQuickImageProvider::Image)

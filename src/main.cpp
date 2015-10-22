@@ -86,10 +86,8 @@ int main(int argc, char *argv[])
     ExportQueue exportQueue;
     TaskStack taskStack(true);
 
-    configDb.add( QUrl::fromLocalFile("/Users/manuel/tmp/rawstack") );
-
     if( argc > 1 )
-        taskStack.loadFromFile( QUrl::fromLocalFile(argv[1]) );
+        configDb.add( QUrl::fromLocalFile(argv[1]) );
 
     QQmlContext *rootContext = engine.rootContext();
     rootContext->setContextProperty( "globalConfigDb",     &configDb );

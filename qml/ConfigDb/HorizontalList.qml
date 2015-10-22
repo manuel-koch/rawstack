@@ -1,5 +1,6 @@
 import QtQuick 2.0
 import QtQuick.Layouts 1.1
+import QtQuick.Controls 1.4
 
 import com.rawstack.types 1.0
 
@@ -10,6 +11,8 @@ Rectangle {
     color:  "#a0a0a0"
 
     signal configSelected(ConfigDbEntry config)
+    signal removeConfig(ConfigDbEntry config)
+
     property alias count: theList.count
 
     Component {
@@ -45,9 +48,25 @@ Rectangle {
                 id: theMouse
                 anchors.fill: parent
                 hoverEnabled: true
-                onClicked:    theList.currentIndex = delegateModel.index
+                acceptedButtons: Qt.LeftButton | Qt.RightButton
+                onPressed: {
+                    theList.currentIndex = delegateModel.index
+                    if( mouse.button & Qt.RightButton )
+                        theContextMenu.popup()
+                    else
+                        theContextMenu.visible = false
+                }
                 onDoubleClicked: theHList.configSelected( delegateModel.config )
             }
+        }
+    }
+
+    Menu {
+        id: theContextMenu
+
+        MenuItem {
+            text: "Remove"
+            onTriggered: globalConfigDb.remove( theList.currentIndex )
         }
     }
 

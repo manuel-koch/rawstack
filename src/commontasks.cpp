@@ -34,8 +34,7 @@ void CommonTasks::setUfraw(TaskBase *ufraw)
    {
        m_ufraw = ufraw;
        emit ufrawChanged(m_ufraw);
-       if( m_ufraw )
-           emit imageChanged( m_ufraw->images()->image() );
+       emit imageChanged( image() );
    }
 }
 
@@ -48,10 +47,10 @@ void CommonTasks::setFinal(TaskBase *final)
 
         m_final = final;
         emit finalChanged(m_final);
+        emit imageChanged( image() );
 
         if( m_final )
         {
-            emit imageChanged( m_final->images()->image() );
             connect( m_final->images(), SIGNAL(imageChanged(QUrl)), this, SIGNAL(imageChanged(QUrl)) );
         }
     }

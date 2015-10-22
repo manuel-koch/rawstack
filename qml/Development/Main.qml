@@ -40,9 +40,7 @@ Rectangle {
         Filmstrip {
             Layout.columnSpan:      2
             Layout.fillWidth:       true
-            Layout.preferredHeight: theScreen.height/4
-            Layout.minimumHeight:   50
-            Layout.maximumHeight:   150
+            Layout.preferredHeight: 128
         }
     }
 }

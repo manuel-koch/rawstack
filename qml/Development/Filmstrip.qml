@@ -1,12 +1,15 @@
 import QtQuick 2.0
 import QtQuick.Layouts 1.1
 
+import com.rawstack.types 1.0
 import "../ConfigDb" as ConfigDb
 
 Rectangle {
     id: theFilmStrip
     width:  200
     height: 50
+
+    signal configSelected(ConfigDbEntry config)
 
     ColumnLayout {
 
@@ -17,6 +20,7 @@ Rectangle {
             id: theListQueue
             Layout.preferredWidth: parent.width
             Layout.fillHeight:     true
+            onConfigSelected:      theFilmStrip.configSelected(config)
         }
 
         Text {

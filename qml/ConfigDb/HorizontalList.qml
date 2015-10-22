@@ -9,6 +9,7 @@ Rectangle {
     height: 300
     color:  "#a0a0a0"
 
+    signal configSelected(ConfigDbEntry config)
     property alias count: theList.count
 
     Component {
@@ -45,6 +46,7 @@ Rectangle {
                 anchors.fill: parent
                 hoverEnabled: true
                 onClicked:    theList.currentIndex = delegateModel.index
+                onDoubleClicked: theHList.configSelected( delegateModel.config )
             }
         }
     }

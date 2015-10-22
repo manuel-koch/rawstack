@@ -41,6 +41,7 @@ Rectangle {
             Layout.columnSpan:      2
             Layout.fillWidth:       true
             Layout.preferredHeight: 128
+            onConfigSelected:       globalDevTaskStack.loadConfig( config )
         }
     }
 }

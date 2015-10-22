@@ -94,8 +94,6 @@ void TaskStack::removeTask(int idx)
     if( task->config()->name() == "ufraw" )
         m_commonTasks->setUfraw(NULL);
 
-    task->setCommonConfig( NULL );
-
     setDirty( anyTaskDirty() );
 
     delete task;

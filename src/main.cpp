@@ -38,12 +38,14 @@ void register_types()
     qRegisterMetaType<ImageFactory*>("ImageFactory");
     qRegisterMetaType<ImageFactoryBase*>("ImageFactoryBase");
     qRegisterMetaType<HistFactory*>("HistFactory");
-    qmlRegisterType<TaskBase>("com.rawstack.types", 1, 0, "TaskBase");
     qRegisterMetaType<ExportSetting*>("ExportSetting");
     qRegisterMetaType<ExportImage*>("ExportImage");
     qRegisterMetaType<ExportQueue*>("ExportQueue");
     qRegisterMetaType<ConfigDb*>("ConfigDb");
     qRegisterMetaType<ConfigDbEntry*>("ConfigDbEntry");
+
+    qmlRegisterType<TaskBase>(     "com.rawstack.types", 1, 0, "TaskBase");
+    qmlRegisterType<ConfigDbEntry>("com.rawstack.types", 1, 0, "ConfigDbEntry");
 }
 
 int main(int argc, char *argv[])

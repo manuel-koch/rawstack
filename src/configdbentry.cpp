@@ -1,4 +1,5 @@
 #include "configdbentry.h"
+#include "fileinfotoolbox.h"
 
 #include <QDebug>
 #include <QFileInfo>
@@ -17,6 +18,11 @@ bool ConfigDbEntry::equals(const ConfigDbEntry *other)
     if( m_raw == other->m_raw && m_config == other->m_config )
         return true;
     return false;
+}
+
+bool ConfigDbEntry::isValidRaw() const
+{
+    return FileInfoToolbox::isRaw( QFileInfo(m_raw) );
 }
 
 void ConfigDbEntry::setRaw(QString raw)

@@ -25,6 +25,8 @@ public:
     QString config() const { return m_config; }
     QUrl    thumbnail() const { return m_thumbnail.url(); }
 
+    bool isValidRaw() const;
+
 signals:
 
     void titleChanged(QString title);

@@ -15,6 +15,8 @@ bool ConfigDbEntry::equals(const ConfigDbEntry *other)
 {
     if( this == other )
         return true;
+    if( !other )
+        return false;
     if( m_raw == other->m_raw && m_config == other->m_config )
         return true;
     return false;

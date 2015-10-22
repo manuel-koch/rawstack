@@ -3,7 +3,8 @@ import QtQuick.Controls 1.3
 
 MenuBar {
 
-    signal openImage()
+    signal openFile()
+    signal openDir()
     signal showDevelop()
     signal showExport()
 
@@ -11,10 +12,18 @@ MenuBar {
         title: qsTr("&File")
 
         MenuItem {
-            text:        qsTr("Open")
+            text:        qsTr("Open File")
             shortcut:    "Ctrl+O"
-            onTriggered: openImage()
+            onTriggered: openFile()
         }
+
+        MenuItem {
+            text:        qsTr("Open Directory")
+            shortcut:    "Ctrl+Shift+O"
+            onTriggered: openDir()
+        }
+
+        MenuSeparator { }
 
         MenuItem {
             text:        qsTr("Quit")

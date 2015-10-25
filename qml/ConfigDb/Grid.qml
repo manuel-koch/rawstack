@@ -1,4 +1,4 @@
-import QtQuick 2.0
+import QtQuick 2.5
 import QtQuick.Layouts 1.1
 import QtQuick.Controls 1.4
 
@@ -6,7 +6,7 @@ import com.rawstack.types 1.0
 import "../Misc" as Misc
 
 Rectangle {
-    id: theList
+    id: theGrid
     width:  100
     height: 300
     color:  "#a0a0a0"
@@ -14,15 +14,15 @@ Rectangle {
     signal configSelected(ConfigDbEntry config)
     signal removeConfig(ConfigDbEntry config)
 
-    property alias count: theListView.count
+    property alias count: theGridView.count
 
     Component {
         id: configDelegate
         Item {
-            property var delegateIsCurrent: ListView.isCurrentItem
+            property var delegateIsCurrent: GridView.isCurrentItem
             property var delegateModel:     model
-            width:  parent.height
-            height: parent.height
+            width:  theGridView.cellWidth
+            height: theGridView.cellHeight
             Image {
                 anchors.fill:    parent
                 anchors.margins: 2
@@ -31,10 +31,13 @@ Rectangle {
                 fillMode:        Image.PreserveAspectFit
             }
             Rectangle {
-                anchors.fill: theText
-                color:        "white"
-                visible:      theMouse.containsMouse
-                opacity:      0.3
+                anchors { left:   parent.left;
+                          top:    parent.top
+                          right:  parent.right;
+                          bottom: theText.bottom; }
+                color:    "white"
+                visible:  theMouse.containsMouse
+                opacity:  0.3
             }
             Text {
                 id: theText
@@ -52,13 +55,13 @@ Rectangle {
                 hoverEnabled: true
                 acceptedButtons: Qt.LeftButton | Qt.RightButton
                 onPressed: {
-                    theListView.currentIndex = delegateModel.index
+                    theGridView.currentIndex = delegateModel.index
                     if( mouse.button & Qt.RightButton )
                         theContextMenu.popup()
                     else
                         theContextMenu.visible = false
                 }
-                onDoubleClicked: theList.configSelected( delegateModel.config )
+                onDoubleClicked: theGrid.configSelected( delegateModel.config )
             }
         }
     }
@@ -68,7 +71,7 @@ Rectangle {
 
         MenuItem {
             text: "Remove"
-            onTriggered: globalConfigDb.remove( theListView.currentIndex )
+            onTriggered: globalConfigDb.remove( theGridView.currentIndex )
         }
     }
 
@@ -77,31 +80,31 @@ Rectangle {
         Rectangle {
             border { width: 1; color: "yellow" }
             color:  "#c0c0c0";
-            radius: theList.radius
+            radius: theGrid.radius
         }
     }
 
-    ListView {
-        id: theListView
-        orientation:             Qt.Horizontal
+    GridView {
+        id: theGridView
         anchors.fill:            parent
         model:                   globalConfigDb
         highlight:               highlightDelegate
         highlightMoveDuration:   0
-        highlightResizeDuration: 0
         maximumFlickVelocity:    300
         boundsBehavior:          Flickable.StopAtBounds
         delegate:                configDelegate
-        spacing:                 4
+        cellWidth:               parent.width / 4
+        cellHeight:              parent.width / 4
         focus:                   true
         clip:                    true
-        snapMode:                ListView.SnapToItem
+        snapMode:                GridView.SnapToRow
+        flow:                    GridView.FlowLeftToRight
     }
 
     Misc.FlickableScrollIndicator {
         id: theScroll
         anchors.fill: parent
-        flickable:    theListView
+        flickable:    theGridView
         opacity:      0.5
     }
 }

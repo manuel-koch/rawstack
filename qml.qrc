@@ -24,5 +24,8 @@
         <file>qml/Export/Main.qml</file>
         <file>qml/Export/ExportQueue.qml</file>
         <file>qml/ConfigDb/HorizontalList.qml</file>
+        <file>qml/ConfigDb/Grid.qml</file>
+        <file>qml/Overview/Main.qml</file>
+        <file>qml/Misc/FlickableScrollIndicator.qml</file>
     </qresource>
 </RCC>

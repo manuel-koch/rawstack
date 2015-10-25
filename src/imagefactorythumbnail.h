@@ -2,6 +2,7 @@
 #define IMAGEFACTORYTHUMBNAIL_H
 
 #include "imagefactorybase.h"
+#include "imagecachegroup.h"
 
 class ConfigDbEntry;
 
@@ -21,10 +22,16 @@ public:
 private slots:
 
     void onRawChanged(QString raw);
+    void onConfigChanged(QString config);
+    void onCacheChanged(ImageCacheGroup::Action action, QString key);
+    void onCacheMiss(QString key);
+
+    void nextUrl();
 
 private:
 
     ConfigDbEntry *m_config;
+    int            m_cycle;
 };
 
 #endif // IMAGEFACTORYTHUMBNAIL_H

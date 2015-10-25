@@ -3,6 +3,7 @@ import QtQuick.Controls 1.3
 import QtQuick.Dialogs 1.2
 import QtQuick.Window 2.2
 
+import "Overview" as Overview
 import "Development" as Development
 import "Export" as Export
 
@@ -19,13 +20,20 @@ ApplicationWindow {
         id: internal
 
         function showView(main) {
-            if( main === theDevMain ) {
-                theExportMain.visible = false
-                theDevMain.visible    = true
+            if( main === theOverviewMain ) {
+                theDevMain.visible      = false
+                theExportMain.visible   = false
+                theOverviewMain.visible = true
+            }
+            else if( main === theDevMain ) {
+                theOverviewMain.visible = false
+                theExportMain.visible   = false
+                theDevMain.visible      = true
             }
             else if( main === theExportMain ) {
-                theDevMain.visible    = false
-                theExportMain.visible = true
+                theOverviewMain.visible = false
+                theDevMain.visible      = false
+                theExportMain.visible   = true
             }
         }
     }
@@ -57,15 +65,29 @@ ApplicationWindow {
     }
 
     menuBar: MainMenuBar {
-        onOpenFile:    openFileDialog.open()
-        onOpenDir:     openDirDialog.open()
-        onShowDevelop: internal.showView(theDevMain)
-        onShowExport:  internal.showView(theExportMain)
+        onOpenFile:     openFileDialog.open()
+        onOpenDir:      openDirDialog.open()
+        onShowOverview: internal.showView(theOverviewMain)
+        onShowDevelop:  internal.showView(theDevMain)
+        onShowExport:   internal.showView(theExportMain)
+    }
+
+    Overview.Main {
+        id: theOverviewMain
+        anchors.fill: parent
+    }
+
+    Binding {
+        target:   theAppWindow
+        property: "title"
+        value:    theOverviewMain.title
+        when:     theOverviewMain.visible
     }
 
     Development.Main {
         id: theDevMain
         anchors.fill: parent
+        visible:      false
     }
 
     Binding {
@@ -77,8 +99,8 @@ ApplicationWindow {
 
     Export.Main {
         id: theExportMain
-        visible:      false
         anchors.fill: parent
+        visible:      false
     }
 
     Binding {

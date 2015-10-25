@@ -1,6 +1,8 @@
 #ifndef CONFIGDB_H
 #define CONFIGDB_H
 
+#include "imagecache.h"
+
 #include <QAbstractListModel>
 
 class QUrl;
@@ -23,6 +25,8 @@ public:
 
     explicit ConfigDb( QObject *parent = NULL );
     virtual ~ConfigDb();
+
+    ImageCache &cache() { return m_cache; }
 
 public slots:
 
@@ -52,6 +56,7 @@ private:
 
     RoleMap               m_rolemap;
     QList<ConfigDbEntry*> m_configs;
+    ImageCache            m_cache;
 };
 
 #endif // CONFIGDB_H

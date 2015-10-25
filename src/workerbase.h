@@ -9,7 +9,7 @@
 
 class ConfigBase;
 class CommonConfig;
-class ImageCacheBase;
+class ImageCache;
 
 class WorkerBase : public QObject
 {
@@ -25,7 +25,7 @@ public:
 
     void setCommonConfig(CommonConfig *common) { m_common = common; }
     void setConfig(ConfigBase *config);
-    void setCache(ImageCacheBase *cache);
+    void setCache(ImageCache *cache);
 
     double progress() const { return m_progress; }
     int    cycle()    const { return m_cycle; }
@@ -70,7 +70,7 @@ private:
 protected:
 
     CommonConfig   *m_common;
-    ImageCacheBase *m_cache;
+    ImageCache     *m_cache;
     Magick::Image   m_img;
     Magick::Image   m_preview;
 

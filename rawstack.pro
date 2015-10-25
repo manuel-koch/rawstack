@@ -71,7 +71,10 @@ SOURCES += \
     src/exportqueue.cpp \
     src/configdb.cpp \
     src/configdbentry.cpp \
-    src/imagefactorythumbnail.cpp
+    src/imagefactorythumbnail.cpp \
+    src/imagecacheentry.cpp \
+    src/imagecachegroup.cpp \
+    src/thumbnailloader.cpp
 
 RESOURCES += qml.qrc
 
@@ -117,7 +120,6 @@ HEADERS += \
     src/imagefactoryworker.h \
     src/imagefactorypreview.h \
     src/imagecache.h \
-    src/imagecachebase.h \
     src/loghandler.h \
     src/commonconfig.h \
     src/exportimage.h \
@@ -126,4 +128,7 @@ HEADERS += \
     src/configdb.h \
     src/fileinfotoolbox.h \
     src/configdbentry.h \
-    src/imagefactorythumbnail.h
+    src/imagefactorythumbnail.h \
+    src/imagecacheentry.h \
+    src/imagecachegroup.h \
+    src/thumbnailloader.h

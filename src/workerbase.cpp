@@ -1,6 +1,6 @@
 #include "workerbase.h"
 #include "configbase.h"
-#include "imagecachebase.h"
+#include "imagecache.h"
 
 #include <QDebug>
 #include <QMutexLocker>
@@ -41,7 +41,7 @@ void WorkerBase::setConfig(ConfigBase *config)
         connect( m_config, SIGNAL(hashChanged()), this, SLOT(onCfgHashChanged()) );
 }
 
-void WorkerBase::setCache(ImageCacheBase *cache)
+void WorkerBase::setCache(ImageCache *cache)
 {
     m_cache = cache;
 }
@@ -107,7 +107,7 @@ void WorkerBase::onDevelop(bool preview, WorkerBase *predecessor)
     {
         if( m_cache )
         {
-            m_img = m_cache->retrieve( curImgHash.toHex().toStdString() );
+            m_img = m_cache->retrieve( curImgHash, false );
             imgCached = m_img.isValid();
         }
         if( !imgCached )
@@ -116,7 +116,7 @@ void WorkerBase::onDevelop(bool preview, WorkerBase *predecessor)
             if( (!predecessor || m_img.isValid()) && m_config->enabled() )
                 developImpl( preview, predecessor );
             if( m_cache )
-                m_cache->store( curImgHash.toHex().toStdString(), m_img );
+                m_cache->store( curImgHash, ImageCacheGroup::Temporary, m_img );
         }
         m_doneConfigHash = curCfgHash;
         m_doneImgHash    = curImgHash;

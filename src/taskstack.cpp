@@ -6,6 +6,7 @@
 #include "configfilesaver.h"
 #include "configfileloader.h"
 #include "taskfactory.h"
+#include "configdb.h"
 #include "configdbentry.h"
 #include "fileinfotoolbox.h"
 
@@ -55,6 +56,7 @@ void TaskStack::addTask(TaskBase *task, int idx)
     beginInsertRows( QModelIndex(), idx, idx );
 
     task->setCommonConfig( m_commonConfig );
+    task->worker()->setCache( &m_config->db()->cache() );
     m_tasks.insert( idx, task );
     connect( task, SIGNAL(started()),               this, SLOT(onTaskStarted()) );
     connect( task, SIGNAL(progressChanged(double)), this, SLOT(onTaskProgress(double)) );
@@ -387,6 +389,9 @@ void TaskStack::onTaskFinished()
     if( nextIdx >= m_tasks.size() )
     {
         //FIXME: saveConfig();
+        m_config->db()->cache().store( m_config->config(),
+                                       ImageCacheGroup::Persistent,
+                                       m_tasks.back()->worker()->gmimage() );
         setDeveloping( false );
     }
     else

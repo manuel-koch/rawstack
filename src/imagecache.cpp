@@ -1,79 +1,67 @@
 #include "imagecache.h"
+#include "thumbnailloader.h"
 
 #include <QDebug>
-#include <QCryptographicHash>
-
-static const size_t MByte = 1024*1024;
 
 ImageCache::ImageCache( QObject *parent )
     : QObject(parent)
-    , m_tmpDir("cached_")
-    , m_sizeMb(0)
-    , m_maxSizeMb(128)
+    , m_thumbLoader(*this)
+    , m_tmp("tmp",ImageCacheGroup::Temporary)
+    , m_persist("persist",ImageCacheGroup::Persistent)
 {
-    if( !m_tmpDir.isValid() )
-        qWarning() << "ImageCache::ImageCache() invalid temp dir";
+    m_thread.setObjectName("ImageCache-ThumbLoader");
+    m_thread.start();
+    m_thumbLoader.moveToThread( &m_thread );
+    connect( this, SIGNAL(loadThumbnail(QString)), &m_thumbLoader, SIGNAL(load(QString)) );
+    connect( &m_tmp, SIGNAL(cached(ImageCacheGroup::Action,QString)), this, SIGNAL(cached(ImageCacheGroup::Action,QString)) );
+    connect( &m_persist, SIGNAL(cached(ImageCacheGroup::Action,QString)), this, SIGNAL(cached(ImageCacheGroup::Action,QString)) );
+    m_persist.load();
 }
 
 ImageCache::~ImageCache()
 {
-    // EMPTY
+    m_thread.quit();
+    m_thread.wait();
+
+    m_persist.save();
 }
 
-Magick::Image ImageCache::retrieve(const std::string &key)
+void ImageCache::store(QString key, ImageCacheGroup::Lifetime lifetime, Magick::Image img)
 {
-    QString k = hash(key);
-    Magick::Image img;
-    if( m_cached.contains(k) )
-    {
-        qDebug() << "ImageCache::retrieve() hit" << k;
-        QFileInfo path(m_tmpDir.path(),k);
-        img.read(path.filePath().toStdString());
-    }
-    else
-        qDebug() << "ImageCache::retrieve() miss" << k;
+    group(lifetime).store( key, img );
+}
 
+Magick::Image ImageCache::retrieve(QString key, bool thumbnail)
+{
+    Magick::Image img = m_persist.retrieve(key,thumbnail);
+    if( img.isValid() )
+        return img;
+
+    img = m_tmp.retrieve(key,thumbnail);
+    if( img.isValid() )
+        return img;
+
+    qDebug() << "ImageCache::retrieve() miss" << key;
+    emit miss(key);
     return img;
 }
 
-void ImageCache::store(const std::string &key, Magick::Image img)
+void ImageCache::store(QByteArray key, ImageCacheGroup::Lifetime lifetime, Magick::Image img)
 {
-    QString k = hash(key);
-    QFileInfo path(m_tmpDir.path(),k);
-
-    if( m_cached.contains(k) )
-    {
-        m_sizeMb -= path.size() / MByte;
-        QFile(path.filePath()).remove();
-        m_cached.removeOne(k);
-    }
-
-    if( !img.isValid() )
-        return;
-
-    m_cached.append(k);
-    img.write( path.filePath().toStdString() );
-    m_sizeMb += path.size() / MByte;
-    qDebug() << "ImageCache::store()" << k << "size MB" << m_sizeMb;
-
-    reduce();
+    store( QString::fromUtf8(key.toHex()), lifetime, img );
 }
 
-QString ImageCache::hash(const std::string &key)
+Magick::Image ImageCache::retrieve(QByteArray key, bool thumbnail)
 {
-    QCryptographicHash h(QCryptographicHash::Md5);
-    h.addData( key.c_str(), key.size() );
-    return  QString::fromLatin1(h.result().toHex());
+    return retrieve( QString::fromUtf8(key.toHex()), thumbnail );
 }
 
-void ImageCache::reduce()
+ImageCacheGroup &ImageCache::group(ImageCacheGroup::Lifetime lifetime)
 {
-    while( !m_cached.empty() && m_sizeMb > m_maxSizeMb )
+    switch(lifetime)
     {
-        QString k = m_cached.takeFirst(); // remove oldest cache entry
-        QFileInfo path(m_tmpDir.path(),k);
-        m_sizeMb -= path.size() / MByte;
-        QFile(path.filePath()).remove();
-        qDebug() << "ImageCache::reduce()" << k << "size MB" << m_sizeMb;
+        case ImageCacheGroup::Temporary:  return m_tmp;
+        case ImageCacheGroup::Persistent: return m_persist;
     }
+    Q_ASSERT(false); // unknown lifetime
 }

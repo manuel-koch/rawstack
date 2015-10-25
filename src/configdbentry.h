@@ -3,8 +3,12 @@
 
 #include "imagefactorythumbnail.h"
 
+#include <Magick++.h>
+
 #include <QObject>
 #include <QUrl>
+
+class ConfigDb;
 
 class ConfigDbEntry : public QObject
 {
@@ -27,12 +31,16 @@ public:
 
     bool isValidRaw() const;
 
+    ConfigDb *db() const;
+
 signals:
 
     void titleChanged(QString title);
     void rawChanged(QString raw);
     void configChanged(QString config);
     void thumbnailChanged(QUrl thumbnail);
+
+    void aboutToBeDestroyed();
 
 public slots:
 

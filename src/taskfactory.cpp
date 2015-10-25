@@ -13,7 +13,6 @@ TaskFactory *TaskFactory::ms_instance = NULL;
 TaskFactory::TaskFactory(QObject *parent)
     : QObject(parent)
 {
-    m_imgCache = new ImageCache(this);
     m_workerThread = new QThread(this);
     m_workerThread->setObjectName("TaskFactory-WorkerThread");
     m_workerThread->start();
@@ -92,6 +91,5 @@ TaskBase *TaskFactory::create(ConfigBase *config, QThread *workerThread)
     TaskBase *task = builder->create( this, workerThread );
     qDebug() << "TaskFactory::create()" << task;
     task->setConfig( config );
-    task->worker()->setCache( m_imgCache );
     return task;
 }

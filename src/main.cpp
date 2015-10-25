@@ -31,6 +31,7 @@
 
 void register_types()
 {
+
     qRegisterMetaType<TaskBase*>("TaskBase");
     qRegisterMetaType<ConfigBase*>("ConfigBase");
     qRegisterMetaType<TaskStack*>("TaskStack");
@@ -43,6 +44,7 @@ void register_types()
     qRegisterMetaType<ExportQueue*>("ExportQueue");
     qRegisterMetaType<ConfigDb*>("ConfigDb");
     qRegisterMetaType<ConfigDbEntry*>("ConfigDbEntry");
+    qRegisterMetaType<ImageCacheGroup::Lifetime>("ImageCacheGroup::Lifetime");
 
     qmlRegisterType<TaskBase>(     "com.rawstack.types", 1, 0, "TaskBase");
     qmlRegisterType<ConfigDbEntry>("com.rawstack.types", 1, 0, "ConfigDbEntry");

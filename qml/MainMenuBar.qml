@@ -5,6 +5,7 @@ MenuBar {
 
     signal openFile()
     signal openDir()
+    signal showOverview()
     signal showDevelop()
     signal showExport()
 
@@ -36,14 +37,20 @@ MenuBar {
         title: qsTr("&View")
 
         MenuItem {
-            text:        qsTr("Development")
+            text:        qsTr("Overview")
             shortcut:    "Ctrl+1"
+            onTriggered: showOverview()
+        }
+
+        MenuItem {
+            text:        qsTr("Development")
+            shortcut:    "Ctrl+2"
             onTriggered: showDevelop()
         }
 
         MenuItem {
             text:        qsTr("Export")
-            shortcut:    "Ctrl+2"
+            shortcut:    "Ctrl+3"
             onTriggered: showExport()
         }
     }

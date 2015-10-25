@@ -1,41 +1,54 @@
 #ifndef IMAGECACHE_H
 #define IMAGECACHE_H
 
-#include "imagecachebase.h"
+#include "imagecachegroup.h"
+#include "thumbnailloader.h"
 
 #include <Magick++.h>
 
 #include <QObject>
-#include <QTemporaryDir>
-#include <QMap>
+#include <QThread>
 #include <QFileInfo>
 
-class ImageCache
-    : public QObject
-    , public ImageCacheBase
+class ImageCacheEntry;
+
+class ImageCache : public QObject
 {
     Q_OBJECT
+    Q_ENUMS(Size)
 
 public:
 
     explicit ImageCache(QObject *parent = NULL);
     virtual ~ImageCache();
 
-    // ImageCacheBase interface
-    virtual Magick::Image retrieve(const std::string &key) override;
-    virtual void store(const std::string &key, Magick::Image img) override;
+    void store(QString key, ImageCacheGroup::Lifetime lifetime, Magick::Image img);
+    void store(QByteArray key, ImageCacheGroup::Lifetime lifetime, Magick::Image img);
+
+    Magick::Image retrieve(QString key, bool thumbnail);
+    Magick::Image retrieve(QByteArray key, bool thumbnail);
+
+signals:
+
+    /// An image has been updated in the cache by given action
+    void cached( ImageCacheGroup::Action action, QString key );
+
+    /// An image was not found in cache
+    void miss( QString key );
+
+    /// Trigger loading of thumbnail for given RAW image
+    void loadThumbnail( QString path );
 
 private:
 
-    QString hash(const std::string &key);
-    void reduce();
+    ImageCacheGroup &group( ImageCacheGroup::Lifetime lifetime );
 
 private:
 
-    QTemporaryDir   m_tmpDir;
-    QList<QString>  m_cached;
-    size_t          m_sizeMb;
-    size_t          m_maxSizeMb;
+    QThread         m_thread;
+    ThumbnailLoader m_thumbLoader;
+    ImageCacheGroup m_tmp;
+    ImageCacheGroup m_persist;
 };
 
 #endif // IMAGECACHE_H

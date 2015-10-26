@@ -36,6 +36,9 @@ public slots:
     /// Remove configuration from database
     Q_INVOKABLE void remove(int idx);
 
+    /// Return index of selected ConfigDbEntry instance
+    Q_INVOKABLE int indexOfConfig(ConfigDbEntry *entry);
+
 public:
 
     // QAbstractItemModel interface

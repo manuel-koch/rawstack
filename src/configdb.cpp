@@ -40,6 +40,11 @@ void ConfigDb::remove(int idx)
     endRemoveRows();
 }
 
+int ConfigDb::indexOfConfig(ConfigDbEntry *entry)
+{
+    return m_configs.indexOf( entry );
+}
+
 void ConfigDb::removeAll()
 {
     qDebug() << "ConfigDb::removeAll()";

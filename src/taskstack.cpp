@@ -127,34 +127,19 @@ void TaskStack::develop()
         m_tasks[0]->develop( m_preview );
 }
 
-//void TaskStack::saveToFile(QString path)
-//{
-//    if( m_tasks.empty() )
-//        return;
+void TaskStack::saveConfig()
+{
+    if( m_tasks.empty() )
+        return;
 
-//    QFileInfo rawInfo( m_commonConfig->raw() );
-//    qDebug() << "TaskStack::saveToFile()" << rawInfo.absoluteFilePath();
-
-//    QFileInfo cfgInfo;
-//    if( path.isEmpty() )
-//    {
-//        cfgInfo = QFileInfo( rawInfo.dir(), rawInfo.completeBaseName() + ".rawstack" );
-//    }
-//    else
-//    {
-//        QFileInfo pathInfo(path);
-//        cfgInfo = QFileInfo( pathInfo.dir(), pathInfo.completeBaseName() + ".rawstack" );
-//    }
-
-//    setConfig( cfgInfo.absoluteFilePath() );
-//    qDebug() << "TaskStack::saveToFile()" << m_config;
-//    ConfigFileSaver fileSaver;
-//    fileSaver.add( m_commonConfig );
-//    std::for_each( m_tasks.begin(), m_tasks.end(), [&] (TaskBase *task) {
-//        fileSaver.add( task->config() );
-//    });
-//    fileSaver.save(m_config);
-//}
+    qDebug() << "TaskStack::saveConfig()" << m_config->config();
+    ConfigFileSaver fileSaver;
+    fileSaver.add( m_commonConfig );
+    std::for_each( m_tasks.begin(), m_tasks.end(), [&] (TaskBase *task) {
+        fileSaver.add( task->config() );
+    });
+    fileSaver.save( m_config->config() );
+}
 
 void TaskStack::loadConfig(ConfigDbEntry *config)
 {
@@ -170,6 +155,7 @@ void TaskStack::loadConfig(ConfigDbEntry *config)
         disconnect( m_config, SIGNAL(rawChanged(QString)), this, SLOT(onRawChanged()) );
         disconnect( m_config, SIGNAL(destroyed(QObject*)), this, SLOT(onConfigDestroyed()) );
     }
+
     m_config = config;
 
     if( m_config )
@@ -177,8 +163,7 @@ void TaskStack::loadConfig(ConfigDbEntry *config)
         connect( m_config, SIGNAL(rawChanged(QString)), this, SLOT(onRawChanged()) );
         connect( m_config, SIGNAL(destroyed(QObject*)), this, SLOT(onConfigDestroyed()) );
         onRawChanged();
-        if( !loadTasks() )
-            applyDefaultTasks();
+        loadConfigImpl();
     }
 
     emit configChanged(m_config);
@@ -215,7 +200,7 @@ void TaskStack::clearTasks()
     setDeveloping( false );
 }
 
-bool TaskStack::loadTasks()
+bool TaskStack::loadConfigImpl()
 {
     ConfigFileLoader loader;
     connect( &loader, &ConfigFileLoader::config, [&] (ConfigBase *cfg) {
@@ -225,12 +210,6 @@ bool TaskStack::loadTasks()
         else
             addTask( TaskFactory::getInstance()->create(cfg,m_workerThread) );
     });
-
-    bool loaded = loader.load(m_config->config());
-    if( !loaded )
-    {
-        qDebug() << "TaskStack::loadTasks() failed to load" << m_config->config();
-    }
 
     // Check that RAW image really exists,
     // fix RAW directory by current config directory if RAW can't be found.
@@ -242,6 +221,11 @@ bool TaskStack::loadTasks()
         m_config->setRaw( raw.absoluteFilePath() );
     else
         m_config->setRaw( "" );
+
+    bool loaded = loader.load(m_config->config());
+    if( !loaded )
+        applyDefaultTasks();
+
     return raw.exists();
 }
 
@@ -388,7 +372,7 @@ void TaskStack::onTaskFinished()
     int nextIdx = idx+1;
     if( nextIdx >= m_tasks.size() )
     {
-        //FIXME: saveConfig();
+        saveConfig();
         m_config->db()->cache().store( m_config->config(),
                                        ImageCacheGroup::Persistent,
                                        m_tasks.back()->worker()->gmimage() );

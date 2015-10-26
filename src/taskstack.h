@@ -56,6 +56,9 @@ public slots:
     /// Load current stack config from selected configuration .
     Q_INVOKABLE void loadConfig( ConfigDbEntry *config );
 
+    /// Save current stack configuration to file
+    Q_INVOKABLE void saveConfig();
+
 public:
 
     // QAbstractItemModel interface
@@ -90,7 +93,7 @@ private:
     void clearTasks();
 
     /// Load tasks from current configuration
-    bool loadTasks();
+    bool loadConfigImpl();
 
     /// Apply default tasks for current raw image
     void applyDefaultTasks();

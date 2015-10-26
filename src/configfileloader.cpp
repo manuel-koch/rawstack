@@ -31,10 +31,11 @@ bool ConfigFileLoader::load(QString path)
             return ConfigXmlLoader::load(doc);
         }
         else
-        {
             qDebug() << "ConfigFileLoader::load() error at line" << errLine << "col" << errCol << ":" << err;
-        }
     }
+    else
+        qDebug() << "ConfigFileLoader::load() failed to open" << path;
+
     return false;
 }
 

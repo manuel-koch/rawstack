@@ -11,9 +11,10 @@ Item {
     property real  degree:      0
 
     onStartPtChanged: {
-        endPt    = startPt
-        distance = 0
-        degree   = 0
+        endPt           = startPt
+        distance        = 0
+        degree          = 0
+        internal.degree = 0
         theCanvas.requestPaint()
     }
 
@@ -21,8 +22,19 @@ Item {
         var dx = endPt.x - startPt.x
         var dy = endPt.y - startPt.y
         distance = Math.sqrt( dx*dx + dy*dy )
-        degree   = -180/Math.PI * Math.atan( dy / dx )
+        internal.degree = -180/Math.PI * Math.atan( dy / dx )
+        if( Math.abs(internal.degree) <= 45 )
+            degree = internal.degree // angle to x-axis
+        else if( internal.degree > 45 && internal.degree <= 90 )
+            degree = -(90-internal.degree) // angle to y-axis
+        else if( internal.degree < -45 && internal.degree >= -90 )
+            degree = 90+internal.degree // angle to y-axis
         theCanvas.requestPaint()
+    }
+
+    QtObject {
+        id: internal
+        property real degree
     }
 
     Canvas {
@@ -33,7 +45,7 @@ Item {
             var ctx = getContext("2d")
             var alpha = 0.5
             var d = endPt.x > startPt.x ? distance : -distance
-            var r = -Math.PI/180*degree
+            var r = -Math.PI/180*internal.degree
             ctx.clearRect( 0, 0, width, height )
 
             if( distance <= minDistance )

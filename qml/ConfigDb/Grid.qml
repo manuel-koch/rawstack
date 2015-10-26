@@ -14,6 +14,7 @@ Rectangle {
     signal configSelected(ConfigDbEntry config)
     signal removeConfig(ConfigDbEntry config)
 
+    property int cellsPerRow: 4
     property alias count: theGridView.count
 
     Component {
@@ -93,12 +94,19 @@ Rectangle {
         maximumFlickVelocity:    300
         boundsBehavior:          Flickable.StopAtBounds
         delegate:                configDelegate
-        cellWidth:               parent.width / 4
-        cellHeight:              parent.width / 4
+        cellWidth:               parent.width / theGrid.cellsPerRow
+        cellHeight:              Math.min( cellWidth, theGridView.height )
         focus:                   true
         clip:                    true
         snapMode:                GridView.SnapToRow
         flow:                    GridView.FlowLeftToRight
+
+        Keys.onPressed: {
+            if( event.key == Qt.Key_Minus )
+                theGrid.cellsPerRow = Math.min( 9, theGrid.cellsPerRow+1 )
+            else if( event.key == Qt.Key_Plus )
+                theGrid.cellsPerRow = Math.max( 1, theGrid.cellsPerRow-1 )
+        }
     }
 
     Misc.FlickableScrollIndicator {

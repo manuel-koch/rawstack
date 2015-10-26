@@ -36,7 +36,9 @@ void ConfigDb::remove(int idx)
         return;
 
     beginRemoveRows( QModelIndex(), idx, idx );
-    delete m_configs.takeAt( idx );
+    ConfigDbEntry *entry = m_configs.takeAt( idx );
+    disconnect( entry, SIGNAL(duplicate()), this, SLOT(onDuplicateConfig()) );
+    delete entry;
     endRemoveRows();
 }
 
@@ -82,6 +84,36 @@ QVariant ConfigDb::data(const QModelIndex &index, int role) const
         }
     }
     return QVariant();
+}
+
+void ConfigDb::onDuplicateConfig()
+{
+    ConfigDbEntry *entry = qobject_cast<ConfigDbEntry*>( sender() );
+    if( !entry )
+        return;
+
+    qDebug() << "ConfigDb::onDuplicateConfig() from" << entry->config();
+
+    int idx = 2;
+    QFileInfo curConfig( entry->config() );
+    QFileInfo newConfig;
+    do
+    {
+        newConfig = QFileInfo(curConfig.dir(), curConfig.baseName() + QString(".%1.%2").arg(idx).arg(curConfig.suffix()) );
+        qDebug() << newConfig.absoluteFilePath();
+        idx++;
+    }
+    while( newConfig.exists() );
+
+    qDebug() << "ConfigDb::onDuplicateConfig() to" << newConfig.absoluteFilePath();
+
+    QFile curCfg( entry->config() );
+    curCfg.copy( newConfig.absoluteFilePath() );
+
+    ConfigDbEntry *config = new ConfigDbEntry( this );
+    config->setRaw( entry->raw() );
+    config->setConfig( newConfig.absoluteFilePath() );
+    addEntry( config );
 }
 
 void ConfigDb::addFromPath(const QFileInfo &path)
@@ -138,7 +170,6 @@ void ConfigDb::addFromConfig(const QFileInfo &path)
 
 void ConfigDb::addEntry(ConfigDbEntry *entry)
 {
-    //FIXME: find out if entry is already in list
     bool found = false;
     foreach( ConfigDbEntry *existingEntry, m_configs )
     {
@@ -158,10 +189,16 @@ void ConfigDb::addEntry(ConfigDbEntry *entry)
 
     qDebug() << "ConfigDb::add()" << entry->config();
 
-    //FIXME: Insert at correct position ( ordered by path ) instead of appending
-    int idx = m_configs.size();
+    int idx = 0;
+    foreach( ConfigDbEntry *existingEntry, m_configs )
+    {
+        if( existingEntry->config().compare( entry->config() ) > 0 )
+            break;
+        idx++;
+    }
     beginInsertRows( QModelIndex(), idx, idx );
     m_configs.insert( idx, entry );
+    connect( entry, SIGNAL(duplicate()), this, SLOT(onDuplicateConfig()) );
     endInsertRows();
 
     qDebug() << "ConfigDb::add()" << m_configs.size();

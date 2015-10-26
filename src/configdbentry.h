@@ -40,6 +40,8 @@ signals:
     void configChanged(QString config);
     void thumbnailChanged(QUrl thumbnail);
 
+    void duplicate();
+
     void aboutToBeDestroyed();
 
 public slots:

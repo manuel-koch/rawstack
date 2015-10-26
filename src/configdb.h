@@ -46,6 +46,10 @@ public:
     virtual QVariant data(const QModelIndex & index, int role = Qt::DisplayRole) const;
     virtual QHash<int, QByteArray> roleNames() const { return m_rolemap; }
 
+private slots:
+
+    void onDuplicateConfig();
+
 private:
 
     void addFromPath( const QFileInfo &path );

@@ -17,7 +17,7 @@ Rectangle {
         spacing:      0
 
         ConfigDb.HorizontalList {
-            id: theListQueue
+            id: theHorizontalList
             Layout.preferredWidth: parent.width
             Layout.fillHeight:     true
             onConfigSelected:      theFilmStrip.configSelected(config)
@@ -28,9 +28,15 @@ Rectangle {
             Layout.rightMargin:    4
             Layout.preferredWidth: parent.width
             wrapMode:              Text.WordWrap
-            text:                  theListQueue.count + " images..."
+            text:                  theHorizontalList.count + " images..."
             font.pointSize:        8
         }
+
+    }
+
+    Connections {
+        target: globalDevTaskStack
+        onConfigChanged: theHorizontalList.selectConfig( config )
     }
 }
 

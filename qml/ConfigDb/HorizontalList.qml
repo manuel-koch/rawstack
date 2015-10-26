@@ -16,6 +16,13 @@ Rectangle {
 
     property alias count: theListView.count
 
+    function selectConfig(config)
+    {
+        var idx = globalConfigDb.indexOfConfig(config)
+        if( idx !== -1 )
+            theListView.currentIndex = idx;
+    }
+
     Component {
         id: configDelegate
         Item {

@@ -1,4 +1,4 @@
-import QtQuick 2.0
+import QtQuick 2.5
 import QtQuick.Controls 1.3
 import com.rawstack.types 1.0
 import "Tasks"
@@ -231,6 +231,31 @@ Rectangle {
                 theRotateOverlay.startPt = theRotateOverlay.endPt = Qt.point( 0, 0 )
             }
         }
+    }
+
+    PinchArea {
+        anchors.fill: parent
+
+        property real lastHandledScale: 1
+        property real zoomInScaleFactor: 1.3
+        property real zoomOutScaleFactor: 1 / zoomInScaleFactor
+
+        onPinchUpdated: {
+            var diffScaleFactor = pinch.scale / lastHandledScale;
+            console.log(diffScaleFactor)
+            if( diffScaleFactor > zoomInScaleFactor )
+            {
+                lastHandledScale = pinch.scale
+                internal.zoomIn()
+            }
+            else if( diffScaleFactor < zoomOutScaleFactor )
+            {
+                lastHandledScale = pinch.scale
+                internal.zoomOut()
+            }
+        }
+
+        onPinchFinished: lastHandledScale = 1
     }
 
     Rectangle {

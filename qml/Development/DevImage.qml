@@ -261,19 +261,27 @@ Rectangle {
     Rectangle {
         id: theProgress
         visible:                  globalDevTaskStack.developing || progressHideTimer.running
-        width:                    parent.width*0.75
-        height:                   15
+        width:                    parent.width*0.50
+        height:                   20
         anchors.horizontalCenter: parent.horizontalCenter
-        anchors.bottom:           parent.bottom
-        anchors.bottomMargin:     10
-        color:                    Qt.rgba(1,1,1,0.8)
-        radius:                   height/3
-        ProgressBar {
-            anchors.fill:    parent
-            anchors.margins: 3
-            minimumValue:    0
-            maximumValue:    1
-            value:           globalDevTaskStack.progress
+        anchors.verticalCenter:   parent.verticalCenter
+        color:                    "white"
+        radius:                   height/2
+        opacity:                  0.5
+        Rectangle {
+            anchors.left:           parent.left
+            anchors.leftMargin:     parent.radius/2
+            anchors.verticalCenter: parent.verticalCenter
+            height:                 parent.height/2
+            width:                  (parent.width-parent.radius) * globalDevTaskStack.progress
+            radius:                 height/2
+            color:                  "yellow"
+        }
+        Text {
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.verticalCenter:   parent.verticalCenter
+            font.pointSize:           10
+            text:                     "Developing..."
         }
         Timer {
             id: progressHideTimer

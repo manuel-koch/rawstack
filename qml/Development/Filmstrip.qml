@@ -9,8 +9,6 @@ Rectangle {
     width:  200
     height: 50
 
-    signal configSelected(ConfigDbEntry config)
-
     ColumnLayout {
 
         anchors.fill: parent
@@ -20,7 +18,6 @@ Rectangle {
             id: theHorizontalList
             Layout.preferredWidth: parent.width
             Layout.fillHeight:     true
-            onConfigSelected:      theFilmStrip.configSelected(config)
         }
 
         Text {

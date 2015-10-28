@@ -11,8 +11,6 @@ Rectangle {
     height: 300
     color:  "#a0a0a0"
 
-    signal configSelected(ConfigDbEntry config)
-
     property alias count: theListView.count
 
     function selectConfig(config)
@@ -64,18 +62,17 @@ Rectangle {
                     else
                         theContextMenu.visible = false
                 }
-                onDoubleClicked: theList.configSelected( delegateModel.config )
+                onDoubleClicked: globalDevTaskStack.loadConfig( delegateModel.config )
             }
             Menu {
                 id: theContextMenu
-
                 MenuItem {
                     text: "Duplicate"
                     onTriggered: delegateModel.config.duplicate()
                 }
                 MenuItem {
                     text: "Remove"
-                    onTriggered: globalConfigDb.remove( theListView.currentIndex )
+                    onTriggered: delegateModel.config.remove()
                 }
             }
         }

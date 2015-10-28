@@ -11,9 +11,6 @@ Rectangle {
     height: 300
     color:  "#a0a0a0"
 
-    signal configSelected(ConfigDbEntry config)
-    signal removeConfig(ConfigDbEntry config)
-
     property int cellsPerRow: 4
     property alias count: theGridView.count
 
@@ -62,7 +59,7 @@ Rectangle {
                     else
                         theContextMenu.visible = false
                 }
-                onDoubleClicked: theGrid.configSelected( delegateModel.config )
+                onDoubleClicked: globalDevTaskStack.loadConfig( delegateModel.config )
             }
         }
     }
@@ -71,8 +68,13 @@ Rectangle {
         id: theContextMenu
 
         MenuItem {
+        MenuItem {
+            text: "Duplicate"
+            onTriggered: delegateModel.config.duplicate()
+        }
+        MenuItem {
             text: "Remove"
-            onTriggered: globalConfigDb.remove( theGridView.currentIndex )
+            onTriggered: delegateModel.config.remove()
         }
     }
 

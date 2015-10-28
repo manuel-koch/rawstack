@@ -23,7 +23,6 @@ Rectangle {
             Layout.preferredWidth: parent.width
             Layout.fillHeight:     true
             onCellsPerRowChanged:  theGridSlider.value = cellsPerRow
-            onConfigSelected:      globalDevTaskStack.loadConfig( config )
         }
 
         RowLayout {

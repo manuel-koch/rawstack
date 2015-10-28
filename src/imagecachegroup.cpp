@@ -128,13 +128,14 @@ void ImageCacheGroup::load()
 {
     QMutexLocker lock(&m_mutex);
     qDebug() << "ImageCacheGroup::load()" << m_name;
-    QFile file( m_dir.absoluteFilePath("cached.xml") );
-    if( file.open( QFile::ReadOnly ) )
+    QStringList cachedPaths;
+    QFile content( m_dir.absoluteFilePath("cached.xml") );
+    if( content.open( QFile::ReadOnly ) )
     {
         QDomDocument doc;
         QString err;
         int errLine, errCol;
-        bool res = doc.setContent(&file,true,&err,&errLine,&errCol);
+        bool res = doc.setContent(&content,true,&err,&errLine,&errCol);
         if( !res )
         {
             qDebug() << "ImageCacheGroup::load() error at line" << errLine << "col" << errCol << ":" << err;
@@ -154,10 +155,24 @@ void ImageCacheGroup::load()
                 continue;
             ImageCacheEntry *entry = new ImageCacheEntry(this);
             entry->setInfo( path );
+            cachedPaths << path.completeBaseName();
             m_cached[key] = entry;
             m_used.append(key);
         }
     }
+
+    // remove files from directory that are not in loaded list of cached images
+    foreach( QString entry, m_dir.entryList(QDir::Files) )
+    {
+        if( entry == "cached.xml" )
+            continue;
+        if( !cachedPaths.contains(entry) )
+        {
+            qDebug() << "ImageCacheGroup::load()" << m_name << "removing obsolete" << entry;
+            QFile( m_dir.absoluteFilePath(entry) ).remove();
+        }
+    }
+
     qDebug() << "ImageCacheGroup::load()" << m_name << m_cached.size();
 }
 

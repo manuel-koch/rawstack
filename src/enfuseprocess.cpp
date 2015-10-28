@@ -30,7 +30,12 @@ void EnfuseProcess::run()
     m_console.clear();
 
     QStringList args(m_inputs);
-    args << "-v" << "--depth=16" << "--gray-projector=luminance"
+    args << "-v" << "--depth=16"
+         << "--exposure-weight=1"
+         << "--contrast-weight=0.1"
+         << "--saturation-weight=0.1"
+         << "--exposure-cutoff=0.5%:99.5%"
+         << "--gray-projector=luminance"
          << "-o" << m_output.fileName();
     qDebug() << "EnfuseProcess::run()" << args;
     setArguments( args );

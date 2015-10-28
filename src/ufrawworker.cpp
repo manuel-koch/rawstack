@@ -29,7 +29,7 @@ void UfrawWorker::run( UfrawProcess &ufraw, bool preview, int idx, int nof )
     if( !cfg || !m_common )
         return;
 
-    double exposureShift = 1.5;
+    double exposureShift = 2;
     if( idx == 0 )
         exposureShift = 0;
     else

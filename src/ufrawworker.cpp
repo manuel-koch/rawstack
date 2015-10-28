@@ -42,12 +42,17 @@ void UfrawWorker::run( UfrawProcess &ufraw, bool preview, int idx, int nof )
     ufraw.setWbTemperature( cfg->wbTemperature() );
     ufraw.setWbGreen( cfg->wbGreen() );
 
-    if( idx < 0 )
-        ufraw.setRestore( UfrawProcess::RestoreHsv );
-    else if( idx > 0 )
+    if( idx > 0 )
+    {
+        // over exposed
         ufraw.setClip( UfrawProcess::ClipDigital );
+    }
     else
+    {
+        // normal / under exposed
+        ufraw.setRestore( UfrawProcess::RestoreHsv );
         ufraw.setClip( UfrawProcess::ClipFilm );
+    }
 
     if( preview )
     {

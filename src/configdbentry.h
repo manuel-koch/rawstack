@@ -40,7 +40,11 @@ signals:
     void configChanged(QString config);
     void thumbnailChanged(QUrl thumbnail);
 
+    /// Request to add a duplicate of current configuration to database
     void duplicate();
+
+    /// Request to remove current configuration from database
+    void remove();
 
     void aboutToBeDestroyed();
 

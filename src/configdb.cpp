@@ -116,6 +116,15 @@ void ConfigDb::onDuplicateConfig()
     addEntry( config );
 }
 
+void ConfigDb::onRemoveConfig()
+{
+    ConfigDbEntry *entry = qobject_cast<ConfigDbEntry*>( sender() );
+    if( !entry )
+        return;
+
+    remove( m_configs.indexOf( entry ) );
+}
+
 void ConfigDb::addFromPath(const QFileInfo &path)
 {
     if( path.isDir() )
@@ -199,6 +208,7 @@ void ConfigDb::addEntry(ConfigDbEntry *entry)
     beginInsertRows( QModelIndex(), idx, idx );
     m_configs.insert( idx, entry );
     connect( entry, SIGNAL(duplicate()), this, SLOT(onDuplicateConfig()) );
+    connect( entry, SIGNAL(remove()),    this, SLOT(onRemoveConfig()) );
     endInsertRows();
 
     qDebug() << "ConfigDb::add()" << m_configs.size();

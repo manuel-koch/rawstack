@@ -49,6 +49,7 @@ public:
 private slots:
 
     void onDuplicateConfig();
+    void onRemoveConfig();
 
 private:
 

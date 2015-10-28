@@ -107,7 +107,7 @@ void UfrawWorker::prepareImpl()
     ufraw.setProgram( "/opt/local/bin/ufraw-batch" );
     ufraw.setRaw( m_common->raw() );
     ufraw.setExposure( cfg->exposure() );
-    ufraw.setShrink( 4 );
+    ufraw.setShrink( 2 );
 
     // probe for other settings first...
     ufraw.run( UfrawProcess::OutputProbe );

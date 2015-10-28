@@ -22,7 +22,6 @@ QImage ImageFactoryUnderExposed::image()
     under.negate();
     under.transparent( "black" );
     under.type( Magick::TrueColorMatteType );
-    under.write( "/Users/manuel/tmp/test_under.tif" );
     return WorkerBase::convert( under );
 }
 

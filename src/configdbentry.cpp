@@ -8,8 +8,10 @@
 ConfigDbEntry::ConfigDbEntry(QObject *parent)
     : QObject(parent)
     , m_thumbnail(this)
+    , m_final(this)
 {
     connect( &m_thumbnail, SIGNAL(urlChanged(QUrl)), this, SIGNAL(thumbnailChanged(QUrl)) );
+    connect( &m_final,     SIGNAL(urlChanged(QUrl)), this, SIGNAL(finalChanged(QUrl)) );
 }
 
 bool ConfigDbEntry::equals(const ConfigDbEntry *other)

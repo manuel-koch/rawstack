@@ -74,7 +74,8 @@ SOURCES += \
     src/imagefactorythumbnail.cpp \
     src/imagecacheentry.cpp \
     src/imagecachegroup.cpp \
-    src/thumbnailloader.cpp
+    src/thumbnailloader.cpp \
+    src/imagefactoryfinal.cpp
 
 RESOURCES += qml.qrc
 
@@ -131,4 +132,5 @@ HEADERS += \
     src/imagefactorythumbnail.h \
     src/imagecacheentry.h \
     src/imagecachegroup.h \
-    src/thumbnailloader.h
+    src/thumbnailloader.h \
+    src/imagefactoryfinal.h

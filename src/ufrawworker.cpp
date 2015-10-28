@@ -4,8 +4,6 @@
 #include "commonconfig.h"
 #include "enfuseprocess.h"
 
-#include <vector>
-
 #include <QDebug>
 #include <QThread>
 #include <QTemporaryFile>
@@ -128,6 +126,25 @@ void UfrawWorker::prepareImpl()
     }
 }
 
+// returns a masked version of given image where every pixel
+// above / below a given value ( in quantum range ) gets transparent
+Magick::Image masked( bool below, double value, Magick::Image img )
+{
+    Magick::Image mask = img;
+    mask.type( Magick::GrayscaleMatteType );
+    mask.normalize();
+    double v = below ? value : 1-value;
+    mask.threshold( v*MaxRGB );
+    if( below )
+        mask.negate();
+    mask.type( Magick::TrueColorMatteType );
+    mask.transparent( "black" );
+
+    Magick::Image masked = img;
+    masked.composite( mask, Magick::CenterGravity, Magick::CopyOpacityCompositeOp );
+    return masked;
+}
+
 void UfrawWorker::developImpl(bool preview, WorkerBase *predecessor)
 {
     qDebug() << "UfrawWorker::developImpl()" << this << predecessor;
@@ -143,7 +160,7 @@ void UfrawWorker::developImpl(bool preview, WorkerBase *predecessor)
     double progressPhaseB = 0.5;
 
     int nof = cfg->fuse();
-    std::vector<Magick::Image> imgs(nof);
+    Magick::Image normalImg;
     std::vector<UfrawProcess>  ufraw(nof);
     int firstIdx = -(nof-1)/2;
     for( int i=0; i<nof; i++ )
@@ -158,8 +175,20 @@ void UfrawWorker::developImpl(bool preview, WorkerBase *predecessor)
         qDebug() << "UfrawWorker::developImpl()" << i << "finished with exitcode" << ufraw[i].exitCode() << ":" << ufraw[i].console();
         if( ufraw[i].exitCode() == 0 )
         {
+            bool isNormalExposed = (firstIdx+i)==0;
+            bool isOverExposed   = (firstIdx+i)>0;
             qDebug() << "UfrawWorker::developImpl()" << i << "loading" << ufraw[i].output();
-            imgs[i].read( ufraw[i].output().toStdString().c_str() );
+            Magick::Image img, mask;
+            img.read( ufraw[i].output().toStdString().c_str() );
+            if( isNormalExposed )
+            {
+                normalImg = img;
+            }
+            else
+            {
+                mask = masked( isOverExposed, 0.98, img );
+                mask.write( ufraw[i].output().toStdString().c_str() );
+            }
         }
     }
 
@@ -189,6 +218,6 @@ void UfrawWorker::developImpl(bool preview, WorkerBase *predecessor)
     }
     else
     {
-        m_img = imgs[0];
+        m_img = normalImg;
     }
 }

@@ -5,6 +5,8 @@ Item {
 
     property Flickable flickable
 
+    opacity: 0.25
+
     QtObject {
         id: internal
         property real posX: flickable.contentX / (flickable.contentWidth  - flickable.width)
@@ -18,9 +20,10 @@ Item {
         anchors.bottom:       parent.bottom
         anchors.bottomMargin: 4
         height:               4
-        width:                flickable.width / 6
+        width:                Math.max( 10, flickable.width * flickable.width / flickable.contentWidth )
         visible:              flickable.contentWidth > flickable.width
         radius:               2
+        color:                "yellow"
     }
 
     Rectangle {
@@ -29,10 +32,11 @@ Item {
         anchors.topMargin:   (flickable.height-height) * internal.posY
         anchors.right:       parent.right
         anchors.rightMargin: 4
-        height:              flickable.height / 6
+        height:              Math.max( 10, flickable.height * flickable.height / flickable.contentHeight )
         width:               4
         visible:             flickable.contentHeight > flickable.height
         radius:              2
+        color:               "yellow"
     }
 }
 

@@ -1,7 +1,9 @@
 import QtQuick 2.5
 import QtQuick.Controls 1.3
+
 import com.rawstack.types 1.0
 import "Tasks"
+import "../Misc" as Misc
 
 Rectangle {
     id: theDevImage
@@ -185,6 +187,12 @@ Rectangle {
             height:             theImage.paintedHeight
             visible:            internal.editRotate
         }
+    }
+
+    Misc.FlickableScrollIndicator {
+        id: theScroll
+        anchors.fill: parent
+        flickable:    theFlickable
     }
 
     Row {

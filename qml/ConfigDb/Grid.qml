@@ -115,6 +115,5 @@ Rectangle {
         id: theScroll
         anchors.fill: parent
         flickable:    theGridView
-        opacity:      0.5
     }
 }

@@ -108,6 +108,5 @@ Rectangle {
         id: theScroll
         anchors.fill: parent
         flickable:    theListView
-        opacity:      0.5
     }
 }

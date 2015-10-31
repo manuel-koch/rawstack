@@ -5,6 +5,11 @@ MenuBar {
 
     signal openFile()
     signal openDir()
+
+    signal loadDb()
+    signal saveDb()
+    signal saveAsDb()
+
     signal showOverview()
     signal showDevelop()
     signal showExport()
@@ -13,15 +18,36 @@ MenuBar {
         title: qsTr("&File")
 
         MenuItem {
-            text:        qsTr("Open File")
-            shortcut:    "Ctrl+O"
+            text:        qsTr("Add image...")
+            shortcut:    "Ctrl+Shift+O"
             onTriggered: openFile()
         }
 
         MenuItem {
-            text:        qsTr("Open Directory")
-            shortcut:    "Ctrl+Shift+O"
+            text:        qsTr("Add directory...")
+            shortcut:    "Ctrl+Alt+O"
             onTriggered: openDir()
+        }
+
+        MenuSeparator { }
+
+        MenuItem {
+            text:        qsTr("Load database...")
+            shortcut:    "Ctrl+O"
+            onTriggered: loadDb()
+        }
+
+        MenuItem {
+            text:        qsTr("Save database...")
+            shortcut:    "Ctrl+S"
+            enabled:     globalConfigDb.path
+            onTriggered: saveDb()
+        }
+
+        MenuItem {
+            text:        qsTr("Save database as...")
+            shortcut:    "Ctrl+Shift+S"
+            onTriggered: saveAsDb()
         }
 
         MenuSeparator { }

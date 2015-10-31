@@ -64,9 +64,31 @@ ApplicationWindow {
         }
     }
 
+    FileDialog {
+        id: loadDbDialog
+        title: "Please choose database"
+        selectExisting: true
+        onAccepted: {
+            globalConfigDb.load( loadDbDialog.fileUrls[0] )
+        }
+    }
+
+    FileDialog {
+        id: saveDbDialog
+        title: "Select path to database"
+        selectExisting: false
+        selectMultiple: false
+        onAccepted: {
+            globalConfigDb.save( saveDbDialog.fileUrls[0] )
+        }
+    }
+
     menuBar: MainMenuBar {
         onOpenFile:     openFileDialog.open()
         onOpenDir:      openDirDialog.open()
+        onLoadDb:       loadDbDialog.open()
+        onSaveDb:       globalConfigDb.save()
+        onSaveAsDb:     saveDbDialog.open()
         onShowOverview: internal.showView(theOverviewMain)
         onShowDevelop:  internal.showView(theDevMain)
         onShowExport:   internal.showView(theExportMain)

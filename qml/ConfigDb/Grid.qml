@@ -27,7 +27,7 @@ Rectangle {
                 anchors.fill:    parent
                 anchors.margins: 2
                 asynchronous:    true
-                source:          delegateModel.config.thumbnail
+                source:          (width>256 || height>256) && delegateModel.config.final ? delegateModel.config.final : delegateModel.config.thumbnail
                 fillMode:        Image.PreserveAspectFit
             }
             Rectangle {

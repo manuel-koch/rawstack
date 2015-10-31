@@ -14,6 +14,8 @@ Rectangle {
     property int cellsPerRow: 4
     property alias count: theGridView.count
 
+    onCellsPerRowChanged: theGridView.returnToBounds()
+
     Component {
         id: configDelegate
         Item {

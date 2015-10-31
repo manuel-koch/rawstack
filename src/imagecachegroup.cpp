@@ -50,6 +50,12 @@ void ImageCacheGroup::store(QString key, Magick::Image img)
     emit triggerStore(key,QByteArray( static_cast<const char*>(blob.data()), blob.length() ));
 }
 
+bool ImageCacheGroup::isCached(QString key)
+{
+    QMutexLocker lock(&m_mutex);
+    return m_cached.contains(key);
+}
+
 void ImageCacheGroup::storeImpl(QString key, QByteArray blob)
 {
     QMutexLocker lock(&m_mutex);

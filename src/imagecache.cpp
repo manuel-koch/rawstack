@@ -51,6 +51,11 @@ void ImageCache::store(QByteArray key, ImageCacheGroup::Lifetime lifetime, Magic
     store( QString::fromUtf8(key.toHex()), lifetime, img );
 }
 
+bool ImageCache::isCached(QString key)
+{
+    return m_persist.isCached(key) || m_tmp.isCached(key);
+}
+
 Magick::Image ImageCache::retrieve(QByteArray key, bool thumbnail)
 {
     return retrieve( QString::fromUtf8(key.toHex()), thumbnail );

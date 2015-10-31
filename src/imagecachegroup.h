@@ -34,6 +34,9 @@ public:
     /// Add / update given image for selected cache key
     void store(QString key, Magick::Image img);
 
+    /// Returns true when selected key is cached
+    bool isCached(QString key);
+
     /// Get cached image ( if any ) for given key
     Magick::Image retrieve(QString key, bool thumbnail);
 

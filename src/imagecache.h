@@ -25,6 +25,7 @@ public:
     void store(QString key, ImageCacheGroup::Lifetime lifetime, Magick::Image img);
     void store(QByteArray key, ImageCacheGroup::Lifetime lifetime, Magick::Image img);
 
+    bool isCached(QString key);
     Magick::Image retrieve(QString key, bool thumbnail);
     Magick::Image retrieve(QByteArray key, bool thumbnail);
 

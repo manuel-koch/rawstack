@@ -4,6 +4,9 @@
 
 #include <QDebug>
 #include <QFileInfo>
+#include <QDomDocument>
+
+const QString ConfigDbEntry::XmlTagName = "config";
 
 ConfigDbEntry::ConfigDbEntry(QObject *parent)
     : QObject(parent)
@@ -32,7 +35,29 @@ bool ConfigDbEntry::isValidRaw() const
 
 ConfigDb *ConfigDbEntry::db() const
 {
-     return qobject_cast<ConfigDb*>(parent());
+    return qobject_cast<ConfigDb*>(parent());
+}
+
+QDomNode ConfigDbEntry::toXML(QDomNode &node) const
+{
+    QDomDocument doc = node.ownerDocument();
+    QDomNode config = node.appendChild( doc.createElement(XmlTagName) );
+    QDomElement elem = config.toElement();
+    elem.setAttribute("path",m_config);
+    return config;
+}
+
+bool ConfigDbEntry::fromXML(const QDomNode &node)
+{
+    QDomElement elm = node.toElement();
+    if( !elm.isElement() )
+        return false;
+    if( elm.nodeName() != XmlTagName )
+        return false;
+
+    setConfig( elm.attribute("path") );
+
+    return true;
 }
 
 void ConfigDbEntry::setRaw(QString raw)

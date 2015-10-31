@@ -8,6 +8,7 @@
 
 #include <QObject>
 #include <QUrl>
+#include <QDomNode>
 
 class ConfigDb;
 
@@ -35,6 +36,11 @@ public:
     bool isValidRaw() const;
 
     ConfigDb *db() const;
+
+    QDomNode toXML(QDomNode &node ) const;
+    bool fromXML(QDomNode const &node );
+
+    static const QString XmlTagName;
 
 signals:
 

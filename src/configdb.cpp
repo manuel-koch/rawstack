@@ -9,6 +9,8 @@
 #include <QFileInfo>
 #include <QDir>
 
+const QString ConfigDb::DatabaseSuffix = "rawstackdb";
+
 ConfigDb::ConfigDb(QObject *parent)
     : QAbstractListModel(parent)
 {
@@ -35,16 +37,107 @@ void ConfigDb::remove(int idx)
     if( idx < 0 || idx >= m_configs.size() )
         return;
 
+    qDebug() << "ConfigDb::remove()" << idx << "of" << m_configs.size();
+
     beginRemoveRows( QModelIndex(), idx, idx );
     ConfigDbEntry *entry = m_configs.takeAt( idx );
     disconnect( entry, SIGNAL(duplicate()), this, SLOT(onDuplicateConfig()) );
     delete entry;
     endRemoveRows();
+
+    if( !m_path.isEmpty() )
+        save();
 }
 
 int ConfigDb::indexOfConfig(ConfigDbEntry *entry)
 {
     return m_configs.indexOf( entry );
+}
+
+void ConfigDb::save(const QUrl &url)
+{
+    QString path;
+    if( url.isEmpty() )
+    {
+        if( !m_path.isEmpty() )
+            path = m_path;
+        else
+        {
+            qWarning() << "ConfigDb::save() can't save to empty path";
+            return;
+        }
+    }
+    else
+        path = url.toLocalFile();
+
+    QFileInfo info( path );
+    info = QFileInfo( info.dir(), info.completeBaseName()+"."+DatabaseSuffix);
+    if( !info.dir().exists() )
+        info.dir().mkpath(".");
+    path = info.absoluteFilePath();
+
+    qDebug() << "ConfigDb::save()" << path << "...";
+
+    QDomDocument doc;
+    doc.appendChild( doc.createProcessingInstruction( "xml", "version=\"1.0\" encoding=\"utf-8\"") );
+    QDomNode root = doc.appendChild( doc.createElement("database") );
+    root.toElement().setAttribute("version",QString("%1.%2").arg(MajorVersion).arg(MinorVersion));
+    foreach( ConfigDbEntry *entry, m_configs )
+    {
+        entry->toXML( root );
+    }
+
+    QFile file( path );
+    if( file.open( QFile::WriteOnly | QFile::Truncate ) )
+    {
+        QTextStream stream(&file);
+        doc.save(stream,QDomNode::EncodingFromDocument);
+        qDebug() << "ConfigDb::save()" << path << "done";
+        setPath(path);
+    }
+    else
+        qWarning() << "ConfigDb::save() failed" << path;
+}
+
+void ConfigDb::load(const QUrl &url)
+{
+    QString path = url.toLocalFile();
+    qDebug() << "ConfigDb::load()" << path;
+
+    removeAll();
+
+    QFile file(path);
+    if( !file.open( QFile::ReadOnly ) )
+    {
+        qWarning() << "ConfigDb::load failed to open" << path;
+        return;
+    }
+
+    QDomDocument doc;
+    QString err;
+    int errLine, errCol;
+    bool res = doc.setContent(&file,true,&err,&errLine,&errCol);
+    if( !res )
+    {
+        qWarning() << "ConfigDb::load() error at line" << errLine << "col" << errCol << ":" << err;
+        return;
+    }
+
+    setPath(path);
+
+    QDomElement database = doc.documentElement();
+    QDomNodeList configs = database.elementsByTagName(ConfigDbEntry::XmlTagName);
+    qDebug() << configs.size();
+    for( int i=0; i<configs.size(); i++ )
+    {
+        QDomElement cfg = configs.item(i).toElement();
+        ConfigDbEntry *entry = new ConfigDbEntry(this);
+        // FIXME: this fails to assign the path to RAW ( because that is stored in the *.rawstack file and must be read therefore )
+        if( entry->fromXML( cfg ) )
+            addEntry( entry );
+        else
+            delete entry;
+    }
 }
 
 void ConfigDb::removeAll()
@@ -123,6 +216,16 @@ void ConfigDb::onRemoveConfig()
         return;
 
     remove( m_configs.indexOf( entry ) );
+}
+
+void ConfigDb::setPath(QString path)
+{
+    if( m_path == path )
+        return;
+
+    m_path = path;
+    qDebug() << "ConfigDb::setPath()" << m_path;
+    emit pathChanged(m_path);
 }
 
 void ConfigDb::addFromPath(const QFileInfo &path)
@@ -212,4 +315,7 @@ void ConfigDb::addEntry(ConfigDbEntry *entry)
     endInsertRows();
 
     qDebug() << "ConfigDb::add()" << m_configs.size();
+
+    if( !m_path.isEmpty() )
+        save();
 }

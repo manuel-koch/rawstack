@@ -17,6 +17,12 @@ ThumbnailLoader::ThumbnailLoader(ImageCache &cache, QObject *parent)
 
 void ThumbnailLoader::loadImpl(QString path)
 {
+    if( path.isEmpty() )
+        return;
+
+    if( m_cache.isCached( path ) )
+        return;
+
     qDebug() << "ThumbnailLoader::loadImpl()" << path;
     try
     {

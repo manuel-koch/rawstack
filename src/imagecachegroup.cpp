@@ -21,6 +21,10 @@ ImageCacheGroup::ImageCacheGroup(QString name, Lifetime lifetime, QObject *paren
     , m_mutex(QMutex::Recursive)
     , m_name(name)
     , m_lifetime(lifetime)
+    , m_memsize(0)
+    , m_maxMemSize(128*MByte)
+    , m_filesize(0)
+    , m_maxFileSize(256*MByte)
 {
     m_dir = QFileInfo(QStandardPaths::writableLocation(QStandardPaths::CacheLocation),m_name).absoluteFilePath();
     if( !m_dir.exists() )
@@ -70,19 +74,42 @@ void ImageCacheGroup::storeImpl(QString key, QByteArray blob)
     }
 
     if( !m_cached.contains(key) )
-    {
-        ImageCacheEntry *entry = new ImageCacheEntry(this);
-        entry->setInfo( QFileInfo( m_dir, hash(key) ).absoluteFilePath() );
-        m_cached[key] = entry;
-        m_used.append(key);
-    }
+        addEntry( key, QFileInfo( m_dir, hash(key) ).absoluteFilePath() );
 
     qDebug() << "ImageCacheGroup::storeImpl()" << m_name << key
              << "image:" << img.format().c_str()
              << "width:"  << img.size().width()
              << "height:" << img.size().height();
+
     m_cached[key]->setImage( img );
+
     emit cached( Updated, key );
+
+    cleanup();
+}
+
+void ImageCacheGroup::onMemSizeChanged(long delta)
+{
+    m_memsize += delta;
+    qDebug() << "ImageCacheGroup::onMemSizeChanged()" << m_name << delta << m_memsize;
+}
+
+void ImageCacheGroup::onFileSizeChanged(long delta)
+{
+    m_filesize += delta;
+    qDebug() << "ImageCacheGroup::onFileSizeChanged()" << m_name << delta << m_filesize;
+}
+
+void ImageCacheGroup::addEntry(QString key, QString path)
+{
+    ImageCacheEntry *entry = new ImageCacheEntry(this);
+
+    connect( entry, SIGNAL(memsizeChanged(long)), this, SLOT(onMemSizeChanged(long)) );
+    connect( entry, SIGNAL(filesizeChanged(long)), this, SLOT(onFileSizeChanged(long)) );
+
+    entry->setInfo( path );
+    m_cached[key] = entry;
+    m_used.append(key);
 }
 
 Magick::Image ImageCacheGroup::retrieve(QString key, bool thumbnail)
@@ -102,6 +129,8 @@ Magick::Image ImageCacheGroup::retrieve(QString key, bool thumbnail)
     {
         qDebug() << "ImageCacheGroup::retrieve()" << m_name << "miss" << key;
     }
+
+    cleanup();
 
     return img;
 }
@@ -159,11 +188,8 @@ void ImageCacheGroup::load()
             QFileInfo path( m_dir, img );
             if( m_cached.contains(key) || !path.exists() )
                 continue;
-            ImageCacheEntry *entry = new ImageCacheEntry(this);
-            entry->setInfo( path );
+            addEntry( key, path.absoluteFilePath() );
             cachedPaths << path.completeBaseName();
-            m_cached[key] = entry;
-            m_used.append(key);
         }
     }
 
@@ -185,6 +211,37 @@ void ImageCacheGroup::load()
 void ImageCacheGroup::cleanup()
 {
     QMutexLocker lock(&m_mutex);
-    //TODO
-}
 
+    unsigned long oldMemSize  = m_memsize;
+    unsigned long oldFileSize = m_filesize;
+
+    int idx = 0;
+    while( m_maxMemSize < m_memsize && idx < m_cached.size() )
+    {
+        m_cached[ m_used[idx] ]->release(true);
+        idx++;
+    }
+
+    idx = 0;
+    while( m_maxMemSize < m_memsize && idx < m_cached.size() )
+    {
+        m_cached[ m_used[idx] ]->release(false);
+        idx++;
+    }
+
+    idx = 0;
+    while( m_maxFileSize < m_filesize && idx < m_cached.size() )
+    {
+        QString key = m_used[idx];
+        ImageCacheEntry *entry = m_cached.take(key);
+        m_used.removeOne(key);
+        entry->purge();
+        delete entry;
+        idx++;
+    }
+
+    if( oldMemSize != m_memsize )
+        qDebug() << "ImageCacheGroup::cleanup()" << m_name << "freed mem:" << (oldMemSize-m_memsize);
+    if( oldFileSize != m_filesize )
+        qDebug() << "ImageCacheGroup::cleanup()" << m_name << "freed file:" << (oldFileSize-m_filesize);
+}

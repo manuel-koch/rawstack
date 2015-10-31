@@ -58,7 +58,12 @@ private slots:
 
     void storeImpl(QString key, QByteArray blob);
 
+    void onMemSizeChanged(long delta);
+    void onFileSizeChanged(long delta);
+
 private:
+
+    void addEntry( QString key, QString path );
 
     /// Apply size constraints on cache to free memory and disk space
     void cleanup();
@@ -71,8 +76,10 @@ private:
     QDir                            m_dir;
     QHash<QString,ImageCacheEntry*> m_cached;
     QList<QString>                  m_used;
-    size_t                          m_sizeMb;
-    size_t                          m_maxSizeMb;
+    unsigned long                   m_memsize;
+    unsigned long                   m_maxMemSize;
+    unsigned long                   m_filesize;
+    unsigned long                   m_maxFileSize;
 };
 
 #endif // IMAGECACHEGROUP_H

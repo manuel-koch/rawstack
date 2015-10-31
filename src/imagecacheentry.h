@@ -20,6 +20,12 @@ public:
     Magick::Image getImage(bool thumbnail);
     void setImage( Magick::Image image );
 
+    /// Returns approx size of image(s) in memory
+    int memsize() const { return m_memsize; }
+
+    /// Returns approx size of image(s) in filesystem
+    int filesize() const { return m_filesize; }
+
     /// Reduce memory usage by releasing loaded image(s).
     /// Select whether to keep the thumbnail and only drop the
     /// full size image.
@@ -28,11 +34,18 @@ public:
     /// Remove the cached image from filesystem and memory
     void purge();
 
+signals:
+
+    void memsizeChanged(long delta);
+    void filesizeChanged(long delta);
+
 private:
 
     QFileInfo     m_path;       // cached on disk
     Magick::Image m_img;        // full size image cached in memory
     Magick::Image m_thumbnail;  // thumbnail image cached in memory
+    int           m_memsize;    // approx size of image(s) in memory
+    int           m_filesize;   // approx size of image(s) in filesystem
 };
 
 #endif // IMAGECACHEENTRY_H

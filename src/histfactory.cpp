@@ -164,8 +164,18 @@ void HistFactory::onCycleChanged(int cycle)
 {
     Q_UNUSED(cycle);
 
-    qDebug() << "HistFactory::onCycleChanged() scale input image";
     Magick::Image image = m_worker->gmimage();
+    if( !image.isValid() )
+    {
+        qWarning() << "HistFactory::onCycleChanged() invalid input image" << m_worker;
+        setRed( QVariantList() );
+        setGreen( QVariantList() );
+        setBlue( QVariantList() );
+        setLum( QVariantList() );
+        return;
+    }
+
+    qDebug() << "HistFactory::onCycleChanged() scale input image";
     image.scale( Magick::Geometry(600,600) );
 
     HistDataVector histograms;

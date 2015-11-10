@@ -13,11 +13,12 @@ Rectangle {
     Text {
         id: theLabel
         anchors {
-            left:         parent.left
-            right:        parent.right
-            bottom:       parent.bottom
+            left:   parent.left
+            right:  parent.right
+            bottom: parent.bottom
         }
         horizontalAlignment: Qt.AlignHCenter
+        font.pointSize:      9
     }
 }
 

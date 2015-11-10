@@ -37,8 +37,6 @@ SOURCES += \
     src/taskbase.cpp \
     src/ufrawtask.cpp \
     src/workerbase.cpp \
-    src/configbase.cpp \
-    src/ufrawconfig.cpp \
     src/ufrawworker.cpp \
     src/ufrawprocess.cpp \
     src/taskstack.cpp \
@@ -49,23 +47,14 @@ SOURCES += \
     src/imagefactoryunderexposed.cpp \
     src/imagefactoryregistry.cpp \
     src/commontasks.cpp \
-    src/configsaverbase.cpp \
     src/stringtoolbox.cpp \
-    src/configxmlsaver.cpp \
-    src/configfilesaver.cpp \
-    src/configloaderbase.cpp \
-    src/configxmlloader.cpp \
-    src/configfileloader.cpp \
     src/histfactory.cpp \
-    src/rotateconfig.cpp \
     src/rotatetask.cpp \
     src/rotateworker.cpp \
     src/enfuseprocess.cpp \
     src/imagefactoryworker.cpp \
-    src/imagefactorypreview.cpp \
     src/imagecache.cpp \
     src/loghandler.cpp \
-    src/commonconfig.cpp \
     src/exportimage.cpp \
     src/exportsetting.cpp \
     src/exportqueue.cpp \
@@ -95,8 +84,6 @@ HEADERS += \
     src/taskbase.h \
     src/ufrawtask.h \
     src/workerbase.h \
-    src/configbase.h \
-    src/ufrawconfig.h \
     src/ufrawworker.h \
     src/ufrawprocess.h \
     src/taskbuilder.h \
@@ -108,25 +95,14 @@ HEADERS += \
     src/imagefactoryunderexposed.h \
     src/imagefactoryregistry.h \
     src/commontasks.h \
-    src/configsaverbase.h \
     src/stringtoolbox.h \
-    src/configxmlsaver.h \
-    src/configfilesaver.h \
-    src/configbuilder.h \
-    src/configbuilderbase.h \
-    src/configloaderbase.h \
-    src/configxmlloader.h \
-    src/configfileloader.h \
     src/histfactory.h \
-    src/rotateconfig.h \
     src/rotatetask.h \
     src/rotateworker.h \
     src/enfuseprocess.h \
     src/imagefactoryworker.h \
-    src/imagefactorypreview.h \
     src/imagecache.h \
     src/loghandler.h \
-    src/commonconfig.h \
     src/exportimage.h \
     src/exportsetting.h \
     src/exportqueue.h \

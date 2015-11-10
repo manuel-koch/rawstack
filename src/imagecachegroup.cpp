@@ -49,9 +49,14 @@ ImageCacheGroup::~ImageCacheGroup()
 
 void ImageCacheGroup::store(QString key, Magick::Image img)
 {
-    Magick::Blob blob;
-    img.write( &blob );
-    emit triggerStore(key,QByteArray( static_cast<const char*>(blob.data()), blob.length() ));
+    if( img.isValid() )
+    {
+        Magick::Blob blob;
+        img.write( &blob );
+        emit triggerStore(key,QByteArray( static_cast<const char*>(blob.data()), blob.length() ));
+    }
+    else
+        qWarning() << "ImageCacheGroup::store() skip invalid image" << key;
 }
 
 bool ImageCacheGroup::isCached(QString key)

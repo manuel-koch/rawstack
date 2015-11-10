@@ -15,9 +15,7 @@
 #include "configsetting.h"
 
 #include "configbase.h"
-#include "ufrawconfig.h"
 #include "ufrawtask.h"
-#include "rotateconfig.h"
 #include "rotatetask.h"
 
 #include <QDebug>

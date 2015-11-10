@@ -75,7 +75,11 @@ SOURCES += \
     src/imagecacheentry.cpp \
     src/imagecachegroup.cpp \
     src/thumbnailloader.cpp \
-    src/imagefactoryfinal.cpp
+    src/imagefactoryfinal.cpp \
+    src/configsettings.cpp \
+    src/configsetting.cpp \
+    src/ufrawsettings.cpp \
+    src/rotatesettings.cpp
 
 RESOURCES += qml.qrc
 
@@ -133,4 +137,8 @@ HEADERS += \
     src/imagecacheentry.h \
     src/imagecachegroup.h \
     src/thumbnailloader.h \
-    src/imagefactoryfinal.h
+    src/imagefactoryfinal.h \
+    src/configsettings.h \
+    src/configsetting.h \
+    src/ufrawsettings.h \
+    src/rotatesettings.h

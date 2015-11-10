@@ -15,8 +15,8 @@ public:
 private:
 
     // WorkerBase interface
-    virtual void developImpl(bool preview, WorkerBase *predecessor);
-
+    virtual void registerSettingsImpl() override;
+    virtual void developImpl(bool preview, WorkerBase *predecessor) override;
 };
 
 #endif // ROTATEWORKER_H

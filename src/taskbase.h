@@ -1,8 +1,7 @@
 #ifndef TASKBASE_H
 #define TASKBASE_H
 
-#include "configbase.h"
-#include "commonconfig.h"
+#include "configdbentry.h"
 #include "workerbase.h"
 #include "imagefactory.h"
 
@@ -12,31 +11,39 @@
 class TaskBase : public QObject
 {
     Q_OBJECT
-    Q_PROPERTY(ConfigBase*   config   READ config   CONSTANT)
-    Q_PROPERTY(ImageFactory* images   READ images   CONSTANT)
-    Q_PROPERTY(double        progress READ progress NOTIFY progressChanged)
-    Q_PROPERTY(bool          dirty    READ dirty    NOTIFY dirtyChanged)
+    Q_PROPERTY(QString        name       READ name       CONSTANT)
+    Q_PROPERTY(ConfigDbEntry* config     READ config     CONSTANT)
+    Q_PROPERTY(ImageFactory*  images     READ images     CONSTANT)
+    Q_PROPERTY(double         progress   READ progress   NOTIFY progressChanged)
+    Q_PROPERTY(bool           dirty      READ dirty      NOTIFY dirtyChanged)
+    Q_PROPERTY(bool           enabled    READ enabled    WRITE setEnabled NOTIFY enabledChanged)
+    Q_PROPERTY(bool           canDisable READ canDisable CONSTANT)
 
 public:
 
-    explicit TaskBase(QObject *parent = NULL);
+    explicit TaskBase(QString name = "", QObject *parent = NULL);
     virtual ~TaskBase();
 
-    CommonConfig* common() { return m_worker ? m_worker->common() : NULL; }
-    ConfigBase*   config() { return m_config; }
-    ImageFactory* images() { return m_images; }
-    WorkerBase*   worker() { return m_worker; }
-    double        progress() const { return m_worker ? m_worker->progress() : 0; }
-    bool          dirty() { return m_worker ? m_worker->dirty() : false; }
+    QString        name() { return m_name; }
+    ConfigDbEntry* config() { return m_config; }
+    ImageFactory*  images() { return m_images; }
+    WorkerBase*    worker() { return m_worker; }
 
-    void setCommonConfig( CommonConfig *common ) { m_worker->setCommonConfig(common); }
-    void setConfig( ConfigBase *config );
+    double progress() const { return m_worker ? m_worker->progress() : 0; }
+    bool   dirty() { return m_worker ? m_worker->dirty() : false; }
+    bool   enabled();
+    virtual bool canDisable() { return true; }
+
+    void setConfig( ConfigDbEntry *config );
     void setWorker( WorkerBase *worker );
+
+    void setEnabled(bool enabled);
 
 signals:
 
     void progressChanged(double progress);
     void dirtyChanged(bool dirty);
+    void enabledChanged(bool enabled);
 
     void started();
     void finished();
@@ -47,14 +54,21 @@ public slots:
 
 private slots:
 
+    void onEnabledChanged(QVariant enabled);
     void onStarted();
     void onFinished();
 
 private:
 
-    ConfigBase   *m_config;
-    WorkerBase   *m_worker;
-    ImageFactory *m_images;
+    void initBaseSettings();
+    virtual void initTaskSettings();
+
+private:
+
+    QString        m_name;
+    ConfigDbEntry *m_config;
+    WorkerBase    *m_worker;
+    ImageFactory  *m_images;
 };
 
 #endif // TASKBASE_H

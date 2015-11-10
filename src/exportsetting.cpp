@@ -9,12 +9,25 @@ ExportSetting::ExportSetting(ConfigDbEntry *config, QObject *parent)
     : QObject(parent)
     , m_config(config)
 {
-    setImgPath( m_config->config() );
+    if( m_config )
+        setImgPath( m_config->config() );
 }
 
 ExportSetting::~ExportSetting()
 {
     // EMPTY
+}
+
+void ExportSetting::setConfig(ConfigDbEntry *config)
+{
+    if( m_config == config )
+        return;
+
+    m_config = config;
+    emit configChanged(m_config);
+
+    if( m_config )
+        setImgPath( m_config->config() );
 }
 
 void ExportSetting::setImgPath(QString imgPath)

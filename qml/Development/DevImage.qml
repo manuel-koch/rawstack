@@ -18,7 +18,7 @@ Rectangle {
 
     QtObject {
         id: internal
-        property bool   editRotate: activeTask ? activeTask.config.name === "rotate" : false
+        property bool   editRotate: activeTask ? activeTask.name === "rotate" : false
         property string zoomName:   "fit"
         property real   zoomFactor: 0
         property real   zoomIdx:    -1

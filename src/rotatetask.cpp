@@ -1,12 +1,12 @@
 #include "rotatetask.h"
 #include "rotateworker.h"
-#include "rotateconfig.h"
+#include "rotatesettings.h"
 
 #include <QDebug>
 #include <QThread>
 
 RotateTask::RotateTask(QObject *parent, QThread *workerThread)
-    : TaskBase(parent)
+    : TaskBase("rotate",parent)
 {
     qDebug() << "RotateTask::RotateTask()" << this << workerThread;
     setWorker( new RotateWorker() );
@@ -18,3 +18,10 @@ RotateTask::~RotateTask()
     // EMPTY
 }
 
+void RotateTask::initTaskSettings()
+{
+    ConfigSettings *settings = config()->settings();
+
+    m_degree = settings->getSetting(RotateSettings::Degree);
+    m_degree->initIfNull( RotateSettings::DefaultDegree );
+}

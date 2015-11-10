@@ -6,8 +6,6 @@
 #include <QFileInfo>
 #include <QDomDocument>
 
-const QString ConfigDbEntry::XmlTagName = "config";
-
 ConfigDbEntry::ConfigDbEntry(QObject *parent)
     : QObject(parent)
     , m_thumbnail(this)
@@ -38,26 +36,91 @@ ConfigDb *ConfigDbEntry::db() const
     return qobject_cast<ConfigDb*>(parent());
 }
 
-QDomNode ConfigDbEntry::toXML(QDomNode &node) const
+void ConfigDbEntry::load(QString path)
 {
-    QDomDocument doc = node.ownerDocument();
-    QDomNode config = node.appendChild( doc.createElement(XmlTagName) );
-    QDomElement elem = config.toElement();
-    elem.setAttribute("path",m_config);
-    return config;
+    if( path.isEmpty() )
+        path = m_config;
+
+    qDebug() << "ConfigDbEntry::load()" << path;
+
+    m_settings.removeAll();
+
+    QFile file(path);
+    if( !file.open( QFile::ReadOnly ) )
+    {
+        qWarning() << "ConfigDbEntry::load() failed to open" << path;
+        return;
+    }
+
+    QDomDocument doc;
+    QString err;
+    int errLine, errCol;
+    bool res = doc.setContent(&file,true,&err,&errLine,&errCol);
+    if( !res )
+    {
+        qWarning() << "ConfigDbEntry::load() error at line" << errLine << "col" << errCol << ":" << err;
+        return;
+    }
+
+    fromXML( doc );
+
+    qDebug() << "ConfigDbEntry::load()" << path << "done";
 }
 
-bool ConfigDbEntry::fromXML(const QDomNode &node)
+void ConfigDbEntry::fromXML(const QDomDocument &doc)
 {
-    QDomElement elm = node.toElement();
-    if( !elm.isElement() )
-        return false;
-    if( elm.nodeName() != XmlTagName )
-        return false;
+    QDomElement root = doc.documentElement();
 
-    setConfig( elm.attribute("path") );
+    QString   raw     = root.attribute("raw");
+    QFileInfo rawInfo = raw;
+    if( !rawInfo.exists() )
+        rawInfo = QFileInfo( QFileInfo(m_config).dir(), rawInfo.fileName() );
 
-    return true;
+    if( rawInfo.exists() )
+        setRaw( rawInfo.absoluteFilePath() );
+    else
+    {
+        qWarning() << "ConfigDbEntry::fromXML() invalid path" << raw;
+        setRaw( raw );
+    }
+
+    QDomNode settings = root.firstChildElement("settings");
+    m_settings.fromXML( settings );
+}
+
+void ConfigDbEntry::save(QString path)
+{
+    if( path.isEmpty() )
+        path = m_config;
+
+    qDebug() << "ConfigDbEntry::save()" << path;
+
+    QDomDocument doc;
+    doc.appendChild( doc.createProcessingInstruction( "xml", "version=\"1.0\" encoding=\"utf-8\"") );
+
+    toXML( doc );
+
+    QFile file( path );
+    if( file.open( QFile::WriteOnly | QFile::Truncate ) )
+    {
+        QTextStream stream(&file);
+        doc.save(stream,QDomNode::EncodingFromDocument);
+        qDebug() << "ConfigDbEntry::save()" << path << "done";
+    }
+    else
+        qWarning() << "ConfigDbEntry::save() failed" << path;
+}
+
+void ConfigDbEntry::toXML(QDomDocument &doc) const
+{
+    QDomNode    root     = doc.appendChild( doc.createElement("rawstack") );
+    QDomElement rootElem = root.toElement();
+
+    rootElem.setAttribute("version","1.0");
+    rootElem.setAttribute("raw",m_raw);
+
+    QDomNode settings = root.appendChild( doc.createElement("settings") );
+    m_settings.toXML( settings );
 }
 
 void ConfigDbEntry::setRaw(QString raw)

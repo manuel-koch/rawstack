@@ -10,7 +10,6 @@
 class ConfigDbEntry;
 class TaskBase;
 class CommonTasks;
-class CommonConfig;
 
 class TaskStack : public QAbstractListModel
 {
@@ -54,10 +53,7 @@ public slots:
     Q_INVOKABLE void develop();
 
     /// Load current stack config from selected configuration .
-    Q_INVOKABLE void loadConfig( ConfigDbEntry *config );
-
-    /// Save current stack configuration to file
-    Q_INVOKABLE void saveConfig();
+    Q_INVOKABLE void setConfig( ConfigDbEntry *config );
 
 public:
 
@@ -80,7 +76,6 @@ private slots:
     void onTaskFinished();
     void onTaskDirty(bool dirty);
     void onConfigDestroyed();
-    void onRawChanged();
 
 private:
 
@@ -92,17 +87,11 @@ private:
     /// Clear list of tasks for current raw image
     void clearTasks();
 
-    /// Load tasks from current configuration
-    bool loadConfigImpl();
-
     /// Apply default tasks for current raw image
-    void applyDefaultTasks();
+    void createDefaultTasks();
 
     /// Returns true when one of the tasks is dirty
     bool anyTaskDirty();
-
-    /// Use new common config instance
-    void setCommonConfig( CommonConfig *common );
 
 private:
 
@@ -110,7 +99,6 @@ private:
     QThread          *m_workerThread;   // hosting task worker in given thread
     QList<TaskBase*>  m_tasks;          // list of all tasks in stack
     CommonTasks      *m_commonTasks;    // helper to access named common tasks
-    CommonConfig     *m_commonConfig;   // common configuration usable by all tasks
     bool              m_developing;     // whether stack is currently developing
     bool              m_dirty;          // whether stack is currently dirty, i.e. needs to develop
     double            m_progress;       // current develop progress of stack ( 0...1 )

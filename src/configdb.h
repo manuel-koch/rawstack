@@ -75,7 +75,7 @@ private:
     void addFromPath( const QFileInfo &path );
     void addFromConfig( const QFileInfo &path );
     void addFromRaw( const QFileInfo &path );
-    void addEntry( ConfigDbEntry *entry );
+    void loadAndAddEntry( ConfigDbEntry *entry );
 
     void removeAll();
 

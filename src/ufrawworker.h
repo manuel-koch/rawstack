@@ -21,7 +21,7 @@ private:
     void run(UfrawProcess &ufraw, bool lowQuality, int idx, int nof);
 
     // WorkerBase interface
-    virtual const Magick::Image gmpreview() override;
+    virtual void registerSettingsImpl() override;
     virtual void prepareImpl() override;
     virtual void developImpl(bool preview, WorkerBase *predecessor) override;
 };

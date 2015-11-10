@@ -1,5 +1,7 @@
 #include "rotateworker.h"
-#include "rotateconfig.h"
+#include "rotatesettings.h"
+#include "configdbentry.h"
+#include "configsetting.h"
 
 #include <math.h>
 
@@ -37,7 +39,7 @@ Magick::Geometry largestRotatedGeometrie( const Magick::Image &img, double degre
 }
 
 RotateWorker::RotateWorker()
-    : WorkerBase()
+    : WorkerBase("rotate")
 {
     // EMPTY
 }
@@ -47,21 +49,23 @@ RotateWorker::~RotateWorker()
     // EMPTY
 }
 
+void RotateWorker::registerSettingsImpl()
+{
+    hashSetting(RotateSettings::Degree);
+}
+
 void RotateWorker::developImpl(bool preview, WorkerBase *predecessor)
 {
     Q_UNUSED(preview);
 
     qDebug() << "RotateWorker::developImpl()" << this << predecessor;
 
-    RotateConfig *cfg = config<RotateConfig>();
-    if( !cfg )
-        return;
-
-    if( cfg->degree() )
+    double degree = config()->settings()->getSetting(RotateSettings::Degree)->value().toDouble();
+    if( degree )
     {
-        qDebug() << "RotateWorker::developImpl()" << this << cfg->degree();
-        Magick::Geometry croppedGeomentry = largestRotatedGeometrie( m_img, cfg->degree() );
-        m_img.rotate( cfg->degree() );
+        qDebug() << "RotateWorker::developImpl()" << this << degree;
+        Magick::Geometry croppedGeomentry = largestRotatedGeometrie( m_img, degree );
+        m_img.rotate( degree );
         setProgress( 0.5 );
         m_img.crop( croppedGeomentry );
     }

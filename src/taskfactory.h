@@ -6,9 +6,7 @@
 
 class QThread;
 class TaskBuilderBase;
-class ConfigBuilderBase;
 class TaskBase;
-class ConfigBase;
 
 class TaskFactory : public QObject
 {
@@ -26,15 +24,9 @@ public slots:
     /// Add an instance that can create a task instance, factory takes ownership of builder.
     bool add(TaskBuilderBase *builder);
 
-    /// Add an instance that can create a config instance, factory takes ownership of builder.
-    bool add(ConfigBuilderBase *builder);
-
-    /// Create config by name, caller takes owership of configuration.
-    ConfigBase *create(QString name);
-
-    /// Create task for given config, worker of task will be hosted in given task or default task.
+    /// Create task of given name, worker of task will be hosted in given thread or default thread.
     /// Caller takes ownership of task.
-    TaskBase *create(ConfigBase *config, QThread *workerThread = NULL);
+    TaskBase *create(QString name, QThread *workerThread = NULL);
 
 private:
 
@@ -42,7 +34,6 @@ private:
 
     QThread                         *m_workerThread;  /// default worker thread for tasks
     QMap<QString,TaskBuilderBase*>   m_taskBuilder;   /// map of registered task builders
-    QMap<QString,ConfigBuilderBase*> m_configBuilder; /// map of registered config builders
 };
 
 #endif // TASKFACTORY_H

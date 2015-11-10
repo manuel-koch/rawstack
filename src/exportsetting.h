@@ -8,7 +8,7 @@ class ConfigDbEntry;
 class ExportSetting : public QObject
 {
     Q_OBJECT
-    Q_PROPERTY(ConfigDbEntry* config     READ config     CONSTANT)
+    Q_PROPERTY(ConfigDbEntry* config     READ config     WRITE setConfig     NOTIFY configChanged)
     Q_PROPERTY(QString        imgPath    READ imgPath    WRITE setImgPath    NOTIFY imgPathChanged)
     Q_PROPERTY(ImageType      imgType    READ imgType    WRITE setImgType    NOTIFY imgTypeChanged)
     Q_PROPERTY(int            imgQuality READ imgQuality WRITE setImgQuality NOTIFY imgQualityChanged)
@@ -16,7 +16,7 @@ class ExportSetting : public QObject
 
 public:
 
-    explicit ExportSetting(ConfigDbEntry *config, QObject *parent = 0);
+    explicit ExportSetting(ConfigDbEntry *config = 0, QObject *parent = 0);
     virtual ~ExportSetting();
 
     enum ImageType
@@ -33,12 +33,14 @@ public:
 
 signals:
 
+    void configChanged(ConfigDbEntry *config);
     void imgPathChanged(QString imgPath);
     void imgTypeChanged(ImageType imgType);
     void imgQualityChanged(int imgQuality);
 
 public slots:
 
+    void setConfig(ConfigDbEntry *config);
     void setImgPath(QString imgPath);
     void setImgType(ImageType imgType);
     void setImgQuality(int imgQuality);

@@ -61,7 +61,7 @@ Rectangle {
                     else
                         theContextMenu.visible = false
                 }
-                onDoubleClicked: globalDevTaskStack.loadConfig( delegateModel.config )
+                onDoubleClicked: globalDevTaskStack.setConfig( delegateModel.config )
             }
         }
     }

@@ -9,6 +9,7 @@
 UfrawProcess::UfrawProcess(QObject *parent)
     : QProcess(parent)
     , m_output()
+    , m_failed(false)
     , m_shrink(1)
     , m_exposure(0)
     , m_colorSmoothing(true)
@@ -35,6 +36,9 @@ void UfrawProcess::run(Output output)
 {
     if( state() == QProcess::Running )
         return;
+
+    m_failed = false;
+
     qDebug() << "UfrawProcess::run()" << output;
 
     if( output == OutputThumbnail )
@@ -131,6 +135,7 @@ void UfrawProcess::onStateChanged(QProcess::ProcessState newState)
 void UfrawProcess::onError(QProcess::ProcessError error)
 {
     qDebug() << "UfrawProcess::onError()" << error;
+    m_failed = true;
 }
 
 void UfrawProcess::onConsole()

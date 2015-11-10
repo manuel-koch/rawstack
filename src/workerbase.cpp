@@ -1,9 +1,11 @@
 #include "workerbase.h"
-#include "configbase.h"
+#include "configdbentry.h"
+#include "configsetting.h"
 #include "imagecache.h"
 
 #include <QDebug>
 #include <QMutexLocker>
+#include <QCryptographicHash>
 
 QImage WorkerBase::convert(Magick::Image image)
 {
@@ -12,11 +14,11 @@ QImage WorkerBase::convert(Magick::Image image)
     return QImage::fromData( QByteArray( static_cast<const char*>(blob.data()), blob.length() ) );
 }
 
-WorkerBase::WorkerBase()
+WorkerBase::WorkerBase(QString name)
     : QObject(NULL)
-    , m_common(NULL)
     , m_cache(NULL)
     , m_mutex(QMutex::Recursive)
+    , m_name(name)
     , m_progress(0)
     , m_cycle(0)
     , m_config(NULL)
@@ -30,15 +32,55 @@ WorkerBase::~WorkerBase()
     qDebug() << "WorkerBase::~WorkerBase()" << this;
 }
 
-void WorkerBase::setConfig(ConfigBase *config)
+void WorkerBase::setConfig(ConfigDbEntry *config)
 {
-    if( m_config )
-        disconnect( m_config, SIGNAL(hashChanged()), this, SLOT(onCfgHashChanged()) );
-
+    qDebug() << "WorkerBase::setConfig()" << this << config;
     m_config = config;
+    hashSetting( m_name+".enabled" );
+    registerSettingsImpl();
+}
 
-    if( m_config )
-        connect( m_config, SIGNAL(hashChanged()), this, SLOT(onCfgHashChanged()) );
+void WorkerBase::registerSettingsImpl()
+{
+    // EMPTY
+}
+
+void WorkerBase::hashSetting(QString name)
+{
+    QMutexLocker lock(&m_mutex);
+
+    ConfigSetting *setting = m_config->settings()->getSetting(name);
+    if( m_hashSettings.contains(setting) )
+        return;
+
+    qDebug() << "WorkerBase::hashSetting()" << this << setting->fullname() << setting->value();
+    m_hashSettings.append(setting);
+    connect( setting, SIGNAL(valueChanged(QVariant)), this, SLOT(onSettingChanged()) );
+}
+
+QByteArray WorkerBase::hashSettings(QByteArray init)
+{
+    QMutexLocker lock(&m_mutex);
+
+    qDebug() << "WorkerBase::hashSettings()" << this;
+    QCryptographicHash h(QCryptographicHash::Md5);
+    h.addData( init );
+    h.addData( m_name.toLocal8Bit() );
+    foreach( ConfigSetting *setting, m_hashSettings )
+    {
+        QString value = setting->value().toString();
+        qDebug() << "WorkerBase::hashSettings()" << this << setting->fullname() << value;
+        h.addData( value.toLocal8Bit() );
+    }
+    return h.result();
+}
+
+void WorkerBase::onSettingChanged()
+{
+    QByteArray hash = hashSettings();
+    bool dirty = m_doneSettingsHash != hash;
+    qDebug() << "WorkerBase::onSettingChanged()" << this << (dirty?"dirty":"clean");
+    setDirty( dirty );
 }
 
 void WorkerBase::setCache(ImageCache *cache)
@@ -52,16 +94,6 @@ void WorkerBase::releaseImages()
 
     m_img     = Magick::Image();
     m_preview = Magick::Image();
-}
-
-void WorkerBase::onCfgHashChanged()
-{
-    QMutexLocker lock(&m_mutex);
-
-    QByteArray hash = m_config->hash();
-    bool dirty = m_doneConfigHash != hash;
-    qDebug() << "WorkerBase::onCfgHashChanged()" << this << (dirty?"dirty":"clean");
-    setDirty( dirty );
 }
 
 void WorkerBase::setProgress(double progress)
@@ -100,9 +132,11 @@ void WorkerBase::onDevelop(bool preview, WorkerBase *predecessor)
     prepareImpl();
 
     bool imgCached = false;
+    bool enabled = config()->settings()->getSetting(m_name+".enabled")->value().toBool();
+
     QByteArray preImgHash = predecessor ? predecessor->hash() : QByteArray();
-    QByteArray curCfgHash = m_config->hash();
-    QByteArray curImgHash = m_config->hash( preImgHash );
+    QByteArray curSettingsHash = hashSettings();
+    QByteArray curImgHash = hashSettings( preImgHash );
     if( m_doneImgHash != curImgHash )
     {
         if( m_cache )
@@ -113,14 +147,14 @@ void WorkerBase::onDevelop(bool preview, WorkerBase *predecessor)
         if( !imgCached )
         {
             m_img = predecessor ? predecessor->gmimage() : Magick::Image();
-            if( (!predecessor || m_img.isValid()) && m_config->enabled() )
+            if( (!predecessor || m_img.isValid()) && enabled )
                 developImpl( preview, predecessor );
             if( m_cache )
                 m_cache->store( curImgHash, ImageCacheGroup::Temporary, m_img );
         }
-        m_doneConfigHash = curCfgHash;
-        m_doneImgHash    = curImgHash;
-        onCfgHashChanged(); // re-evaluate dirty flag based on current config
+        m_doneSettingsHash = curSettingsHash;
+        m_doneImgHash      = curImgHash;
+        onSettingChanged(); // re-evaluate dirty flag based on current settings
     }
 
     if( m_img.isValid() )
@@ -130,7 +164,7 @@ void WorkerBase::onDevelop(bool preview, WorkerBase *predecessor)
                  << "width:"  << m_img.size().width()
                  << "height:" << m_img.size().height();
         Magick::Image img = m_img;
-        img.write( QString("/Users/manuel/tmp/test_%1.tif").arg(m_config->name()).toStdString() );
+        img.write( QString("/Users/manuel/tmp/test_%1.tif").arg(m_name).toStdString() );
     }
     else
     {

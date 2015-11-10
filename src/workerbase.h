@@ -7,8 +7,8 @@
 #include <QMutex>
 #include <QImage>
 
-class ConfigBase;
-class CommonConfig;
+class ConfigDbEntry;
+class ConfigSetting;
 class ImageCache;
 
 class WorkerBase : public QObject
@@ -20,13 +20,14 @@ class WorkerBase : public QObject
 
 public:
 
-    explicit WorkerBase();
+    explicit WorkerBase(QString name);
     virtual ~WorkerBase();
 
-    void setCommonConfig(CommonConfig *common) { m_common = common; }
-    void setConfig(ConfigBase *config);
+    void setConfig(ConfigDbEntry *config);
     void setCache(ImageCache *cache);
 
+    QString name() const { return m_name; }
+    ConfigDbEntry* config() const { return m_config; }
     double progress() const { return m_progress; }
     int    cycle()    const { return m_cycle; }
     bool   dirty()    const { return m_dirty; }
@@ -34,12 +35,8 @@ public:
     const QByteArray &hash() const { return m_doneImgHash; }
 
     virtual const Magick::Image gmimage() { return m_img; }
-    virtual const Magick::Image gmpreview() { return m_preview; }
     virtual void releaseImages();
     static QImage convert(Magick::Image image);
-
-    CommonConfig *common() { return m_common; }
-    template <typename T> T *config() { return qobject_cast<T*>(m_config); }
 
 signals:
 
@@ -54,12 +51,13 @@ signals:
 protected slots:
 
     void setProgress(double progress);
+    void hashSetting( QString name );
 
 private slots:
 
     void setDirty( bool dirty );
     void onDevelop( bool preview, WorkerBase *predecessor );
-    void onCfgHashChanged();
+    void onSettingChanged();
 
 private:
 
@@ -67,9 +65,11 @@ private:
     virtual void developImpl(bool preview, WorkerBase *predecessor );
     void nextCycle();
 
+    virtual void registerSettingsImpl();
+    QByteArray hashSettings( QByteArray init = QByteArray() );
+
 protected:
 
-    CommonConfig   *m_common;
     ImageCache     *m_cache;
     Magick::Image   m_img;
     Magick::Image   m_preview;
@@ -77,12 +77,15 @@ protected:
 private:
 
     QMutex         m_mutex;
+    QString        m_name;
     double         m_progress;
     int            m_cycle;
     bool           m_dirty;
-    ConfigBase    *m_config;
-    QByteArray     m_doneConfigHash;
-    QByteArray     m_doneImgHash;
+    ConfigDbEntry *m_config;
+
+    QList<ConfigSetting*> m_hashSettings;
+    QByteArray            m_doneSettingsHash;
+    QByteArray            m_doneImgHash;
 };
 
 #endif // WORKERBASE_H

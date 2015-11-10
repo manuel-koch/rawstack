@@ -45,6 +45,8 @@ public:
     QString &console() { return m_console; }
 
     void   run(Output output );
+    bool   failed() const { return m_failed; }
+
     int    shrink() const { return m_shrink; }
     double exposure() const { return m_exposure; }
     bool colorSmoothing() const { return m_colorSmoothing; }
@@ -89,6 +91,7 @@ private:
 
     QTemporaryFile m_output;
     QString        m_console;
+    bool           m_failed;
 
     QString     m_raw;
     int         m_shrink;

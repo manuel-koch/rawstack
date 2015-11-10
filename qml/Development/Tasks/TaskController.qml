@@ -16,10 +16,9 @@ Item {
     }
 
     function toggleEnabled() {
-        console.log(theController,task.config.enabled,theController.task.config.canDisable)
-        var enabled = !theController.task.config.enabled
-        if( enabled || (!enabled && theController.task.config.canDisable) ) {
-            theController.task.config.enabled = enabled
+        var enabled = !theController.task.enabled
+        if( enabled || (!enabled && theController.task.canDisable) ) {
+            theController.task.enabled = enabled
             triggerDevelop(true,true)
         }
     }

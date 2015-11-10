@@ -84,7 +84,8 @@ void ConfigDb::save(const QUrl &url)
     root.toElement().setAttribute("version",QString("%1.%2").arg(MajorVersion).arg(MinorVersion));
     foreach( ConfigDbEntry *entry, m_configs )
     {
-        entry->toXML( root );
+        QDomNode config = doc.appendChild( doc.createElement("config") );
+        config.toElement().setAttribute( "path", entry->config() );
     }
 
     QFile file( path );
@@ -126,17 +127,14 @@ void ConfigDb::load(const QUrl &url)
     setPath(path);
 
     QDomElement database = doc.documentElement();
-    QDomNodeList configs = database.elementsByTagName(ConfigDbEntry::XmlTagName);
+    QDomNodeList configs = database.elementsByTagName("config");
     qDebug() << configs.size();
     for( int i=0; i<configs.size(); i++ )
     {
         QDomElement cfg = configs.item(i).toElement();
         ConfigDbEntry *entry = new ConfigDbEntry(this);
-        // FIXME: this fails to assign the path to RAW ( because that is stored in the *.rawstack file and must be read therefore )
-        if( entry->fromXML( cfg ) )
-            addEntry( entry );
-        else
-            delete entry;
+        entry->setConfig( cfg.attribute("path") );
+        loadAndAddEntry( entry );
     }
 }
 
@@ -200,13 +198,11 @@ void ConfigDb::onDuplicateConfig()
 
     qDebug() << "ConfigDb::onDuplicateConfig() to" << newConfig.absoluteFilePath();
 
-    QFile curCfg( entry->config() );
-    curCfg.copy( newConfig.absoluteFilePath() );
-
     ConfigDbEntry *config = new ConfigDbEntry( this );
-    config->setRaw( entry->raw() );
+    config->load( entry->config() );
     config->setConfig( newConfig.absoluteFilePath() );
-    addEntry( config );
+    config->save();
+    loadAndAddEntry( config );
 }
 
 void ConfigDb::onRemoveConfig()
@@ -252,36 +248,20 @@ void ConfigDb::addFromRaw(const QFileInfo &path)
     ConfigDbEntry *config = new ConfigDbEntry( this );
     config->setRaw( path.absoluteFilePath() );
     config->setConfig( QFileInfo(path.dir(), path.completeBaseName() + ".rawstack").absoluteFilePath() );
-    addEntry( config );
+    loadAndAddEntry( config );
 }
 
 void ConfigDb::addFromConfig(const QFileInfo &path)
 {
-    QString rawPath;
-    ConfigFileLoader loader;
-    connect( &loader, &ConfigFileLoader::config, [&] (ConfigBase *cfg) {
-        if( cfg->name() == "common" )
-        {
-            CommonConfig *common = reinterpret_cast<CommonConfig*>(cfg);
-            rawPath = common->raw();
-        }
-        delete cfg;
-    });
-    bool loaded = loader.load(path.absoluteFilePath());
-    if( !loaded )
-    {
-        qDebug() << "ConfigDb::addFromConfig() failed";
-        return;
-    }
-
     ConfigDbEntry *config = new ConfigDbEntry( this );
-    config->setRaw( rawPath );
     config->setConfig( path.absoluteFilePath() );
-    addEntry( config );
+    loadAndAddEntry( config );
 }
 
-void ConfigDb::addEntry(ConfigDbEntry *entry)
+void ConfigDb::loadAndAddEntry(ConfigDbEntry *entry)
 {
+    entry->load();
+
     bool found = false;
     foreach( ConfigDbEntry *existingEntry, m_configs )
     {

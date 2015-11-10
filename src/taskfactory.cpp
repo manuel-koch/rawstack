@@ -1,7 +1,5 @@
 #include "taskfactory.h"
 #include "taskbuilderbase.h"
-#include "configbuilderbase.h"
-#include "configbase.h"
 #include "taskbase.h"
 #include "imagecache.h"
 
@@ -27,11 +25,6 @@ TaskFactory::~TaskFactory()
         delete m_taskBuilder.first();
         m_taskBuilder.erase( m_taskBuilder.begin() );
     }
-    while( !m_configBuilder.empty() )
-    {
-        delete m_configBuilder.first();
-        m_configBuilder.erase( m_configBuilder.begin() );
-    }
 }
 
 bool TaskFactory::add(TaskBuilderBase *builder)
@@ -47,40 +40,12 @@ bool TaskFactory::add(TaskBuilderBase *builder)
     return true;
 }
 
-bool TaskFactory::add(ConfigBuilderBase *builder)
+TaskBase *TaskFactory::create(QString name, QThread *workerThread)
 {
-    auto it = m_configBuilder.find(builder->name());
-    if( it != m_configBuilder.end() )
-    {
-        qDebug() << "TaskFactory::add() config" << builder->name() << "already added";
-        return false;
-    }
-    qDebug() << "TaskFactory::add() config" << builder->name();
-    m_configBuilder[builder->name()] = builder;
-    return true;
-}
-
-ConfigBase *TaskFactory::create(QString config)
-{
-    auto it = m_configBuilder.find(config);
-    if( it == m_configBuilder.end() )
-    {
-        qDebug() << "TaskFactory::create() config" << config << "unknown";
-        return NULL;
-    }
-
-    ConfigBuilderBase *builder = (*it);
-    ConfigBase *cfg = builder->create();
-    qDebug() << "TaskFactory::create() " << cfg;
-    return cfg;
-}
-
-TaskBase *TaskFactory::create(ConfigBase *config, QThread *workerThread)
-{
-    auto it = m_taskBuilder.find(config->name());
+    auto it = m_taskBuilder.find(name);
     if( it == m_taskBuilder.end() )
     {
-        qDebug() << "TaskFactory::create() task" << config << "unknown";
+        qDebug() << "TaskFactory::create() task" << name << "unknown";
         return NULL;
     }
 
@@ -90,6 +55,5 @@ TaskBase *TaskFactory::create(ConfigBase *config, QThread *workerThread)
     TaskBuilderBase *builder = (*it);
     TaskBase *task = builder->create( this, workerThread );
     qDebug() << "TaskFactory::create()" << task;
-    task->setConfig( config );
     return task;
 }

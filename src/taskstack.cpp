@@ -20,7 +20,6 @@ TaskStack::TaskStack(bool preview, QObject *parent)
     : QAbstractListModel(parent)
     , m_workerThread(NULL)
     , m_commonTasks(NULL)
-    , m_commonConfig(NULL)
     , m_developing(false)
     , m_dirty(false)
     , m_progress(0)
@@ -40,7 +39,6 @@ TaskStack::~TaskStack()
 {
     clearTasks();
     delete m_commonTasks;
-    delete m_commonConfig;
 }
 
 void TaskStack::addTask(TaskBase *task, int idx)
@@ -55,8 +53,8 @@ void TaskStack::addTask(TaskBase *task, int idx)
 
     beginInsertRows( QModelIndex(), idx, idx );
 
-    task->setCommonConfig( m_commonConfig );
-    task->worker()->setCache( &m_config->db()->cache() );
+    task->setConfig( m_config );
+    task->worker()->setCache( &m_config->db()->cache() ); // FIXME: redundant when worker already knows config
     m_tasks.insert( idx, task );
     connect( task, SIGNAL(started()),               this, SLOT(onTaskStarted()) );
     connect( task, SIGNAL(progressChanged(double)), this, SLOT(onTaskProgress(double)) );
@@ -64,7 +62,7 @@ void TaskStack::addTask(TaskBase *task, int idx)
     connect( task, SIGNAL(dirtyChanged(bool)),      this, SLOT(onTaskDirty(bool)) );
 
     m_commonTasks->setFinal( m_tasks.back() );
-    if( task->config()->name() == "ufraw" )
+    if( task->name() == "ufraw" )
         m_commonTasks->setUfraw(task);
 
     setDirty( anyTaskDirty() );
@@ -93,7 +91,7 @@ void TaskStack::removeTask(int idx)
         m_commonTasks->setFinal( NULL );
     else
         m_commonTasks->setFinal( m_tasks.back() );
-    if( task->config()->name() == "ufraw" )
+    if( task->name() == "ufraw" )
         m_commonTasks->setUfraw(NULL);
 
     setDirty( anyTaskDirty() );
@@ -127,21 +125,7 @@ void TaskStack::develop()
         m_tasks[0]->develop( m_preview );
 }
 
-void TaskStack::saveConfig()
-{
-    if( m_tasks.empty() )
-        return;
-
-    qDebug() << "TaskStack::saveConfig()" << m_config->config();
-    ConfigFileSaver fileSaver;
-    fileSaver.add( m_commonConfig );
-    std::for_each( m_tasks.begin(), m_tasks.end(), [&] (TaskBase *task) {
-        fileSaver.add( task->config() );
-    });
-    fileSaver.save( m_config->config() );
-}
-
-void TaskStack::loadConfig(ConfigDbEntry *config)
+void TaskStack::setConfig(ConfigDbEntry *config)
 {
     if( m_config == config || (m_config && m_config->equals(config)) )
         return;
@@ -152,18 +136,15 @@ void TaskStack::loadConfig(ConfigDbEntry *config)
 
     if( m_config )
     {
-        disconnect( m_config, SIGNAL(rawChanged(QString)), this, SLOT(onRawChanged()) );
         disconnect( m_config, SIGNAL(destroyed(QObject*)), this, SLOT(onConfigDestroyed()) );
     }
 
     m_config = config;
+    createDefaultTasks();
 
     if( m_config )
     {
-        connect( m_config, SIGNAL(rawChanged(QString)), this, SLOT(onRawChanged()) );
         connect( m_config, SIGNAL(destroyed(QObject*)), this, SLOT(onConfigDestroyed()) );
-        onRawChanged();
-        loadConfigImpl();
     }
 
     emit configChanged(m_config);
@@ -200,53 +181,22 @@ void TaskStack::clearTasks()
     setDeveloping( false );
 }
 
-bool TaskStack::loadConfigImpl()
+void TaskStack::createDefaultTasks()
 {
-    ConfigFileLoader loader;
-    connect( &loader, &ConfigFileLoader::config, [&] (ConfigBase *cfg) {
-        qDebug() << "TaskStack::loadTasks()" << cfg;
-        if( cfg->name() == "common" )
-            setCommonConfig( reinterpret_cast<CommonConfig*>(cfg) );
-        else
-            addTask( TaskFactory::getInstance()->create(cfg,m_workerThread) );
-    });
-
-    // Check that RAW image really exists,
-    // fix RAW directory by current config directory if RAW can't be found.
-    QFileInfo cfg(m_config->config());
-    QFileInfo raw(m_config->raw());
-    if( !raw.exists() )
-        raw = QFileInfo(cfg.absoluteDir(),cfg.fileName());
-    if( raw.exists() )
-        m_config->setRaw( raw.absoluteFilePath() );
-    else
-        m_config->setRaw( "" );
-
-    bool loaded = loader.load(m_config->config());
-    if( !loaded )
-        applyDefaultTasks();
-
-    return raw.exists();
-}
-
-void TaskStack::applyDefaultTasks()
-{
-    qDebug() << "TaskStack::applyDefaultTasks()" << m_config->raw();
+    qDebug() << "TaskStack::createDefaultTasks()" << m_config->raw();
 
     if( !m_config->isValidRaw() )
     {
-        qDebug() << "TaskStack::applyDefaultTasks() unsupported raw";
+        qDebug() << "TaskStack::createDefaultTasks() unsupported raw";
         return;
     }
-
-    setCommonConfig( new CommonConfig() );
-    m_commonConfig->setRaw( m_config->raw() );
 
     QStringList tasks;
     tasks << "ufraw" << "rotate";
     foreach( QString task, tasks )
     {
-        addTask( TaskFactory::getInstance()->create( TaskFactory::getInstance()->create(task), m_workerThread ) );
+        qDebug() << "TaskStack::createDefaultTasks()" << task;
+        addTask( TaskFactory::getInstance()->create( task, m_workerThread ) );
     }
 }
 
@@ -259,29 +209,6 @@ bool TaskStack::anyTaskDirty()
             dirty = true;
     });
     return dirty;
-}
-
-void TaskStack::setCommonConfig(CommonConfig *common)
-{
-    if( m_commonConfig )
-    {
-        std::for_each( m_tasks.begin(), m_tasks.end(), [&] (TaskBase *task)
-        {
-            task->setCommonConfig( NULL );
-        });
-    }
-
-    delete m_commonConfig;
-    common->setParent(this);
-    m_commonConfig = common;
-
-    if( m_commonConfig )
-    {
-        std::for_each( m_tasks.begin(), m_tasks.end(), [&] (TaskBase *task)
-        {
-            task->setCommonConfig( m_commonConfig );
-        });
-    }
 }
 
 int TaskStack::rowCount(const QModelIndex &parent) const
@@ -303,7 +230,7 @@ QVariant TaskStack::data(const QModelIndex &index, int role) const
         case Qt::DisplayRole:
         case NameRole:
         {
-            return m_tasks[index.row()]->config()->name();
+            return m_tasks[index.row()]->name();
         }
         case ProgressRole:
         {
@@ -370,9 +297,10 @@ void TaskStack::onTaskFinished()
     double p = (double)(idx+1) / m_tasks.size();
     setProgress( p );
     int nextIdx = idx+1;
-    if( nextIdx >= m_tasks.size() )
+    bool isLastTask = nextIdx >= m_tasks.size();
+    if( isLastTask )
     {
-        saveConfig();
+        m_config->save();
         m_config->db()->cache().store( m_config->config(),
                                        ImageCacheGroup::Persistent,
                                        m_tasks.back()->worker()->gmimage() );
@@ -398,13 +326,7 @@ void TaskStack::onTaskDirty(bool dirty)
 
 void TaskStack::onConfigDestroyed()
 {
-    loadConfig( NULL );
-}
-
-void TaskStack::onRawChanged()
-{
-    if( m_commonConfig && m_config )
-        m_commonConfig->setRaw( m_config->raw() );
+    setConfig( NULL );
 }
 
 void TaskStack::setDeveloping(bool developing)

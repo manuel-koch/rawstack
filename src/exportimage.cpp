@@ -23,7 +23,7 @@ ExportImage::ExportImage(QThread *workerThread, ExportSetting *setting, QObject 
     connect(m_stack, SIGNAL(progressChanged(double)), this, SIGNAL(progressChanged(double)) );
     connect(m_stack, SIGNAL(developingChanged(bool)), this, SLOT(onDeveloping(bool)) );
     m_stack->setWorkerThread( workerThread );
-    m_stack->loadConfig( m_setting->config() );
+    m_stack->setConfig( m_setting->config() );
 }
 
 ExportImage::~ExportImage()

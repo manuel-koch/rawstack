@@ -1,10 +1,12 @@
 #include "taskbase.h"
 #include "workerbase.h"
+#include "configsetting.h"
 
 #include <QDebug>
 
-TaskBase::TaskBase(QObject *parent)
+TaskBase::TaskBase(QString name, QObject *parent)
     : QObject(parent)
+    , m_name(name)
     , m_config(NULL)
     , m_worker(NULL)
     , m_images(NULL)
@@ -19,12 +21,18 @@ TaskBase::~TaskBase()
     delete m_worker;
 }
 
-void TaskBase::setConfig(ConfigBase *config)
+bool TaskBase::enabled()
+{
+    ConfigSetting *enabled = m_config->settings()->getSetting(m_name+".enabled");
+    return enabled->value().toBool();
+}
+
+void TaskBase::setConfig(ConfigDbEntry *config)
 {
     qDebug() << "TaskBase::setConfig()" << this << config;
     m_config = config;
-    if( m_config )
-        m_config->setParent(this);
+    initBaseSettings();
+    initTaskSettings();
     m_worker->setConfig(m_config);
 }
 
@@ -38,14 +46,40 @@ void TaskBase::setWorker(WorkerBase *worker)
     m_images = new ImageFactory(worker,this);
 }
 
+void TaskBase::setEnabled(bool enabled)
+{
+    ConfigSetting *en = m_config->settings()->getSetting(m_name+".enabled");
+    en->setValue( enabled );
+}
+
 void TaskBase::develop(bool preview, TaskBase *predecessor)
 {
     qDebug() << "TaskBase::develop()" << this << predecessor;
-   if( m_worker )
-   {
-       WorkerBase *predecWorder = predecessor ? predecessor->worker() : NULL;
-       m_worker->develop( preview, predecWorder );
-   }
+    if( m_worker )
+    {
+       WorkerBase *predecWorker = predecessor ? predecessor->worker() : NULL;
+       m_worker->develop( preview, predecWorker );
+    }
+}
+
+void TaskBase::initBaseSettings()
+{
+    qDebug() << "TaskBase::initBaseSettings()" << this;
+    ConfigSetting *enabled = m_config->settings()->getSetting(m_name+".enabled");
+    enabled->initIfNull( true );
+    connect( enabled, SIGNAL(valueChanged(QVariant)), this, SLOT(onEnabledChanged(QVariant)) );
+    if( !canDisable() && !enabled->value().toBool() )
+        enabled->setValue( true );
+}
+
+void TaskBase::onEnabledChanged(QVariant enabled)
+{
+    emit enabledChanged( enabled.toBool() );
+}
+
+void TaskBase::initTaskSettings()
+{
+    qDebug() << "TaskBase::initTaskSettings()" << this;
 }
 
 void TaskBase::onStarted()

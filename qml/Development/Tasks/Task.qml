@@ -30,14 +30,14 @@ Item {
         Binding {
             target:   theHeader
             property: "enabled"
-            value:    controller && controller.task ? controller.task.config.enabled : false
+            value:    controller && controller.task ? controller.task.enabled : false
             when:     controller && controller.task
         }
 
         Binding {
             target:   theHeader
             property: "canDisable"
-            value:    controller && controller.task ? controller.task.config.canDisable : false
+            value:    controller && controller.task ? controller.task.canDisable : false
             when:     controller && controller.task
         }
     }

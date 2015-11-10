@@ -34,7 +34,6 @@ void EnfuseProcess::run()
          << "--exposure-weight=1"
          << "--contrast-weight=0"
          << "--saturation-weight=0"
-         << "--exposure-cutoff=0.5%:99.5%"
          << "--gray-projector=luminance"
          << "-o" << m_output.fileName();
     qDebug() << "EnfuseProcess::run()" << args;

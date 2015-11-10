@@ -1,8 +1,6 @@
 #include "configdb.h"
 #include "configdbentry.h"
 #include "fileinfotoolbox.h"
-#include "commonconfig.h"
-#include "configfileloader.h"
 
 #include <QDebug>
 #include <QUrl>

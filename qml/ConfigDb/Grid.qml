@@ -1,6 +1,8 @@
 import QtQuick 2.5
 import QtQuick.Layouts 1.1
 import QtQuick.Controls 1.4
+import QtQml.Models 2.2
+import QtQml 2.2
 
 import com.rawstack.types 1.0
 import "../Misc" as Misc
@@ -12,25 +14,48 @@ Rectangle {
     color:  "#a0a0a0"
 
     property int cellsPerRow: 4
-    property alias count: theGridView.count
+    property alias count:     theGridView.count
+    property int selCount:    theSelectionModel.selectedIndexes.length
 
     onCellsPerRowChanged: theGridView.returnToBounds()
 
     Component {
         id: configDelegate
         Item {
-            property var delegateIsCurrent: GridView.isCurrentItem
-            property var delegateModel:     model
+            id: theDelegate
+
+            property var delegateIsSelected: false
+            property var delegateModel:      model
+
             width:  theGridView.cellWidth
             height: theGridView.cellHeight
+
+            function toggleSelection(extendSelection,forceSelection) {
+                var cmd = forceSelection ? ItemSelectionModel.Select : ItemSelectionModel.Toggle;
+                if( !extendSelection && !delegateIsSelected )
+                    cmd |= ItemSelectionModel.Clear
+                theSelectionModel.select( globalConfigDb.index( delegateModel.index, 0 ), cmd )
+            }
+
+            Connections {
+                target: theSelectionModel
+                onSelectionChanged: {
+                    var idx = globalConfigDb.index( delegateModel.index, 0 )
+                    theDelegate.delegateIsSelected = theSelectionModel.isSelected( idx )
+                }
+            }
+
             Image {
+                id: theThumbnail
                 anchors.fill:    parent
                 anchors.margins: 2
                 asynchronous:    true
                 source:          (width>256 || height>256) && delegateModel.config.final ? delegateModel.config.final : delegateModel.config.thumbnail
                 fillMode:        Image.PreserveAspectFit
             }
+
             Rectangle {
+                id: theHoverBg
                 anchors { left:   parent.left;
                           top:    parent.top
                           right:  parent.right;
@@ -39,6 +64,7 @@ Rectangle {
                 visible:  theMouse.containsMouse
                 opacity:  0.3
             }
+
             Text {
                 id: theText
                 anchors { left:        parent.left;
@@ -49,6 +75,15 @@ Rectangle {
                 font.pointSize:  10
                 text:            delegateModel.config.title
             }
+
+            Rectangle {
+                id: theSelectionBg
+                anchors.fill: parent
+                color:        "yellow"
+                opacity:      0.2
+                visible:      delegateIsSelected
+            }
+
             MouseArea {
                 id: theMouse
                 anchors.fill: parent
@@ -56,7 +91,10 @@ Rectangle {
                 acceptedButtons: Qt.LeftButton | Qt.RightButton
                 onPressed: {
                     theGridView.currentIndex = delegateModel.index
-                    if( mouse.button & Qt.RightButton )
+                    var isContextAction = mouse.button & Qt.RightButton
+                    var extendSelection = mouse.modifiers & Qt.ControlModifier
+                    theDelegate.toggleSelection( extendSelection, isContextAction )
+                    if( isContextAction )
                         theContextMenu.popup()
                     else
                         theContextMenu.visible = false
@@ -70,13 +108,28 @@ Rectangle {
         id: theContextMenu
 
         MenuItem {
+            text: "Export"
+            onTriggered: {
+//                var cfgs = theSelectionModel.selectedConfigs()
+//                for( var idx=0; idx<cfgs.length; idx++ )
+//                    exportConfig( cfgs[idx] )
+            }
+        }
         MenuItem {
             text: "Duplicate"
-            onTriggered: delegateModel.config.duplicate()
+            onTriggered: {
+                var cfgs = theSelectionModel.selectedConfigs()
+                for( var idx=0; idx<cfgs.length; idx++ )
+                    cfgs[idx].duplicate()
+            }
         }
         MenuItem {
             text: "Remove"
-            onTriggered: delegateModel.config.remove()
+            onTriggered: {
+                var cfgs = theSelectionModel.selectedConfigs()
+                for( var idx=0; idx<cfgs.length; idx++ )
+                    cfgs[idx].remove()
+            }
         }
     }
 
@@ -86,6 +139,20 @@ Rectangle {
             border { width: 1; color: "yellow" }
             color:  "#c0c0c0";
             radius: theGrid.radius
+        }
+    }
+
+    ItemSelectionModel {
+        id: theSelectionModel
+        model: globalConfigDb
+
+        function selectedConfigs() {
+            var cfgs = [];
+            console.log("selectedConfigs",ConfigDb.ConfigRole)
+            for( var idx = 0; idx < selectedIndexes.length; idx++ )
+                cfgs.push( globalConfigDb.data( selectedIndexes[idx], ConfigDb.ConfigRole ) );
+            console.log( cfgs )
+            return cfgs;
         }
     }
 
@@ -106,6 +173,10 @@ Rectangle {
         flow:                    GridView.FlowLeftToRight
 
         Keys.onPressed: {
+            if( event.key == Qt.Key_Space ) {
+                var idx = globalConfigDb.index( currentIndex, 0 )
+                theSelectionModel.select( idx, ItemSelectionModel.Toggle )
+            }
             if( event.key == Qt.Key_Minus )
                 theGrid.cellsPerRow = Math.min( 9, theGrid.cellsPerRow+1 )
             else if( event.key == Qt.Key_Plus )

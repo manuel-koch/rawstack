@@ -14,6 +14,7 @@ class ConfigDb : public QAbstractListModel
 {
     Q_OBJECT
     Q_PROPERTY(QString path READ path NOTIFY pathChanged)
+    Q_ENUMS(Roles)
 
 public:
 

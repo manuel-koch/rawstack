@@ -1,6 +1,5 @@
 #include "taskstack.h"
 #include "taskbase.h"
-#include "configbase.h"
 #include "commontasks.h"
 #include "taskfactory.h"
 #include "configdb.h"

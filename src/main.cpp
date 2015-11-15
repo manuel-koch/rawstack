@@ -3,7 +3,6 @@
 #include "taskstack.h"
 #include "commontasks.h"
 #include "taskbase.h"
-#include "configbase.h"
 #include "imagefactoryregistry.h"
 #include "imageprovider.h"
 #include "loghandler.h"
@@ -14,7 +13,6 @@
 #include "configdbentry.h"
 #include "configsetting.h"
 
-#include "configbase.h"
 #include "ufrawtask.h"
 #include "rotatetask.h"
 

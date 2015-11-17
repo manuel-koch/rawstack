@@ -74,6 +74,10 @@ Rectangle {
                     text: "Remove"
                     onTriggered: delegateModel.config.remove()
                 }
+                MenuItem {
+                    text: "Purge"
+                    onTriggered: delegateModel.config.purge()
+                }
             }
         }
     }

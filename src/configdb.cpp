@@ -285,7 +285,7 @@ void ConfigDb::loadAndAddEntry(ConfigDbEntry *entry)
     int idx = 0;
     foreach( ConfigDbEntry *existingEntry, m_configs )
     {
-        if( existingEntry->config().compare( entry->config() ) > 0 )
+        if( existingEntry->compare( entry ) > 0 )
             break;
         idx++;
     }

@@ -1,16 +1,16 @@
-#ifndef ROTATEWORKER_H
-#define ROTATEWORKER_H
+#ifndef SHARPENWORKER_H
+#define SHARPENWORKER_H
 
 #include "workerbase.h"
 
-class RotateWorker : public WorkerBase
+class SharpenWorker : public WorkerBase
 {
     Q_OBJECT
 
 public:
 
-    explicit RotateWorker();
-    virtual ~RotateWorker();
+    explicit SharpenWorker();
+    virtual ~SharpenWorker();
 
 private:
 
@@ -19,4 +19,4 @@ private:
     virtual void developImpl(bool preview, WorkerBase *predecessor) override;
 };
 
-#endif // ROTATEWORKER_H
+#endif // SHARPENWORKER_H

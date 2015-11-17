@@ -68,7 +68,10 @@ SOURCES += \
     src/configsettings.cpp \
     src/configsetting.cpp \
     src/ufrawsettings.cpp \
-    src/rotatesettings.cpp
+    src/rotatesettings.cpp \
+    src/sharpensettings.cpp \
+    src/sharpentask.cpp \
+    src/sharpenworker.cpp
 
 RESOURCES += qml.qrc
 
@@ -117,4 +120,7 @@ HEADERS += \
     src/configsettings.h \
     src/configsetting.h \
     src/ufrawsettings.h \
-    src/rotatesettings.h
+    src/rotatesettings.h \
+    src/sharpensettings.h \
+    src/sharpentask.h \
+    src/sharpenworker.h

@@ -15,6 +15,7 @@
 
 #include "ufrawtask.h"
 #include "rotatetask.h"
+#include "sharpentask.h"
 
 #include <QDebug>
 #include <QApplication>
@@ -70,6 +71,7 @@ int main(int argc, char *argv[])
     TaskFactory::setInstance( &taskFactory );
     taskFactory.add( new TaskBuilder<UfrawTask>("ufraw") );
     taskFactory.add( new TaskBuilder<RotateTask>("rotate") );
+    taskFactory.add( new TaskBuilder<SharpenTask>("sharpen") );
 
     QQmlImageProviderBase *imageProvider     = static_cast<QQmlImageProviderBase*>( new ImageProvider() );
     QString                imageProviderName = ImageProvider::name;

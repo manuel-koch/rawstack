@@ -132,6 +132,14 @@ Rectangle {
                     cfgs[idx].remove()
             }
         }
+        MenuItem {
+            text: "Purge"
+            onTriggered: {
+                var cfgs = theSelectionModel.selectedConfigs()
+                for( var idx=0; idx<cfgs.length; idx++ )
+                    cfgs[idx].purge()
+            }
+        }
     }
 
     Component {

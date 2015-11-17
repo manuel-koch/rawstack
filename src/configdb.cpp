@@ -39,7 +39,6 @@ void ConfigDb::remove(int idx)
 
     beginRemoveRows( QModelIndex(), idx, idx );
     ConfigDbEntry *entry = m_configs.takeAt( idx );
-    disconnect( entry, SIGNAL(duplicate()), this, SLOT(onDuplicateConfig()) );
     delete entry;
     endRemoveRows();
 
@@ -212,6 +211,23 @@ void ConfigDb::onRemoveConfig()
     if( !entry )
         return;
 
+    qDebug() << "ConfigDb::onRemoveConfig()" << entry->config();
+
+    remove( m_configs.indexOf( entry ) );
+}
+
+void ConfigDb::onPurgeConfig()
+{
+    ConfigDbEntry *entry = qobject_cast<ConfigDbEntry*>( sender() );
+    if( !entry )
+        return;
+
+    qDebug() << "ConfigDb::onPurgeConfig()" << entry->config();
+
+    QFile config(entry->config());
+    if( config.exists() )
+        config.remove();
+
     remove( m_configs.indexOf( entry ) );
 }
 
@@ -293,6 +309,7 @@ void ConfigDb::loadAndAddEntry(ConfigDbEntry *entry)
     m_configs.insert( idx, entry );
     connect( entry, SIGNAL(duplicate()), this, SLOT(onDuplicateConfig()) );
     connect( entry, SIGNAL(remove()),    this, SLOT(onRemoveConfig()) );
+    connect( entry, SIGNAL(purge()),     this, SLOT(onPurgeConfig()) );
     endInsertRows();
 
     qDebug() << "ConfigDb::add()" << m_configs.size();

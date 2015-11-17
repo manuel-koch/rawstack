@@ -91,6 +91,7 @@ Rectangle {
                 acceptedButtons: Qt.LeftButton | Qt.RightButton
                 onPressed: {
                     theGridView.currentIndex = delegateModel.index
+                    theGridView.focus = true;
                     var isContextAction = mouse.button & Qt.RightButton
                     var extendSelection = mouse.modifiers & Qt.ControlModifier
                     theDelegate.toggleSelection( extendSelection, isContextAction )

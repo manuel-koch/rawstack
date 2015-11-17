@@ -29,5 +29,6 @@
         <file>qml/Misc/FlickableScrollIndicator.qml</file>
         <file>qml/Development/Tasks/SharpenController.qml</file>
         <file>qml/Development/Tasks/SharpenTask.qml</file>
+        <file>qml/ConfigDb/Entry.qml</file>
     </qresource>
 </RCC>

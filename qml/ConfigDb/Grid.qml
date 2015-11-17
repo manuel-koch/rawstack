@@ -45,35 +45,9 @@ Rectangle {
                 }
             }
 
-            Image {
-                id: theThumbnail
-                anchors.fill:    parent
-                anchors.margins: 2
-                asynchronous:    true
-                source:          (width>256 || height>256) && delegateModel.config.final ? delegateModel.config.final : delegateModel.config.thumbnail
-                fillMode:        Image.PreserveAspectFit
-            }
-
-            Rectangle {
-                id: theHoverBg
-                anchors { left:   parent.left;
-                          top:    parent.top
-                          right:  parent.right;
-                          bottom: theText.bottom; }
-                color:    "white"
-                visible:  theMouse.containsMouse
-                opacity:  0.3
-            }
-
-            Text {
-                id: theText
-                anchors { left:        parent.left;
-                          leftMargin:  4
-                          right:       parent.right;
-                          rightMargin: 4; }
-                wrapMode:        Text.WrapAtWordBoundaryOrAnywhere
-                font.pointSize:  10
-                text:            delegateModel.config.title + ( delegateModel.config.instance > 1 ? "." + delegateModel.config.instance : "" )
+            Entry {
+                anchors.fill: parent
+                config:       delegateModel.config
             }
 
             Rectangle {
@@ -86,8 +60,7 @@ Rectangle {
 
             MouseArea {
                 id: theMouse
-                anchors.fill: parent
-                hoverEnabled: true
+                anchors.fill:    parent
                 acceptedButtons: Qt.LeftButton | Qt.RightButton
                 onPressed: {
                     theGridView.currentIndex = delegateModel.index

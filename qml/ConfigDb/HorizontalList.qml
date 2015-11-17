@@ -27,33 +27,15 @@ Rectangle {
             property var delegateModel:     model
             width:  parent.height
             height: parent.height
-            Image {
-                anchors.fill:    parent
-                anchors.margins: 2
-                asynchronous:    true
-                source:          delegateModel.config.thumbnail
-                fillMode:        Image.PreserveAspectFit
+
+            Entry {
+                anchors.fill: parent
+                config:       delegateModel.config
             }
-            Rectangle {
-                anchors.fill: theText
-                color:        "white"
-                visible:      theMouse.containsMouse
-                opacity:      0.3
-            }
-            Text {
-                id: theText
-                anchors { left:        parent.left;
-                          leftMargin:  4
-                          right:       parent.right;
-                          rightMargin: 4; }
-                wrapMode:        Text.WrapAtWordBoundaryOrAnywhere
-                font.pointSize:  10
-                text:            delegateModel.config.title
-            }
+
             MouseArea {
                 id: theMouse
-                anchors.fill: parent
-                hoverEnabled: true
+                anchors.fill:    parent
                 acceptedButtons: Qt.LeftButton | Qt.RightButton
                 onPressed: {
                     theListView.currentIndex = delegateModel.index
@@ -64,6 +46,7 @@ Rectangle {
                 }
                 onDoubleClicked: globalDevTaskStack.setConfig( delegateModel.config )
             }
+
             Menu {
                 id: theContextMenu
                 MenuItem {

@@ -26,6 +26,31 @@ bool ConfigDbEntry::equals(const ConfigDbEntry *other)
     return false;
 }
 
+int ConfigDbEntry::compare(const ConfigDbEntry *other)
+{
+    QFileInfo i(m_config);
+    QFileInfo i_(other->config());
+
+    QString d  = i.dir().absolutePath();
+    QString d_ = i_.dir().absolutePath();
+    int cmp = d.compare(d_);
+    if( cmp != 0 )
+        return cmp;
+
+    QString n  = i.baseName();
+    QString n_ = i_.baseName();
+    cmp = n.compare( n_ );
+    if( cmp != 0 )
+        return cmp;
+
+    if( m_instance > other->instance() )
+        return 1;
+    else if( m_instance < other->instance() )
+        return -1;
+    else
+        return 0;
+}
+
 bool ConfigDbEntry::isValidRaw() const
 {
     return FileInfoToolbox::isRaw( QFileInfo(m_raw) );
@@ -142,7 +167,12 @@ void ConfigDbEntry::setConfig(QString config)
     qDebug() << "ConfigDbEntry::setConfig()" << m_config;
     emit configChanged(m_config);
 
-    setTitle( QFileInfo(m_config).baseName() );
+    QFileInfo info(m_config);
+    setTitle( info.baseName() );
+
+    QStringList suffixes  = info.completeSuffix().split(".");
+    int instance = suffixes.length() >= 2 ? suffixes[suffixes.length()-2].toInt() : 1;
+    setInstance( instance );
 }
 
 void ConfigDbEntry::setTitle(QString title)
@@ -153,5 +183,15 @@ void ConfigDbEntry::setTitle(QString title)
     m_title = title;
     qDebug() << "ConfigDbEntry::setTitle()" << m_title;
     emit titleChanged(m_title);
+}
+
+void ConfigDbEntry::setInstance(int instance)
+{
+    if( m_instance == instance )
+        return;
+
+    m_instance = instance;
+    qDebug() << "ConfigDbEntry::setInstance()" << m_instance;
+    emit instanceChanged(m_instance);
 }
 

@@ -17,6 +17,7 @@ class ConfigDbEntry : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(QString         title     READ title                     NOTIFY titleChanged)
+    Q_PROPERTY(int             instance  READ instance                  NOTIFY instanceChanged)
     Q_PROPERTY(QString         raw       READ raw       WRITE setRaw    NOTIFY rawChanged)
     Q_PROPERTY(QString         config    READ config    WRITE setConfig NOTIFY configChanged)
     Q_PROPERTY(ConfigSettings* settings  READ settings  CONSTANT)
@@ -28,8 +29,10 @@ public:
     explicit ConfigDbEntry(QObject *parent = 0);
 
     bool equals( const ConfigDbEntry *other );
+    int  compare( const ConfigDbEntry *other );
 
     QString title() const { return m_title; }
+    int instance() const { return m_instance; }
     QString raw() const { return m_raw; }
     QString config() const { return m_config; }
     ConfigSettings *settings() { return &m_settings; }
@@ -48,6 +51,7 @@ public:
 signals:
 
     void titleChanged(QString title);
+    void instanceChanged(int instance);
     void rawChanged(QString raw);
     void configChanged(QString config);
     void thumbnailChanged(QUrl thumbnail);
@@ -59,6 +63,9 @@ signals:
     /// Request to remove current configuration from database
     void remove();
 
+    /// Request to remove current configuration from database and delete the configuration on filesystem
+    void purge();
+
     void aboutToBeDestroyed();
 
 public slots:
@@ -69,10 +76,12 @@ public slots:
 private:
 
     void setTitle(QString title);
+    void setInstance(int instance);
 
 private:
 
     QString               m_title;     // title/name of configuration ( basename of configuration path )
+    int                   m_instance;  // instance of configuration ( multiple configurations can use the same RAW )
     QString               m_raw;       // path to RAW image
     QString               m_config;    // path to rawstack configuration file
 

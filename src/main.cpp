@@ -42,6 +42,7 @@ void register_types()
     qRegisterMetaType<ImageCacheGroup::Lifetime>("ImageCacheGroup::Lifetime");
 
     qmlRegisterType<TaskBase>( "com.rawstack.types", 1, 0, "TaskBase" );
+    qmlRegisterType<ConfigDbEntry>( "com.rawstack.types", 1, 0, "ConfigDbEntry" );
     qmlRegisterUncreatableType<ConfigDb>( "com.rawstack.types", 1, 0, "ConfigDb", "Can't create type ConfigDb" );
 }
 

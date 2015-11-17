@@ -197,12 +197,12 @@ void ConfigDb::onDuplicateConfig()
 
     ConfigDbEntry *newEntry = new ConfigDbEntry( this );
     newEntry->setRaw( curEntry->raw() ); // use the same RAW image, in case loading fails
-    newEntry->load( curEntry->config() ); // loading may fail if source config was never saved yet
-    newEntry->setConfig( newConfig.absoluteFilePath() );
+    newEntry->load( curEntry->config() ); // loading may fail if source config was never been saved yet
+    newEntry->setConfig( newConfig.absoluteFilePath() ); // apply the altered config path
     newEntry->save(); // save as new config
     loadAndAddEntry( newEntry );
 
-    qDebug() << "ConfigDb::onDuplicateConfig()" << curEntry->config() << "done";
+    qDebug() << "ConfigDb::onDuplicateConfig()" << newEntry->config() << "done";
 }
 
 void ConfigDb::onRemoveConfig()

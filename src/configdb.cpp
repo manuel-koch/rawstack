@@ -177,14 +177,14 @@ QVariant ConfigDb::data(const QModelIndex &index, int role) const
 
 void ConfigDb::onDuplicateConfig()
 {
-    ConfigDbEntry *entry = qobject_cast<ConfigDbEntry*>( sender() );
-    if( !entry )
+    ConfigDbEntry *curEntry = qobject_cast<ConfigDbEntry*>( sender() );
+    if( !curEntry )
         return;
 
-    qDebug() << "ConfigDb::onDuplicateConfig() from" << entry->config();
+    qDebug() << "ConfigDb::onDuplicateConfig() from" << curEntry->config();
 
     int idx = 2;
-    QFileInfo curConfig( entry->config() );
+    QFileInfo curConfig( curEntry->config() );
     QFileInfo newConfig;
     do
     {
@@ -196,11 +196,14 @@ void ConfigDb::onDuplicateConfig()
 
     qDebug() << "ConfigDb::onDuplicateConfig() to" << newConfig.absoluteFilePath();
 
-    ConfigDbEntry *config = new ConfigDbEntry( this );
-    config->load( entry->config() );
-    config->setConfig( newConfig.absoluteFilePath() );
-    config->save();
-    loadAndAddEntry( config );
+    ConfigDbEntry *newEntry = new ConfigDbEntry( this );
+    newEntry->setRaw( curEntry->raw() ); // use the same RAW image, in case loading fails
+    newEntry->load( curEntry->config() ); // loading may fail if source config was never saved yet
+    newEntry->setConfig( newConfig.absoluteFilePath() );
+    newEntry->save(); // save as new config
+    loadAndAddEntry( newEntry );
+
+    qDebug() << "ConfigDb::onDuplicateConfig()" << curEntry->config() << "done";
 }
 
 void ConfigDb::onRemoveConfig()

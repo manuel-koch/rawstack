@@ -73,7 +73,7 @@ Rectangle {
                           rightMargin: 4; }
                 wrapMode:        Text.WrapAtWordBoundaryOrAnywhere
                 font.pointSize:  10
-                text:            delegateModel.config.title
+                text:            delegateModel.config.title + ( delegateModel.config.instance > 1 ? "." + delegateModel.config.instance : "" )
             }
 
             Rectangle {

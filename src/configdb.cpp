@@ -183,14 +183,14 @@ void ConfigDb::onDuplicateConfig()
 
     qDebug() << "ConfigDb::onDuplicateConfig() from" << curEntry->config();
 
-    int idx = 2;
+    int instance = curEntry->instance()+1;
     QFileInfo curConfig( curEntry->config() );
     QFileInfo newConfig;
     do
     {
-        newConfig = QFileInfo(curConfig.dir(), curConfig.baseName() + QString(".%1.%2").arg(idx).arg(curConfig.suffix()) );
+        newConfig = QFileInfo(curConfig.dir(), curConfig.baseName() + QString(".%1.%2").arg(instance).arg(curConfig.suffix()) );
         qDebug() << newConfig.absoluteFilePath();
-        idx++;
+        instance++;
     }
     while( newConfig.exists() );
 

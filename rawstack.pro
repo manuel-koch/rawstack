@@ -71,7 +71,10 @@ SOURCES += \
     src/rotatesettings.cpp \
     src/sharpensettings.cpp \
     src/sharpentask.cpp \
-    src/sharpenworker.cpp
+    src/sharpenworker.cpp \
+    src/levelsettings.cpp \
+    src/leveltask.cpp \
+    src/levelworker.cpp
 
 RESOURCES += qml.qrc
 
@@ -123,4 +126,7 @@ HEADERS += \
     src/rotatesettings.h \
     src/sharpensettings.h \
     src/sharpentask.h \
-    src/sharpenworker.h
+    src/sharpenworker.h \
+    src/levelsettings.h \
+    src/leveltask.h \
+    src/levelworker.h

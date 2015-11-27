@@ -11,10 +11,15 @@ import com.rawstack.types 1.0
 
 ApplicationWindow {
     id: theAppWindow
-    title: "Rawstack"
-    width: 640
-    height: 480
+    title:   "Rawstack"
+    width:   600
+    height:  600
     visible: true
+
+    function centerOnScreen() {
+        theAppWindow.x = Screen.desktopAvailableWidth/2 - theAppWindow.width/2
+        theAppWindow.y = Screen.desktopAvailableHeight/2 - theAppWindow.height/2
+    }
 
     QtObject {
         id: internal

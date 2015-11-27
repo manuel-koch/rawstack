@@ -94,6 +94,9 @@ int main(int argc, char *argv[])
 
     engine.load(QUrl(QStringLiteral("qrc:/qml/Main.qml")));
 
+    QObject *rootObject = engine.rootObjects()[0];
+    QMetaObject::invokeMethod(rootObject, "centerOnScreen");
+
     int result = app.exec();
     return result;
 }

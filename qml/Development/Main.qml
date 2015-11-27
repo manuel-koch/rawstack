@@ -22,6 +22,8 @@ Rectangle {
         HistogramFinal {
             Layout.preferredWidth:  theGrid.stackWidth
             Layout.preferredHeight: theGrid.stackWidth/2
+            task: globalDevTaskStack.tasks.final
+            text: "Output Histogram"
         }
 
         DevImage {

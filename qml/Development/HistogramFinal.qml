@@ -1,10 +1,15 @@
 import QtQuick 2.0
 import QtQuick.Layouts 1.1
 
+import com.rawstack.types 1.0
+
 Item {
     id: theHistogram
     width:  100
     height: 100
+
+    property alias text: theTitle.text
+    property TaskBase task
 
     QtObject {
         id: internal
@@ -43,7 +48,7 @@ Item {
         id: theLumChannel
         objectName:   "lum"
         anchors.fill: parent
-        bins:         globalDevTaskStack.tasks.final ? globalDevTaskStack.tasks.final.images.histogram.lum : []
+        bins:         task ? task.images.histogram.lum : []
         visible:      theLumToggle.enabled
         lineColor:    "black"
         fillColor:    Qt.rgba(0.2,0.2,0.2,0.25)
@@ -53,7 +58,7 @@ Item {
         id: theRedChannel
         objectName:   "red"
         anchors.fill: parent
-        bins:         globalDevTaskStack.tasks.final ? globalDevTaskStack.tasks.final.images.histogram.red : []
+        bins:         task ? task.images.histogram.red : []
         visible:      theRedToggle.enabled
         lineColor:    "red"
         fillColor:    Qt.rgba(1,0,0,0.25)
@@ -63,7 +68,7 @@ Item {
         id: theGreenChannel
         objectName:   "green"
         anchors.fill: parent
-        bins:         globalDevTaskStack.tasks.final ? globalDevTaskStack.tasks.final.images.histogram.green : []
+        bins:         task ? task.images.histogram.green : []
         visible:      theGreenToggle.enabled
         lineColor:    "green"
         fillColor:    Qt.rgba(0,1,0,0.25)
@@ -73,7 +78,7 @@ Item {
         id: theBlueChannel
         anchors.fill: parent
         objectName:   "blue"
-        bins:         globalDevTaskStack.tasks.final ? globalDevTaskStack.tasks.final.images.histogram.blue : []
+        bins:         task ? task.images.histogram.blue : []
         visible:      theBlueToggle.enabled
         lineColor:    "blue"
         fillColor:    Qt.rgba(0,0,1,0.25)
@@ -122,9 +127,10 @@ Item {
     }
 
     Text {
-        id: theHint
-        anchors.centerIn: parent
-        horizontalAlignment: Qt.AlignHCenter
+        id: theTitle
+        anchors { left: parent.left; right: parent.right; top: parent.top; topMargin: 4; }
+        horizontalAlignment: Text.Center
+        font.pointSize: 8
     }
 }
 

@@ -14,8 +14,13 @@
 #include "configsetting.h"
 
 #include "ufrawtask.h"
+#include "ufrawsettings.h"
+#include "leveltask.h"
+#include "levelsettings.h"
 #include "rotatetask.h"
+#include "rotatesettings.h"
 #include "sharpentask.h"
+#include "sharpensettings.h"
 
 #include <QDebug>
 #include <QApplication>
@@ -70,9 +75,10 @@ int main(int argc, char *argv[])
 
     TaskFactory taskFactory;
     TaskFactory::setInstance( &taskFactory );
-    taskFactory.add( new TaskBuilder<UfrawTask>("ufraw") );
-    taskFactory.add( new TaskBuilder<RotateTask>("rotate") );
-    taskFactory.add( new TaskBuilder<SharpenTask>("sharpen") );
+    taskFactory.add( new TaskBuilder<UfrawTask>(UfrawSettings::Name) );
+    taskFactory.add( new TaskBuilder<LevelTask>(LevelSettings::Name) );
+    taskFactory.add( new TaskBuilder<RotateTask>(RotateSettings::Name) );
+    taskFactory.add( new TaskBuilder<SharpenTask>(SharpenSettings::Name) );
 
     QQmlImageProviderBase *imageProvider     = static_cast<QQmlImageProviderBase*>( new ImageProvider() );
     QString                imageProviderName = ImageProvider::name;

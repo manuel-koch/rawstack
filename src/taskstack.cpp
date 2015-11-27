@@ -188,7 +188,7 @@ void TaskStack::createDefaultTasks()
     }
 
     QStringList tasks;
-    tasks << "ufraw" << "rotate" << "sharpen";
+    tasks << "ufraw" << "level" << "rotate" << "sharpen";
     foreach( QString task, tasks )
     {
         qDebug() << "TaskStack::createDefaultTasks()" << task;

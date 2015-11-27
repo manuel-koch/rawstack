@@ -5,6 +5,7 @@ class SharpenSettings
 {
 public:
 
+    static const char *Name;
     static const char *Radius;
     static const char *Sigma;
 

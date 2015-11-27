@@ -5,6 +5,7 @@ class RotateSettings
 {
 public:
 
+    static const char *Name;
     static const char *Degree;
 
     static const double DefaultDegree;

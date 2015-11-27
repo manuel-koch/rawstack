@@ -30,5 +30,9 @@
         <file>qml/Development/Tasks/SharpenController.qml</file>
         <file>qml/Development/Tasks/SharpenTask.qml</file>
         <file>qml/ConfigDb/Entry.qml</file>
+        <file>qml/Development/Tasks/LevelController.qml</file>
+        <file>qml/Development/Tasks/LevelTask.qml</file>
+        <file>qml/Development/Tasks/HistogramEditable.qml</file>
+        <file>qml/Development/Tasks/HistogramLine.qml</file>
     </qresource>
 </RCC>

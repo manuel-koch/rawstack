@@ -1,5 +1,6 @@
 #include "ufrawsettings.h"
 
+const char *UfrawSettings::Name          = "ufraw";
 const char *UfrawSettings::Fuse          = "ufraw.fuse";
 const char *UfrawSettings::Exposure      = "ufraw.exposure";
 const char *UfrawSettings::WbTemperature = "ufraw.wb.temperature";

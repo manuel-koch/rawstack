@@ -1,5 +1,6 @@
 #include "sharpensettings.h"
 
+const char *SharpenSettings::Name   = "sharpen";
 const char *SharpenSettings::Radius = "sharpen.radius";
 const char *SharpenSettings::Sigma  = "sharpen.sigma";
 

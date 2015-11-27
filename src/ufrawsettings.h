@@ -5,6 +5,7 @@ class UfrawSettings
 {
 public:
 
+    static const char *Name;
     static const char *Fuse;
     static const char *Exposure;
     static const char *WbTemperature;

@@ -9,11 +9,14 @@ Task {
     controller: LevelController { }
 
     HistogramEditable {
-        controller: theTask.controller
-        width:      parent.width
-        height:     width*0.5
-        linewidth:  2
-        text:       "Input Histogram"
+        controller:   theTask.controller
+        width:        parent.width
+        height:       width*0.5
+        linewidth:    2
+        text:         "Input Histogram"
+        redEnabled:   false
+        greenEnabled: false
+        blueEnabled:  false
     }
 
     TaskSetting {

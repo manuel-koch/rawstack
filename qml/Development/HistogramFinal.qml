@@ -8,6 +8,11 @@ Item {
     width:  100
     height: 100
 
+    property alias redEnabled:   theRedToggle.enabled
+    property alias greenEnabled: theGreenToggle.enabled
+    property alias blueEnabled:  theBlueToggle.enabled
+    property alias lumEnabled:   theLumToggle.enabled
+
     property alias text: theTitle.text
     property TaskBase task
 

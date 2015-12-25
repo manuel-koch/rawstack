@@ -8,7 +8,7 @@ const char *LevelSettings::Brightness = "level.brightness";
 const char *LevelSettings::Saturation = "level.saturation";
 
 const double LevelSettings::DefaultBlackpoint = 0.0;
-const double LevelSettings::DefaultMidpoint   = 1.0;
+const double LevelSettings::DefaultMidpoint   = 0.5;
 const double LevelSettings::DefaultWhitepoint = 1.0;
 const double LevelSettings::DefaultBrightness = 1.0;
 const double LevelSettings::DefaultSaturation = 1.0;

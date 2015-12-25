@@ -46,8 +46,9 @@ void LevelWorker::developImpl(bool preview, WorkerBase *predecessor)
     {
         qDebug() << "LevelWorker::developImpl() level" << this << blackpoint << midpoint << whitepoint;
         double b = blackpoint*MaxRGB;
+        double m = midpoint <= 0.5 ? midpoint / 0.5 : 1 + (midpoint - 0.5) * 10;
         double w = whitepoint*MaxRGB;
-        m_img.level( b, w, midpoint );
+        m_img.level( b, w, m );
         setProgress(0.5);
     }
 

@@ -13,9 +13,7 @@ Rectangle {
     property real dragMinX
     property real dragMaxX
 
-    signal newValue(real value)
-
-    onXChanged: console.log((theLine.x+theLine.width/2) / theLine.parent.width)
+    signal dragDone()
 
     MouseArea {
         id: theDragArea
@@ -29,7 +27,7 @@ Rectangle {
         drag.threshold: 0
         drag.onActiveChanged: {
             if( !drag.active )
-                newValue( (theLine.x+theLine.width/2) / theLine.parent.width )
+                dragDone()
         }
     }
 }

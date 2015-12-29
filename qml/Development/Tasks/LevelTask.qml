@@ -25,8 +25,8 @@ Task {
             Layout.alignment:  Qt.AlignRight
             Layout.fillWidth:  true
             font.pointSize:    10
-            decimals:          2
-            maximumValue:      controller.whitepoint
+            decimals:          3
+            maximumValue:      controller.whitepoint-stepSize
             minimumValue:      0
             stepSize:          0.02
             value:             controller.blackpoint
@@ -35,14 +35,14 @@ Task {
     }
 
     TaskSetting {
-        label:   "Midpoint"
+        label:   "Gamma"
         SpinBox {
             Layout.alignment:  Qt.AlignRight
             Layout.fillWidth:  true
             font.pointSize:    10
-            decimals:          2
-            maximumValue:      6
-            minimumValue:      0
+            decimals:          3
+            maximumValue:      10
+            minimumValue:      0.1
             stepSize:          0.02
             value:             controller.midpoint
             onEditingFinished: controller.setMidpoint( value )
@@ -55,9 +55,9 @@ Task {
             Layout.alignment:  Qt.AlignRight
             Layout.fillWidth:  true
             font.pointSize:    10
-            decimals:          2
+            decimals:          3
             maximumValue:      1
-            minimumValue:      controller.blackpoint
+            minimumValue:      controller.blackpoint+stepSize
             stepSize:          0.02
             value:             controller.whitepoint
             onEditingFinished: controller.setWhitepoint( value )
@@ -70,8 +70,8 @@ Task {
             Layout.alignment:  Qt.AlignRight
             Layout.fillWidth:  true
             font.pointSize:    10
-            decimals:          2
-            maximumValue:      5
+            decimals:          3
+            maximumValue:      10
             minimumValue:      0
             stepSize:          0.02
             value:             controller.brightness
@@ -85,8 +85,8 @@ Task {
             Layout.alignment:  Qt.AlignRight
             Layout.fillWidth:  true
             font.pointSize:    10
-            decimals:          2
-            maximumValue:      5
+            decimals:          3
+            maximumValue:      10
             minimumValue:      0
             stepSize:          0.02
             value:             controller.saturation

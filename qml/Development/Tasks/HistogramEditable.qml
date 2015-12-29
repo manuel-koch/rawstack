@@ -27,28 +27,48 @@ Development.HistogramFinal {
 
     HistogramLineLabel {
         id: theBlackLabel
-        anchors { top: theBlackLine.top; topMargin: theBlackLine.height/3 }
+        anchors { top: theBlackLine.verticalCenter; topMargin: theBlackLabel.implicitHeight }
         line: theBlackLine
-        text: theBlackLine.value.toFixed(2)
+        text: theBlackLine.value.toFixed(3)
     }
 
     HistogramLine {
         id: theMidLine
         width:      linewidth
-        x:          theBlackLine.x + (theWhiteLine.x-theBlackLine.x) * controller.midpoint
-        dragMinX:   theBlackLine.x+2
-        dragMaxX:   theWhiteLine.x-2
+        x:          -width/2 + m2f(controller.midpoint) * theHistogram.width
+        dragMinX:   theBlackLine.dragMinX
+        dragMaxX:   theWhiteLine.dragMaxX
         onDragDone: controller.setMidpoint( value )
         color:      "yellow"
-        property real value: (theMidLine.x-theBlackLine.x)/(theWhiteLine.x-theBlackLine.x)
-        onValueChanged: console.log("theMidLine",value)
+        property real value: f2m( (x+width/2) / theHistogram.width )
+        onValueChanged: console.log("onValueChanged",controller.midpoint,value)
+
+        // map factor 0...1 to midpoint 0.1 ... 10
+        function f2m( f ) {
+            var m;
+            if( f <= 0.5 )
+                m = 0.1 + f * 2 * 0.9
+            else
+                m = 1.0 + (f-0.5) * 2 * 9
+            return m;
+        }
+
+        // map midpoint 0.1 ... 10 to factor 0...1
+        function m2f( m ) {
+            var f;
+            if( m <= 1.0 )
+                f = (m-0.1) / 0.9 * 0.5
+            else
+                f = 0.5 + (m-1.0) / 9 / 2
+            return f
+        }
     }
 
     HistogramLineLabel {
         id: theMidLabel
-        anchors { top: theBlackLabel.bottom; topMargin: 2 }
+        anchors { verticalCenter: theMidLine.verticalCenter }
         line: theMidLine
-        text: theMidLine.value.toFixed(2)
+        text: theMidLine.value.toFixed(3)
     }
 
     HistogramLine {
@@ -65,9 +85,9 @@ Development.HistogramFinal {
 
     HistogramLineLabel {
         id: theWhiteLabel
-        anchors { top: theMidLabel.bottom; topMargin: 2 }
+        anchors { bottom: theWhiteLine.verticalCenter; bottomMargin: theWhiteLabel.implicitHeight }
         line: theWhiteLine
-        text: theWhiteLine.value.toFixed(2)
+        text: theWhiteLine.value.toFixed(3)
     }
 }
 

@@ -8,6 +8,8 @@ Item {
     width:  100
     height: 100
 
+    default property alias content: container.children
+
     property alias redEnabled:   theRedToggle.enabled
     property alias greenEnabled: theGreenToggle.enabled
     property alias blueEnabled:  theBlueToggle.enabled
@@ -129,6 +131,11 @@ Item {
             onToggleChannel: internal.toggleChannel(theLumToggle,exclusive)
             onEnabledChanged: console.log(color,enabled)
         }
+    }
+
+    Item {
+        id: container
+        anchors.fill: parent
     }
 
     Text {

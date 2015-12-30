@@ -14,10 +14,10 @@ Task {
             Layout.alignment:  Qt.AlignRight
             Layout.fillWidth:  true
             font.pointSize:    10
-            decimals:          2
-            maximumValue:      10
+            decimals:          0
+            maximumValue:      200
             minimumValue:      0
-            stepSize:          0.1
+            stepSize:          1
             value:             controller.radius
             onEditingFinished: controller.setRadius( value )
         }

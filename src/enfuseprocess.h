@@ -19,7 +19,7 @@ public:
     QString &console() { return m_console; }
 
     void setInputs(const QStringList &inputs) { m_inputs = inputs; }
-
+    void setExposureSigma(double sigma) { m_exposuresigma = sigma; }
     void run();
 
 signals:
@@ -45,6 +45,7 @@ private:
     QTemporaryFile m_output;
     QString        m_console;
     QStringList    m_inputs;
+    double         m_exposuresigma;
 };
 
 #endif // ENFUSEPROCESS_H

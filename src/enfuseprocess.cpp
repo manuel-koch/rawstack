@@ -6,6 +6,7 @@
 EnfuseProcess::EnfuseProcess(QObject *parent)
     : QProcess(parent)
     , m_output("XXXXXX.tif")
+    , m_exposuresigma(0.2)
 {
     connect( this, SIGNAL(finished(int)),                        this, SLOT(onTerminated(int)) );
     connect( this, SIGNAL(started()),                            this, SLOT(onStarted()) );
@@ -30,11 +31,13 @@ void EnfuseProcess::run()
     m_console.clear();
 
     QStringList args(m_inputs);
-    args << "-v" << "--depth=16"
+    args << "--verbose" << "--depth=16"
          << "--exposure-weight=1"
          << "--contrast-weight=0"
          << "--saturation-weight=0"
          << "--gray-projector=luminance"
+         << QString("--exposure-sigma=%1").arg(m_exposuresigma)
+         << "--levels=29"
          << "-o" << m_output.fileName();
     qDebug() << "EnfuseProcess::run()" << args;
     setArguments( args );

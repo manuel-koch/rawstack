@@ -68,31 +68,22 @@ void UfrawWorker::prepareImpl()
 {
     qDebug() << "UfrawWorker::prepareImpl()" << this;
 
-    UfrawProcess ufraw;
-    ufraw.setProgram( "/opt/local/bin/ufraw-batch" );
-    ufraw.setRaw( config()->raw() );
-    ufraw.setExposure( config()->settings()->getSetting(UfrawSettings::Exposure)->value().toDouble() );
-    ufraw.setShrink( 2 );
-
-    // probe for other settings first...
-    ufraw.run( UfrawProcess::OutputProbe );
-    if( ufraw.failed() )
-    {
-        qWarning() << "UfrawWorker::prepareImpl() ufraw failed, returned" << ufraw.exitCode();
-        return;
-    }
-
-    UfrawProcess::InfoMap info = ufraw.info();
-    QVariantMap exif;
-    for( auto it = info.begin(); it != info.end(); it++ )
-    {
-        exif[it.key()] = it.value();
-    }
-    //FIXME: m_common->setExif( exif );
-
     if( config()->settings()->getSetting(UfrawSettings::WbTemperature)->value().toInt() == UfrawSettings::DefaultWbTemperature ||
         config()->settings()->getSetting(UfrawSettings::WbGreen)->value().toInt()       == UfrawSettings::DefaultWbGreen          )
     {
+        // probe for resulting settings...
+        UfrawProcess ufraw;
+        ufraw.setProgram( "/opt/local/bin/ufraw-batch" );
+        ufraw.setRaw( config()->raw() );
+        ufraw.setExposure( config()->settings()->getSetting(UfrawSettings::Exposure)->value().toDouble() );
+        ufraw.setShrink( 8 );
+        ufraw.run( UfrawProcess::OutputProbe );
+        if( ufraw.failed() )
+        {
+            qWarning() << "UfrawWorker::prepareImpl() ufraw failed, returned" << ufraw.exitCode();
+            return;
+        }
+        // use the resulting settings
         config()->settings()->getSetting(UfrawSettings::WbTemperature)->setValue( ufraw.wbTemperature() );
         config()->settings()->getSetting(UfrawSettings::WbGreen)->setValue( ufraw.wbGreen() );
     }

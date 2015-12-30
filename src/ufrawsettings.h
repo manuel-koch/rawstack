@@ -7,11 +7,13 @@ public:
 
     static const char *Name;
     static const char *Fuse;
+    static const char *ExposureSigma;
     static const char *Exposure;
     static const char *WbTemperature;
     static const char *WbGreen;
 
     static const int    DefaultFuse;
+    static const double DefaultExposureSigma;
     static const double DefaultExposure;
     static const int    DefaultWbTemperature;
     static const double DefaultWbGreen;

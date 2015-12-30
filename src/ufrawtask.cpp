@@ -30,6 +30,9 @@ void UfrawTask::initTaskSettings()
     m_fuse = settings->getSetting(UfrawSettings::Fuse);
     m_fuse->initIfNull( UfrawSettings::DefaultFuse );
 
+    m_exposuresigma = settings->getSetting(UfrawSettings::ExposureSigma);
+    m_exposuresigma->initIfNull( UfrawSettings::DefaultExposureSigma );
+
     m_exposure = settings->getSetting(UfrawSettings::Exposure);
     m_exposure->initIfNull( UfrawSettings::DefaultExposure );
 

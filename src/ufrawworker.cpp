@@ -120,6 +120,7 @@ Magick::Image masked( bool below, double value, Magick::Image img )
 void UfrawWorker::registerSettingsImpl()
 {
     hashSetting(UfrawSettings::Fuse);
+    hashSetting(UfrawSettings::ExposureSigma);
     hashSetting(UfrawSettings::Exposure);
     hashSetting(UfrawSettings::WbTemperature);
     hashSetting(UfrawSettings::WbGreen);
@@ -175,9 +176,11 @@ void UfrawWorker::developImpl(bool preview, WorkerBase *predecessor)
 
     if( nof > 1 )
     {
+        double sigma = config()->settings()->getSetting(UfrawSettings::ExposureSigma)->value().toDouble();
         EnfuseProcess enfuse;
         enfuse.setProgram( "/opt/local/bin/enfuse" );
         enfuse.setInputs( rawImages );
+        enfuse.setExposureSigma( sigma );
         connect( &enfuse, &EnfuseProcess::progress, [&](double progress) {
             setProgress( progressPhaseA + progressPhaseB + (1-progressPhaseA-progressPhaseB)*progress );
         });

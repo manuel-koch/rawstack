@@ -24,6 +24,22 @@ Task {
     }
 
     TaskSetting {
+        label: "Fuse Exposure Sigma"
+        SpinBox {
+            enabled:           controller.fuse > 1
+            Layout.alignment:  Qt.AlignRight
+            Layout.fillWidth:  true
+            font.pointSize:    10
+            decimals:          2
+            maximumValue:      1
+            minimumValue:      0.05
+            stepSize:          0.05
+            value:             controller.exposuresigma
+            onEditingFinished: controller.setExposureSigma( value )
+        }
+    }
+
+    TaskSetting {
         label: "Exposure"
         SpinBox {
             Layout.alignment:  Qt.AlignRight

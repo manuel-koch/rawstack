@@ -153,6 +153,7 @@ Rectangle {
         clip:                    true
         snapMode:                GridView.SnapToRow
         flow:                    GridView.FlowLeftToRight
+        cacheBuffer:             cellHeight*2
 
         Keys.onPressed: {
             if( event.key == Qt.Key_Space ) {

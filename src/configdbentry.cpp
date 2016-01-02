@@ -1,18 +1,20 @@
 #include "configdbentry.h"
+#include "configexif.h"
 #include "configdb.h"
 #include "fileinfotoolbox.h"
 
 #include <QDebug>
 #include <QFileInfo>
 #include <QDomDocument>
+#include <QDateTime>
 
 ConfigDbEntry::ConfigDbEntry(QObject *parent)
     : QObject(parent)
     , m_thumbnail(this)
     , m_final(this)
 {
-    connect( &m_thumbnail, SIGNAL(urlChanged(QUrl)), this, SIGNAL(thumbnailChanged(QUrl)) );
-    connect( &m_final,     SIGNAL(urlChanged(QUrl)), this, SIGNAL(finalChanged(QUrl)) );
+    connect( &m_thumbnail, &ImageFactoryThumbnail::urlChanged, this, &ConfigDbEntry::thumbnailChanged );
+    connect( &m_final,     &ImageFactoryFinal::urlChanged,     this, &ConfigDbEntry::finalChanged     );
 }
 
 bool ConfigDbEntry::equals(const ConfigDbEntry *other)
@@ -73,7 +75,8 @@ void ConfigDbEntry::load(QString path)
     QFile file(path);
     if( !file.open( QFile::ReadOnly ) )
     {
-        qWarning() << "ConfigDbEntry::load() failed to open" << path;
+        // configuration may not exist yet
+        loadExif();
         return;
     }
 
@@ -96,10 +99,11 @@ void ConfigDbEntry::fromXML(const QDomDocument &doc)
 {
     QDomElement root = doc.documentElement();
 
-    QString   raw     = root.attribute("raw");
-    QFileInfo rawInfo = raw;
+    QString   raw        = root.attribute("raw");
+    QFileInfo configInfo = QFileInfo(m_config);
+    QFileInfo rawInfo    = raw;
     if( !rawInfo.exists() )
-        rawInfo = QFileInfo( QFileInfo(m_config).dir(), rawInfo.fileName() );
+        rawInfo = QFileInfo( configInfo.dir(), rawInfo.fileName() );
 
     if( rawInfo.exists() )
         setRaw( rawInfo.absoluteFilePath() );
@@ -108,6 +112,11 @@ void ConfigDbEntry::fromXML(const QDomDocument &doc)
         qWarning() << "ConfigDbEntry::fromXML() invalid path" << raw;
         setRaw( raw );
     }
+
+    QDomNode exif = root.firstChildElement("exif");
+    m_exif.fromXML( exif );
+    if( configInfo.lastModified() < rawInfo.lastModified() )
+        loadExif();
 
     QDomNode settings = root.firstChildElement("settings");
     m_settings.fromXML( settings );
@@ -144,6 +153,9 @@ void ConfigDbEntry::toXML(QDomDocument &doc) const
     rootElem.setAttribute("version","1.0");
     rootElem.setAttribute("raw",m_raw);
 
+    QDomNode exif = root.appendChild( doc.createElement("exif") );
+    m_exif.toXML( exif );
+
     QDomNode settings = root.appendChild( doc.createElement("settings") );
     m_settings.toXML( settings );
 }
@@ -173,6 +185,13 @@ void ConfigDbEntry::setConfig(QString config)
     QStringList suffixes  = info.completeSuffix().split(".");
     int instance = suffixes.length() >= 2 ? suffixes[suffixes.length()-2].toInt() : 1;
     setInstance( instance );
+}
+
+void ConfigDbEntry::loadExif()
+{
+    qDebug() << "ConfigDbEntry::loadExif()" << m_raw;
+    if( !m_raw.isEmpty() )
+        m_exif.load( m_raw );
 }
 
 void ConfigDbEntry::setTitle(QString title)

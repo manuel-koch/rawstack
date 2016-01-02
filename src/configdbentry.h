@@ -4,6 +4,7 @@
 #include "imagefactorythumbnail.h"
 #include "imagefactoryfinal.h"
 #include "configsettings.h"
+#include "configexif.h"
 
 #include <Magick++.h>
 
@@ -21,6 +22,7 @@ class ConfigDbEntry : public QObject
     Q_PROPERTY(QString         raw       READ raw       WRITE setRaw    NOTIFY rawChanged)
     Q_PROPERTY(QString         config    READ config    WRITE setConfig NOTIFY configChanged)
     Q_PROPERTY(ConfigSettings* settings  READ settings  CONSTANT)
+    Q_PROPERTY(ConfigExif*     exif      READ exif      CONSTANT)
     Q_PROPERTY(QUrl            thumbnail READ thumbnail                 NOTIFY thumbnailChanged)
     Q_PROPERTY(QUrl            final     READ final                     NOTIFY finalChanged)
 
@@ -36,6 +38,7 @@ public:
     QString raw() const { return m_raw; }
     QString config() const { return m_config; }
     ConfigSettings *settings() { return &m_settings; }
+    ConfigExif *exif() { return &m_exif; }
     QUrl    thumbnail() const { return m_thumbnail.url(); }
     QUrl    final() const { return m_final.url(); }
 
@@ -72,6 +75,7 @@ public slots:
 
     void setRaw(QString raw);
     void setConfig(QString config);
+    void loadExif();
 
 private:
 
@@ -86,6 +90,7 @@ private:
     QString               m_config;    // path to rawstack configuration file
 
     ConfigSettings        m_settings;  // settings for the tasks to develop the RAW image
+    ConfigExif            m_exif;      // EXIF info of RAW image
 
     ImageFactoryThumbnail m_thumbnail; // factory for thumbnail of preview / developed image
     ImageFactoryFinal     m_final;     // factory for full size of preview / developed image

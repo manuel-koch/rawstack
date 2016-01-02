@@ -74,7 +74,8 @@ SOURCES += \
     src/sharpenworker.cpp \
     src/levelsettings.cpp \
     src/leveltask.cpp \
-    src/levelworker.cpp
+    src/levelworker.cpp \
+    src/configexif.cpp
 
 RESOURCES += qml.qrc
 
@@ -129,4 +130,5 @@ HEADERS += \
     src/sharpenworker.h \
     src/levelsettings.h \
     src/leveltask.h \
-    src/levelworker.h
+    src/levelworker.h \
+    src/configexif.h

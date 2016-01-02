@@ -12,6 +12,7 @@
 #include "configdb.h"
 #include "configdbentry.h"
 #include "configsetting.h"
+#include "configexif.h"
 
 #include "ufrawtask.h"
 #include "ufrawsettings.h"
@@ -44,6 +45,7 @@ void register_types()
     qRegisterMetaType<ConfigDb*>("ConfigDb");
     qRegisterMetaType<ConfigDbEntry*>("ConfigDbEntry");
     qRegisterMetaType<ConfigSetting*>("ConfigSetting");
+    qRegisterMetaType<ConfigExif*>("ConfigExif");
     qRegisterMetaType<ImageCacheGroup::Lifetime>("ImageCacheGroup::Lifetime");
 
     qmlRegisterType<TaskBase>( "com.rawstack.types", 1, 0, "TaskBase" );

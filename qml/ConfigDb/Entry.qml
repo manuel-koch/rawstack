@@ -37,7 +37,7 @@ Item {
                   bottom: theTitle.bottom; }
         color:        "white"
         visible:      theMouse.containsMouse
-        opacity:      0.3
+        opacity:      0.8
         radius:       theUsableArea.radius
     }
 
@@ -50,7 +50,14 @@ Item {
                   rightMargin: 4; }
         wrapMode:        Text.WrapAtWordBoundaryOrAnywhere
         font.pointSize:  10
-        text:            config != undefined ? (config.title + ( config.instance > 1 ? "." + config.instance : "" )) : ""
+        text:            title + "\n" + exif
+        property string title: config.title + ( config.instance > 1 ? "." + config.instance : "" )
+        property string exif:  config.exif.model + "\n" +
+                               config.exif.lens + "\n" +
+                               config.exif.exposure + ", " +
+                               config.exif.fnumber + ", " +
+                               config.exif.focallength + ", " +
+                               config.exif.iso
     }
 
     MouseArea {

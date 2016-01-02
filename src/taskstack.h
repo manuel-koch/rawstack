@@ -19,6 +19,7 @@ class TaskStack : public QAbstractListModel
     Q_PROPERTY(CommonTasks*   tasks      READ tasks      CONSTANT)
     Q_PROPERTY(ConfigDbEntry* config     READ config     NOTIFY configChanged)
     Q_PROPERTY(bool           dirty      READ dirty      NOTIFY dirtyChanged)
+
 public:
 
     typedef QHash<int, QByteArray> RoleMap;

@@ -8,6 +8,15 @@
 #include <math.h>
 #include <exiv2/exiv2.hpp>
 
+static const char *XML_ATTR_VALUE    = "value";
+static const char *XML_ELEM_MAKE     = "make";
+static const char *XML_ELEM_MODEL    = "model";
+static const char *XML_ELEM_LENS     = "lens";
+static const char *XML_ELEM_SHUTTER  = "shutter";
+static const char *XML_ELEM_APERTURE = "aperture";
+static const char *XML_ELEM_FOCALLEN = "focallen";
+static const char *XML_ELEM_ISO      = "iso";
+
 /*
  * Helper function to copy a exif string from current locale
  * (in which exiv2 often returns strings) to QString.
@@ -22,12 +31,12 @@ ConfigExif::ConfigExif(QObject *parent) : QObject(parent)
     // EMPTY
 }
 
-void ConfigExif::setMaker(QString maker)
+void ConfigExif::setMake(QString make)
 {
-    if( m_maker == maker )
+    if( m_make == make )
         return;
-    m_maker = maker;
-    emit makerChanged(m_maker);
+    m_make = make;
+    emit makeChanged(m_make);
 }
 
 void ConfigExif::setModel(QString model)
@@ -112,7 +121,7 @@ void ConfigExif::setIsoText(QString iso)
 
 void ConfigExif::clearTags()
 {
-    setMaker("");
+    setMake("");
     setModel("");
     setLens("");
     setShutter(0);
@@ -147,7 +156,7 @@ void ConfigExif::load(QString path)
     /* Read maker name */
     if( (pos = Exiv2::make(exifData)) != exifData.end() )
     {
-        setMaker( getExifText(pos, exifData) );
+        setMake( getExifText(pos, exifData) );
     }
     /* Read model name */
     if ((pos = Exiv2::model(exifData)) != exifData.end())
@@ -206,7 +215,7 @@ void ConfigExif::load(QString path)
         setFocallenText( getExifText(pos, exifData) );
     }
     qDebug() << "ConfigExif::load()"
-             << "maker =" << m_maker
+             << "maker =" << m_make
              << "model =" << m_model
              << "lens =" << m_lens
              << "shutter =" << m_shutter << m_shutterText
@@ -219,36 +228,36 @@ void ConfigExif::toXML(QDomNode &node) const
 {
     QDomDocument doc = node.ownerDocument();
 
-    QDomNode elmNode = node.appendChild( doc.createElement("maker") );
+    QDomNode elmNode = node.appendChild( doc.createElement(XML_ELEM_MAKE) );
     QDomElement elm = elmNode.toElement();
-    elm.appendChild( doc.createTextNode( m_maker ) );
+    elm.appendChild( doc.createTextNode( m_make ) );
 
-    elmNode = node.appendChild( doc.createElement("model") );
+    elmNode = node.appendChild( doc.createElement(XML_ELEM_MODEL) );
     elm = elmNode.toElement();
     elm.appendChild( doc.createTextNode( m_model ) );
 
-    elmNode = node.appendChild( doc.createElement("lens") );
+    elmNode = node.appendChild( doc.createElement(XML_ELEM_LENS) );
     elm = elmNode.toElement();
     elm.appendChild( doc.createTextNode( m_lens ) );
 
-    elmNode = node.appendChild( doc.createElement("shutter") );
+    elmNode = node.appendChild( doc.createElement(XML_ELEM_SHUTTER) );
     elm = elmNode.toElement();
-    elm.setAttribute("value",m_shutter);
+    elm.setAttribute(XML_ATTR_VALUE,m_shutter);
     elm.appendChild( doc.createTextNode( m_shutterText ) );
 
-    elmNode = node.appendChild( doc.createElement("aperture") );
+    elmNode = node.appendChild( doc.createElement(XML_ELEM_APERTURE) );
     elm = elmNode.toElement();
-    elm.setAttribute("value",m_aperture);
+    elm.setAttribute(XML_ATTR_VALUE,m_aperture);
     elm.appendChild( doc.createTextNode( m_apertureText) );
 
-    elmNode = node.appendChild( doc.createElement("focallen") );
+    elmNode = node.appendChild( doc.createElement(XML_ELEM_FOCALLEN) );
     elm = elmNode.toElement();
-    elm.setAttribute("value",m_focallen);
+    elm.setAttribute(XML_ATTR_VALUE,m_focallen);
     elm.appendChild( doc.createTextNode( m_focallenText ) );
 
-    elmNode = node.appendChild( doc.createElement("iso") );
+    elmNode = node.appendChild( doc.createElement(XML_ELEM_ISO) );
     elm = elmNode.toElement();
-    elm.setAttribute("value",m_iso);
+    elm.setAttribute(XML_ATTR_VALUE,m_iso);
     elm.appendChild( doc.createTextNode( m_isoText ) );
 }
 
@@ -257,43 +266,43 @@ void ConfigExif::fromXML(const QDomNode &node)
     clearTags();
 
     QDomElement nodeElm = node.toElement();
-    QDomElement makerElm = nodeElm.firstChildElement("maker");
+    QDomElement makerElm = nodeElm.firstChildElement(XML_ELEM_MAKE);
     if( makerElm.isElement() )
         setModel(makerElm.text().trimmed());
 
-    QDomElement modelElm = nodeElm.firstChildElement("model");
+    QDomElement modelElm = nodeElm.firstChildElement(XML_ELEM_MODEL);
     if( modelElm.isElement() )
         setModel(modelElm.text().trimmed());
 
-    QDomElement lensElm = nodeElm.firstChildElement("lens");
+    QDomElement lensElm = nodeElm.firstChildElement(XML_ELEM_LENS);
     if( lensElm.isElement() )
         setLens(lensElm.text().trimmed());
 
-    QDomElement shutterElm = nodeElm.firstChildElement("shutter");
+    QDomElement shutterElm = nodeElm.firstChildElement(XML_ELEM_SHUTTER);
     if( shutterElm.isElement() )
     {
-        setShutter(shutterElm.attribute("value").toFloat());
+        setShutter(shutterElm.attribute(XML_ATTR_VALUE).toFloat());
         setShutterText(shutterElm.text().trimmed());
     }
 
-    QDomElement apertureElm = nodeElm.firstChildElement("aperture");
+    QDomElement apertureElm = nodeElm.firstChildElement(XML_ELEM_APERTURE);
     if( apertureElm.isElement() )
     {
-        setAperture(apertureElm.attribute("value").toFloat());
+        setAperture(apertureElm.attribute(XML_ATTR_VALUE).toFloat());
         setApertureText(apertureElm.text().trimmed());
     }
 
-    QDomElement focallenElm = nodeElm.firstChildElement("focallen");
+    QDomElement focallenElm = nodeElm.firstChildElement(XML_ELEM_FOCALLEN);
     if( focallenElm.isElement() )
     {
-        setFocallen(focallenElm.attribute("value").toFloat());
+        setFocallen(focallenElm.attribute(XML_ATTR_VALUE).toFloat());
         setFocallenText(focallenElm.text().trimmed());
     }
 
-    QDomElement isoElm = nodeElm.firstChildElement("iso");
+    QDomElement isoElm = nodeElm.firstChildElement(XML_ELEM_ISO);
     if( isoElm.isElement() )
     {
-        setIso(isoElm.attribute("value").toFloat());
+        setIso(isoElm.attribute(XML_ATTR_VALUE).toFloat());
         setIsoText(isoElm.text().trimmed());
     }
 }

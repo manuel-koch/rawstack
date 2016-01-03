@@ -8,7 +8,7 @@
 class ConfigExif : public QObject
 {
     Q_OBJECT
-    Q_PROPERTY(QString maker        READ maker        NOTIFY makerChanged)
+    Q_PROPERTY(QString make         READ make         NOTIFY makeChanged)
     Q_PROPERTY(QString model        READ model        NOTIFY modelChanged)
     Q_PROPERTY(QString lens         READ lens         NOTIFY lensChanged)
     Q_PROPERTY(float   shutter      READ shutter      NOTIFY shutterChanged)
@@ -24,7 +24,7 @@ public:
 
     explicit ConfigExif(QObject *parent = 0);
 
-    void setMaker(QString maker);
+    void setMake(QString make);
     void setModel(QString model);
     void setLens(QString lens);
     void setShutter(float shutter);
@@ -43,7 +43,7 @@ public:
     void toXML(QDomNode &node) const;
     void fromXML(const QDomNode &node);
 
-    QString maker() const { return m_maker; }
+    QString make() const { return m_make; }
     QString model() const { return m_model; }
     QString lens() const { return m_lens; }
     float shutter() const { return m_shutter; }
@@ -57,7 +57,7 @@ public:
 
 signals:
 
-    void makerChanged(QString maker);
+    void makeChanged(QString make);
     void modelChanged(QString model);
     void lensChanged(QString lens);
     void shutterChanged(float shutter);
@@ -71,7 +71,7 @@ signals:
 
 private:
 
-    QString m_maker;
+    QString m_make;
     QString m_model;
     QString m_lens;
     float   m_shutter;

@@ -24,6 +24,7 @@ Item {
     Image {
         id: theThumbnail
         anchors.fill:    theUsableArea
+        anchors.bottomMargin: Math.min( theUsableArea.height/2, theExifFlow.height+theUsableArea.radius )
         asynchronous:    true
         source:          config != undefined ? ((width>256 || height>256) && config.final ? config.final : config.thumbnail) : ""
         fillMode:        Image.PreserveAspectFit
@@ -50,14 +51,37 @@ Item {
                   rightMargin: 4; }
         wrapMode:        Text.WrapAtWordBoundaryOrAnywhere
         font.pointSize:  10
-        text:            title + "\n" + exif
-        property string title: config.title + ( config.instance > 1 ? "." + config.instance : "" )
-        property string exif:  config.exif.model + "\n" +
-                               config.exif.lens + "\n" +
-                               config.exif.exposure + ", " +
-                               config.exif.fnumber + ", " +
-                               config.exif.focallength + ", " +
-                               config.exif.iso
+        text:            config.title + ( config.instance > 1 ? "." + config.instance : "" )
+    }
+
+    Flow {
+        id: theExifFlow
+        anchors { bottom: theUsableArea.bottom; left: theUsableArea.left; right: theUsableArea.right }
+        spacing: theUsableArea.radius
+        ExifText {
+            radius: theUsableArea.radius
+            text:   config.exif.model
+        }
+        ExifText {
+            radius: theUsableArea.radius
+            text:   config.exif.lens
+        }
+        ExifText {
+            radius: theUsableArea.radius
+            text:   config.exif.shutterText
+        }
+        ExifText {
+            radius: theUsableArea.radius
+            text:   config.exif.apertureText
+        }
+        ExifText {
+            radius: theUsableArea.radius
+            text:   config.exif.isoText
+        }
+        ExifText {
+            radius: theUsableArea.radius
+            text:   config.exif.focallenText
+        }
     }
 
     MouseArea {

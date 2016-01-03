@@ -3,20 +3,30 @@
 #include <QDebug>
 #include <QFileInfo>
 
+#include <array>
 #include <math.h>
 #include <exiv2/exiv2.hpp>
 
-static const Exiv2::ExifKey modelKey("Exif.Image.Model");
-static const Exiv2::ExifKey canonLensKey("Exif.Canon.LensModel");
-static const Exiv2::ExifKey canonCsLensKey("Exif.CanonCs.Lens");
-static const Exiv2::ExifKey exposureKey("Exif.Photo.ExposureTime");
-static const Exiv2::ExifKey fnumberKey("Exif.Photo.FNumber");
-static const Exiv2::ExifKey focallengthKey("Exif.Photo.FocalLength");
-static const Exiv2::ExifKey isoKey("Exif.Photo.ISOSpeedRatings");
+/*
+ * Helper function to copy a exif string from current locale
+ * (in which exiv2 often returns strings) to QString.
+ */
+static QString getExifText( Exiv2::ExifMetadata::const_iterator pos, Exiv2::ExifData& exifData )
+{
+    return QString::fromStdString( pos->print(&exifData) );
+}
 
 ConfigExif::ConfigExif(QObject *parent) : QObject(parent)
 {
     // EMPTY
+}
+
+void ConfigExif::setMaker(QString maker)
+{
+    if( m_maker == maker )
+        return;
+    m_maker = maker;
+    emit makerChanged(m_maker);
 }
 
 void ConfigExif::setModel(QString model)
@@ -35,31 +45,55 @@ void ConfigExif::setLens(QString lens)
     emit lensChanged(m_lens);
 }
 
-void ConfigExif::setExposure(QString exposure)
+void ConfigExif::setShutter(float shutter)
 {
-    if( m_exposure == exposure )
+    if( m_shutter == shutter )
         return;
-    m_exposure = exposure;
-    emit exposureChanged(m_exposure);
+    m_shutter = shutter;
+    emit shutterChanged(m_shutter);
 }
 
-void ConfigExif::setFnumber(QString fnumber)
+void ConfigExif::setShutterText(QString shutter)
 {
-    if( m_fnumber == fnumber )
+    if( m_shutterText == shutter )
         return;
-    m_fnumber = fnumber;
-    emit fnumberChanged(m_fnumber);
+    m_shutterText = shutter;
+    emit shutterTextChanged(m_shutterText);
 }
 
-void ConfigExif::setFocallength(QString focallength)
+void ConfigExif::setAperture(float aperture)
 {
-    if( m_focallength == focallength )
+    if( m_aperture == aperture )
         return;
-    m_focallength = focallength;
-    emit focallengthChanged(m_focallength);
+    m_aperture = aperture;
+    emit apertureChanged(m_aperture);
 }
 
-void ConfigExif::setIso(QString iso)
+void ConfigExif::setApertureText(QString aperture)
+{
+    if( m_apertureText == aperture )
+        return;
+    m_apertureText = aperture;
+    emit apertureTextChanged(m_apertureText);
+}
+
+void ConfigExif::setFocallen(float focallen)
+{
+    if( m_focallen == focallen )
+        return;
+    m_focallen = focallen;
+    emit focallenChanged(m_focallen);
+}
+
+void ConfigExif::setFocallenText(QString focallen)
+{
+    if( m_focallenText == focallen )
+        return;
+    m_focallenText = focallen;
+    emit focallenTextChanged(m_focallenText);
+}
+
+void ConfigExif::setIso(int iso)
 {
     if( m_iso == iso )
         return;
@@ -67,14 +101,27 @@ void ConfigExif::setIso(QString iso)
     emit isoChanged(m_iso);
 }
 
+void ConfigExif::setIsoText(QString iso)
+{
+    if( m_isoText == iso )
+        return;
+    m_isoText = iso;
+    emit isoTextChanged(m_isoText);
+}
+
 void ConfigExif::clearTags()
 {
+    setMaker("");
     setModel("");
     setLens("");
-    setExposure("");
-    setFnumber("");
-    setFocallength("");
-    setIso("");
+    setShutter(0);
+    setShutterText("");
+    setAperture(0);
+    setApertureText("");
+    setFocallen(0);
+    setFocallenText("");
+    setIso(0);
+    setIsoText("");
 }
 
 void ConfigExif::load(QString path)
@@ -94,99 +141,112 @@ void ConfigExif::load(QString path)
         return;
 
     Exiv2::ExifData &exifData = exifImg->exifData();
-    Exiv2::ExifMetadata::iterator pos;
+    Exiv2::ExifMetadata::const_iterator pos;
 
-    QString model;
-    pos = exifData.findKey(modelKey);
-    if( pos != exifData.end() )
-        model = QString::fromStdString( pos->value().toString() );
-    qDebug() << "ConfigExif::load() model" << model;
-    setModel( model );
-
-    QString lens;
-    pos = exifData.findKey(canonLensKey);
-    if( pos != exifData.end() )
-        lens = QString::fromStdString( pos->value().toString() );
-    else {
-        pos = exifData.findKey(canonCsLensKey);
-        if( pos != exifData.end() )
-        {
-            short from = pos->value().toLong(0);
-            short to   = pos->value().toLong(1);
-            lens = QString("%1 - %2 mm").arg(from).arg(to);
-        }
-    }
-    qDebug() << "ConfigExif::load() lens" << lens;
-    setLens(lens);
-
-    QString exposure;
-    pos = exifData.findKey(exposureKey);
-    if( pos != exifData.end() )
-        exposure = QString("%1 s").arg(QString::fromStdString( pos->value().toString() ));
-    qDebug() << "ConfigExif::load() exposure" << exposure;
-    setExposure(exposure);
-
-    QString fnumber;
-    pos = exifData.findKey(fnumberKey);
-    if( pos != exifData.end() )
+    /* Read maker name */
+    if( (pos = Exiv2::make(exifData)) != exifData.end() )
     {
-        float f = pos->value().toFloat();
-        if( f == floor(f) )
-            fnumber = QString("F%1").arg(f);
-        else
-            fnumber = QString("F%1").arg(f,3,'g',2);
+        setMaker( getExifText(pos, exifData) );
     }
-    qDebug() << "ConfigExif::load() fnumber" << fnumber;
-    setFnumber(fnumber);
-
-    QString focallength;
-    pos = exifData.findKey(focallengthKey);
-    if( pos != exifData.end() ) {
-        float l = pos->value().toFloat();
-        if( l == floor(l) )
-            focallength = QString("%1 mm").arg(l);
-        else
-            focallength = QString("%1 mm").arg(l,3,'g',2);
+    /* Read model name */
+    if ((pos = Exiv2::model(exifData)) != exifData.end())
+    {
+        setModel( getExifText(pos, exifData) );
     }
-    setFocallength(focallength);
-    qDebug() << "ConfigExif::load() focallength" << focallength;
-
-    QString iso;
-    pos = exifData.findKey(isoKey);
-    if( pos != exifData.end() ) {
-        iso = QString("ISO %1").arg(pos->value().toLong());
+    /* Read full lens name */
+    if( (pos = Exiv2::lensName(exifData)) != exifData.end() )
+    {
+        QString lens = getExifText(pos, exifData);
+        //for Canon it can contain "(65535)" or "(0)" for unknown lenses
+        //for Pentax it can contain Unknown (0xHEX)
+        if( lens.startsWith("(") || lens.compare("unknown",Qt::CaseInsensitive) )
+        {
+            lens = ""; // force unknown lens
+            const Exiv2::ExifKey lensKey("Exif.CanonCs.Lens");
+            if( (pos = exifData.findKey(lensKey)) != exifData.end() )
+            {
+                // retry with found components, seem to be focal range ( short/long ) of lens in mm
+                if( pos->typeId() == Exiv2::unsignedShort && pos->count() >= 2 )
+                {
+                    short from = pos->value().toLong(0);
+                    short to   = pos->value().toLong(1);
+                    if( from > to )
+                        std::swap( from, to );
+                    lens = QString("%1 - %2 mm").arg(from).arg(to);
+                }
+            }
+        }
+        setLens( lens );
     }
-    qDebug() << "ConfigExif::load() iso" << iso;
-    setIso(iso);
+    /* Read shutter time */
+    if( (pos = Exiv2::exposureTime(exifData)) != exifData.end() )
+    {
+        setShutter( pos->toFloat() );
+        setShutterText( getExifText(pos, exifData) );
+    }
+    /* Read aperture */
+    if( (pos = Exiv2::fNumber(exifData)) != exifData.end() )
+    {
+        setAperture( pos->toFloat() );
+        setApertureText( getExifText(pos, exifData) );
+    }
+    /* Read ISO speed */
+    if( (pos = Exiv2::isoSpeed(exifData)) != exifData.end() )
+    {
+        setIso( pos->toLong() );
+        setIsoText( QString("ISO%1").arg(m_iso) );
+    }
+    /* Read focal length */
+    if( (pos = Exiv2::focalLength(exifData)) != exifData.end() )
+    {
+        setFocallen( pos->toFloat() );
+        setFocallenText( getExifText(pos, exifData) );
+    }
+    qDebug() << "ConfigExif::load()"
+             << "maker =" << m_maker
+             << "model =" << m_model
+             << "lens =" << m_lens
+             << "shutter =" << m_shutter << m_shutterText
+             << "aperture =" << m_aperture << m_apertureText
+             << "focallen =" << m_focallen << m_focallenText
+             << "iso =" << m_iso << m_isoText;
 }
 
 void ConfigExif::toXML(QDomNode &node) const
 {
     QDomDocument doc = node.ownerDocument();
 
-    QDomNode elmNode = node.appendChild( doc.createElement("model") );
+    QDomNode elmNode = node.appendChild( doc.createElement("maker") );
     QDomElement elm = elmNode.toElement();
+    elm.appendChild( doc.createTextNode( m_maker ) );
+
+    elmNode = node.appendChild( doc.createElement("model") );
+    elm = elmNode.toElement();
     elm.appendChild( doc.createTextNode( m_model ) );
 
     elmNode = node.appendChild( doc.createElement("lens") );
     elm = elmNode.toElement();
     elm.appendChild( doc.createTextNode( m_lens ) );
 
-    elmNode = node.appendChild( doc.createElement("exposure") );
+    elmNode = node.appendChild( doc.createElement("shutter") );
     elm = elmNode.toElement();
-    elm.appendChild( doc.createTextNode( m_exposure ) );
+    elm.setAttribute("value",m_shutter);
+    elm.appendChild( doc.createTextNode( m_shutterText ) );
 
-    elmNode = node.appendChild( doc.createElement("fnumber") );
+    elmNode = node.appendChild( doc.createElement("aperture") );
     elm = elmNode.toElement();
-    elm.appendChild( doc.createTextNode( m_fnumber ) );
+    elm.setAttribute("value",m_aperture);
+    elm.appendChild( doc.createTextNode( m_apertureText) );
 
-    elmNode = node.appendChild( doc.createElement("focallength") );
+    elmNode = node.appendChild( doc.createElement("focallen") );
     elm = elmNode.toElement();
-    elm.appendChild( doc.createTextNode( m_focallength ) );
+    elm.setAttribute("value",m_focallen);
+    elm.appendChild( doc.createTextNode( m_focallenText ) );
 
     elmNode = node.appendChild( doc.createElement("iso") );
     elm = elmNode.toElement();
-    elm.appendChild( doc.createTextNode( m_iso ) );
+    elm.setAttribute("value",m_iso);
+    elm.appendChild( doc.createTextNode( m_isoText ) );
 }
 
 void ConfigExif::fromXML(const QDomNode &node)
@@ -194,6 +254,10 @@ void ConfigExif::fromXML(const QDomNode &node)
     clearTags();
 
     QDomElement nodeElm = node.toElement();
+    QDomElement makerElm = nodeElm.firstChildElement("maker");
+    if( makerElm.isElement() )
+        setModel(makerElm.text().trimmed());
+
     QDomElement modelElm = nodeElm.firstChildElement("model");
     if( modelElm.isElement() )
         setModel(modelElm.text().trimmed());
@@ -202,19 +266,31 @@ void ConfigExif::fromXML(const QDomNode &node)
     if( lensElm.isElement() )
         setLens(lensElm.text().trimmed());
 
-    QDomElement exposureElm = nodeElm.firstChildElement("exposure");
-    if( exposureElm.isElement() )
-        setExposure(exposureElm.text().trimmed());
+    QDomElement shutterElm = nodeElm.firstChildElement("shutter");
+    if( shutterElm.isElement() )
+    {
+        setShutter(shutterElm.attribute("value").toFloat());
+        setShutterText(shutterElm.text().trimmed());
+    }
 
-    QDomElement fnumberElm = nodeElm.firstChildElement("fnumber");
-    if( fnumberElm.isElement() )
-        setFnumber(fnumberElm.text().trimmed());
+    QDomElement apertureElm = nodeElm.firstChildElement("aperture");
+    if( apertureElm.isElement() )
+    {
+        setAperture(apertureElm.attribute("value").toFloat());
+        setApertureText(apertureElm.text().trimmed());
+    }
 
-    QDomElement focallengthElm = nodeElm.firstChildElement("focallength");
-    if( focallengthElm.isElement() )
-        setFocallength(focallengthElm.text().trimmed());
+    QDomElement focallenElm = nodeElm.firstChildElement("focallen");
+    if( focallenElm.isElement() )
+    {
+        setFocallen(focallenElm.attribute("value").toFloat());
+        setFocallenText(focallenElm.text().trimmed());
+    }
 
     QDomElement isoElm = nodeElm.firstChildElement("iso");
     if( isoElm.isElement() )
-        setIso(isoElm.text().trimmed());
+    {
+        setIso(isoElm.attribute("value").toFloat());
+        setIsoText(isoElm.text().trimmed());
+    }
 }

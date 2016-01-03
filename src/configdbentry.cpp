@@ -115,7 +115,7 @@ void ConfigDbEntry::fromXML(const QDomDocument &doc)
 
     QDomNode exif = root.firstChildElement("exif");
     m_exif.fromXML( exif );
-    if( configInfo.lastModified() < rawInfo.lastModified() )
+    if( !exif.isElement() || configInfo.lastModified() < rawInfo.lastModified() )
         loadExif();
 
     QDomNode settings = root.firstChildElement("settings");

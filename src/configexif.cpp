@@ -13,7 +13,7 @@
  */
 static QString getExifText( Exiv2::ExifMetadata::const_iterator pos, Exiv2::ExifData& exifData )
 {
-    return QString::fromStdString( pos->print(&exifData) );
+    return QString::fromStdString( pos->print(&exifData) ).trimmed();
 }
 
 ConfigExif::ConfigExif(QObject *parent) : QObject(parent)

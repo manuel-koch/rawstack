@@ -2,6 +2,7 @@
 
 #include <QDebug>
 #include <QFileInfo>
+#include <QRegularExpression>
 
 #include <array>
 #include <math.h>
@@ -157,13 +158,15 @@ void ConfigExif::load(QString path)
     if( (pos = Exiv2::lensName(exifData)) != exifData.end() )
     {
         QString lens = getExifText(pos, exifData);
+        //for e.g. Sony it can contain "----"
+        lens = lens.replace(QRegularExpression("^-*(.*)-*"),"\\1");
         //for Canon it can contain "(65535)" or "(0)" for unknown lenses
         //for Pentax it can contain Unknown (0xHEX)
-        if( lens.startsWith("(") || lens.compare("unknown",Qt::CaseInsensitive) )
+        if( lens.startsWith("(") || lens.contains("unknown",Qt::CaseInsensitive) )
         {
             lens = ""; // force unknown lens
-            const Exiv2::ExifKey lensKey("Exif.CanonCs.Lens");
-            if( (pos = exifData.findKey(lensKey)) != exifData.end() )
+            const Exiv2::ExifKey canonLensKey("Exif.CanonCs.Lens");
+            if( (pos = exifData.findKey(canonLensKey)) != exifData.end() )
             {
                 // retry with found components, seem to be focal range ( short/long ) of lens in mm
                 if( pos->typeId() == Exiv2::unsignedShort && pos->count() >= 2 )

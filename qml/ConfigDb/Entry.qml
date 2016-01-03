@@ -51,7 +51,7 @@ Item {
                   rightMargin: 4; }
         wrapMode:        Text.WrapAtWordBoundaryOrAnywhere
         font.pointSize:  10
-        text:            config.title + ( config.instance > 1 ? "." + config.instance : "" )
+        text:            config != undefined ? (config.title + ( config.instance > 1 ? "." + config.instance : "" )) : ""
     }
 
     Flow {
@@ -60,27 +60,28 @@ Item {
         spacing: theUsableArea.radius
         ExifText {
             radius: theUsableArea.radius
-            text:   config.exif.model
+            text:   config != undefined ? config.exif.model : ""
+        }
+        ExifText {
+            radius:  theUsableArea.radius
+            text:    config != undefined ? config.exif.lens : ""
+            visible: config != undefined ? config.exif.lens : false
         }
         ExifText {
             radius: theUsableArea.radius
-            text:   config.exif.lens
+            text:   config != undefined ? config.exif.shutterText : ""
         }
         ExifText {
             radius: theUsableArea.radius
-            text:   config.exif.shutterText
+            text:   config != undefined ? config.exif.apertureText : ""
         }
         ExifText {
             radius: theUsableArea.radius
-            text:   config.exif.apertureText
+            text:   config != undefined ? config.exif.isoText : ""
         }
         ExifText {
             radius: theUsableArea.radius
-            text:   config.exif.isoText
-        }
-        ExifText {
-            radius: theUsableArea.radius
-            text:   config.exif.focallenText
+            text:   config != undefined ? config.exif.focallenText : ""
         }
     }
 

@@ -22,7 +22,6 @@ Development.HistogramFinal {
         onDragDone: controller.setBlackpoint( value )
         color:      "black"
         property real value: (x+width/2) / theHistogram.width
-        onValueChanged: console.log("theBlackLine",value)
     }
 
     HistogramLineLabel {
@@ -41,7 +40,6 @@ Development.HistogramFinal {
         onDragDone: controller.setMidpoint( value )
         color:      "yellow"
         property real value: f2m( (x+width/2) / theHistogram.width )
-        onValueChanged: console.log("onValueChanged",controller.midpoint,value)
 
         // map factor 0...1 to midpoint 0.1 ... 10
         function f2m( f ) {
@@ -80,7 +78,6 @@ Development.HistogramFinal {
         onDragDone: controller.setWhitepoint( value )
         color:      "white"
         property real value: (x+width/2) / theHistogram.width
-        onValueChanged: console.log("theWhiteLine",value)
     }
 
     HistogramLineLabel {

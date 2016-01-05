@@ -152,6 +152,10 @@ void WorkerBase::onDevelop(bool preview, WorkerBase *predecessor)
             if( m_cache )
                 m_cache->store( curImgHash, ImageCacheGroup::Temporary, m_img );
         }
+        else
+        {
+            qDebug() << "WorkerBase::onDevelop()" << this << "using cached result image";
+        }
         m_doneSettingsHash = curSettingsHash;
         m_doneImgHash      = curImgHash;
         onSettingChanged(); // re-evaluate dirty flag based on current settings

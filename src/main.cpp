@@ -58,7 +58,7 @@ int main(int argc, char *argv[])
     QApplication app( argc, argv );
     Magick::InitializeMagick( argv[0] );
 
-    qSetMessagePattern("%{time} %{threadid} %{type}: %{message}");
+    qSetMessagePattern("%{time yyyy-MM-dd hh:mm:ss.zzz} %{threadid} %{type}: %{message}");
 
     LogHandler logHandler;
     logHandler.start( "/Users/manuel/tmp/rawstack/debug.log" );

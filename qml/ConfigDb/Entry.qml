@@ -8,12 +8,6 @@ Item {
     property ConfigDbEntry config
 
     Rectangle {
-        id: theBorderBg
-        anchors.fill: parent
-        color:        "#a0a0a0"
-    }
-
-    Rectangle {
         id: theUsableArea
         anchors.fill:    parent
         anchors.margins: 2

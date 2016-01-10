@@ -18,7 +18,6 @@ Item {
     Image {
         id: theThumbnail
         anchors.fill:    theUsableArea
-        anchors.bottomMargin: Math.min( theUsableArea.height/2, theExifFlow.height+theUsableArea.radius )
         asynchronous:    true
         source:          config != undefined ? ((width>256 || height>256) && config.final ? config.final : config.thumbnail) : ""
         fillMode:        Image.PreserveAspectFit
@@ -52,6 +51,7 @@ Item {
         id: theExifFlow
         anchors { bottom: theUsableArea.bottom; left: theUsableArea.left; right: theUsableArea.right }
         spacing: theUsableArea.radius
+        visible: theMouse.containsMouse
         ExifText {
             radius: theUsableArea.radius
             text:   config != undefined ? config.exif.model : ""

@@ -13,6 +13,7 @@
 #include "configdbentry.h"
 #include "configsetting.h"
 #include "configexif.h"
+#include "taskhistogram.h"
 
 #include "ufrawtask.h"
 #include "ufrawsettings.h"
@@ -38,7 +39,6 @@ void register_types()
     qRegisterMetaType<CommonTasks*>("CommonTasks");
     qRegisterMetaType<ImageFactory*>("ImageFactory");
     qRegisterMetaType<ImageFactoryBase*>("ImageFactoryBase");
-    qRegisterMetaType<HistFactory*>("HistFactory");
     qRegisterMetaType<ExportSetting*>("ExportSetting");
     qRegisterMetaType<ExportImage*>("ExportImage");
     qRegisterMetaType<ExportQueue*>("ExportQueue");
@@ -51,6 +51,7 @@ void register_types()
     qmlRegisterType<TaskBase>( "com.rawstack.types", 1, 0, "TaskBase" );
     qmlRegisterType<ConfigDbEntry>( "com.rawstack.types", 1, 0, "ConfigDbEntry" );
     qmlRegisterUncreatableType<ConfigDb>( "com.rawstack.types", 1, 0, "ConfigDb", "Can't create type ConfigDb" );
+    qmlRegisterType<TaskHistogram>( "com.rawstack.types", 1, 0, "TaskHistogram" );
 }
 
 int main(int argc, char *argv[])

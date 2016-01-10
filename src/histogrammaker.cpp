@@ -1,9 +1,7 @@
-#include "histfactory.h"
-#include "workerbase.h"
+#include "histogrammaker.h"
 
-#include <memory>
-#include <vector>
 #include <QDebug>
+#include <QElapsedTimer>
 
 
 typedef std::pair<Magick::Color,unsigned long> GmHistPair;
@@ -11,7 +9,7 @@ typedef std::vector<GmHistPair>                GmHistVector;
 typedef std::vector<double>                    DataVector;
 
 
-class HistogramData
+class Data
 {
 public:
     enum Channel
@@ -23,14 +21,14 @@ public:
         LumChannel   = 0x08,
     };
 
-    HistogramData(Channel channel, size_t nofBins)
+    Data(Channel channel, size_t nofBins)
         : m_channel(channel)
         , m_max(0)
         , m_data(nofBins)
     {
     }
 
-    virtual ~HistogramData() { }
+    virtual ~Data() { }
 
     Channel channel() const { return m_channel; }
 
@@ -45,7 +43,7 @@ public:
         m_max = std::max( m_max, m_data[idx] );
     }
 
-    // Normalize histogram data to selected maximum
+    // Normalize histogram data ( 0.0 - 1.0 ) using selected maximum
     void normalize( int maxNof )
     {
         m_max = 0;
@@ -56,7 +54,7 @@ public:
         });
     }
 
-    // convert to list of histogram bins, normalized to 0.0 - 1.0
+    // convert to list of histogram bins
     QVariantList toList() const
     {
         QVariantList l;
@@ -92,10 +90,10 @@ private:
 };
 
 
-class RedData : public HistogramData
+class RedData : public Data
 {
 public:
-    RedData(size_t nofBins) : HistogramData(HistogramData::RedChannel,nofBins)
+    RedData(size_t nofBins) : Data(Data::RedChannel,nofBins)
     {
     }
     virtual ~RedData() { }
@@ -106,10 +104,10 @@ public:
 };
 
 
-class GreenData : public HistogramData
+class GreenData : public Data
 {
 public:
-    GreenData(size_t nofBins) : HistogramData(HistogramData::GreenChannel,nofBins)
+    GreenData(size_t nofBins) : Data(Data::GreenChannel,nofBins)
     {
     }
     virtual ~GreenData() { }
@@ -120,10 +118,10 @@ public:
 };
 
 
-class BlueData : public HistogramData
+class BlueData : public Data
 {
 public:
-    BlueData(size_t nofBins) : HistogramData(HistogramData::BlueChannel,nofBins)
+    BlueData(size_t nofBins) : Data(Data::BlueChannel,nofBins)
     {
     }
     virtual ~BlueData() { }
@@ -134,10 +132,10 @@ public:
 };
 
 
-class LumData : public HistogramData
+class LumData : public Data
 {
 public:
-    LumData(size_t nofBins) : HistogramData(HistogramData::LumChannel,nofBins)
+    LumData(size_t nofBins) : Data(Data::LumChannel,nofBins)
     {
     }
     virtual ~LumData() { }
@@ -148,26 +146,27 @@ public:
 };
 
 
-typedef std::unique_ptr<HistogramData> HistDataUPtr;
-typedef std::vector<HistDataUPtr>      HistDataVector;
+typedef std::unique_ptr<Data>      HistDataUPtr;
+typedef std::vector<HistDataUPtr>  HistDataVector;
 
 
-HistFactory::HistFactory(WorkerBase *worker, QObject *parent)
-    : QObject(parent)
-    , m_worker(worker)
+HistogramMaker::HistogramMaker(QObject *parent)
+    : HistogramData(parent)
     , m_nofBins(256)
 {
-    connect( m_worker, SIGNAL(cycleChanged(int)), this, SLOT(onCycleChanged(int)) );
+    // EMPTY
 }
 
-void HistFactory::onCycleChanged(int cycle)
+void HistogramMaker::analyze(Magick::Image image)
 {
-    Q_UNUSED(cycle);
+    qDebug() << "HistogramMaker::analyze()";
 
-    Magick::Image image = m_worker->gmimage();
+    QElapsedTimer elapsed;
+    elapsed.start();
+
     if( !image.isValid() )
     {
-        qWarning() << "HistFactory::onCycleChanged() invalid input image" << m_worker;
+        qWarning() << "HistogramMaker::analyze() invalid input image";
         setRed( QVariantList() );
         setGreen( QVariantList() );
         setBlue( QVariantList() );
@@ -175,8 +174,9 @@ void HistFactory::onCycleChanged(int cycle)
         return;
     }
 
-    qDebug() << "HistFactory::onCycleChanged() scale input image";
-    image.scale( Magick::Geometry(600,600) );
+    qDebug() << "HistogramMaker::analyze() scaling" << image.size().width() << "x" << image.size().height();
+    image.scale( "400>" ); // scale with same aspect ratio
+    qDebug() << "HistogramMaker::analyze() scaled to" << image.size().width() << "x" << image.size().height();
 
     HistDataVector histograms;
     histograms.push_back( HistDataUPtr( new RedData(m_nofBins) ) );
@@ -184,14 +184,11 @@ void HistFactory::onCycleChanged(int cycle)
     histograms.push_back( HistDataUPtr( new BlueData(m_nofBins) ) );
     histograms.push_back( HistDataUPtr( new LumData(m_nofBins) ) );
 
-    qDebug() << "HistFactory::onCycleChanged() create histogram data";
+    qDebug() << "HistogramMaker::analyze() create histogram data";
     GmHistVector histogram;
-    if( image.isValid() )
-        Magick::colorHistogram( &histogram, image );
-    else
-        qWarning() << "HistFactory::onCycleChanged() invalid image";
+    Magick::colorHistogram( &histogram, image );
 
-    qDebug() << "HistFactory::onCycleChanged() channel data of" << histogram.size() << "colors";
+    qDebug() << "HistogramMaker::analyze() channel data of" << histogram.size() << "colors";
     std::for_each( histogram.begin(), histogram.end(), [&](const GmHistPair &p)
     {
         const Magick::Color &c = p.first;
@@ -202,59 +199,28 @@ void HistFactory::onCycleChanged(int cycle)
         });
     });
 
-    qDebug() << "HistFactory::onCycleChanged() find maximum";
+    qDebug() << "HistogramMaker::analyze() find maximum";
     double maxY = 0;
     std::for_each( histograms.begin(), histograms.end(), [&](HistDataUPtr &data)
     {
         maxY = std::max( maxY, data->max() );
     });
-    qDebug() << "HistFactory::onCycleChanged() maximum" << maxY;
+    qDebug() << "HistogramMaker::analyze() maximum" << maxY;
 
-    qDebug() << "HistFactory::onCycleChanged() normalize";
+    qDebug() << "HistogramMaker::analyze() normalize";
     std::for_each( histograms.begin(), histograms.end(), [&](HistDataUPtr &data)
     {
         data->normalize( maxY );
         switch( data->channel() )
         {
-            case HistogramData::RedChannel:   setRed( data->toList() );   break;
-            case HistogramData::GreenChannel: setGreen( data->toList() ); break;
-            case HistogramData::BlueChannel:  setBlue( data->toList() );  break;
-            case HistogramData::LumChannel:   setLum( data->toList() );   break;
+            case Data::RedChannel:   setRed( data->toList() );   break;
+            case Data::GreenChannel: setGreen( data->toList() ); break;
+            case Data::BlueChannel:  setBlue( data->toList() );  break;
+            case Data::LumChannel:   setLum( data->toList() );   break;
             default: break;
         }
     });
 
-    qDebug() << "HistFactory::onCycleChanged() done";
+    qDebug() << "HistogramMaker::analyze() done in" << elapsed.elapsed() << "ms";
 }
 
-void HistFactory::setRed(const QVariantList &red)
-{
-    if( red == m_red )
-        return;
-    m_red = red;
-    emit redChanged( m_red );
-}
-
-void HistFactory::setGreen(const QVariantList &green)
-{
-    if( green == m_green )
-        return;
-    m_green = green;
-    emit greenChanged( m_green );
-}
-
-void HistFactory::setBlue(const QVariantList &blue)
-{
-    if( blue == m_blue )
-        return;
-    m_blue = blue;
-    emit blueChanged( m_blue );
-}
-
-void HistFactory::setLum(const QVariantList &lum)
-{
-    if( lum == m_lum )
-        return;
-    m_lum = lum;
-    emit lumChanged( m_lum );
-}

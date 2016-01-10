@@ -10,6 +10,7 @@
 class ConfigDbEntry;
 class ConfigSetting;
 class ImageCache;
+class HistogramMaker;
 
 class WorkerBase : public QObject
 {
@@ -38,6 +39,8 @@ public:
     virtual void releaseImages();
     static QImage convert(Magick::Image image);
 
+    HistogramMaker *histogram() const { return m_histogram; }
+
 signals:
 
     void progressChanged(double progress);
@@ -47,6 +50,8 @@ signals:
     void develop( bool preview, WorkerBase *predecessor );
     void started();
     void finished();
+
+    void requestHistogram();
 
 protected slots:
 
@@ -58,7 +63,8 @@ private slots:
     void setDirty( bool dirty );
     void onDevelop( bool preview, WorkerBase *predecessor );
     void onSettingChanged();
-
+    void onRequestHistogram();
+    
 private:
 
     virtual void prepareImpl();
@@ -81,7 +87,9 @@ private:
     double         m_progress;
     int            m_cycle;
     bool           m_dirty;
-    ConfigDbEntry *m_config;
+
+    ConfigDbEntry  *m_config;
+    HistogramMaker *m_histogram;
 
     QList<ConfigSetting*> m_hashSettings;
     QByteArray            m_doneSettingsHash;

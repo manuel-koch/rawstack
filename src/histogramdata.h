@@ -1,12 +1,10 @@
-#ifndef HISTFACTORY_H
-#define HISTFACTORY_H
+#ifndef HISTOGRAMDATA_H
+#define HISTOGRAMDATA_H
 
 #include <QObject>
 #include <QVariant>
 
-class WorkerBase;
-
-class HistFactory : public QObject
+class HistogramData : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(QVariantList red   READ red   NOTIFY redChanged)
@@ -16,16 +14,12 @@ class HistFactory : public QObject
 
 public:
 
-    explicit HistFactory(WorkerBase *worker, QObject *parent = 0);
+    explicit HistogramData(QObject *parent = 0);
 
     const QVariantList &red() const { return m_red; }
     const QVariantList &green() const { return m_green; }
     const QVariantList &blue() const { return m_blue; }
     const QVariantList &lum() const { return m_lum; }
-
-public slots:
-
-    void onCycleChanged(int cycle);
 
 signals:
 
@@ -34,7 +28,7 @@ signals:
     void blueChanged(QVariantList blue);
     void lumChanged(QVariantList lum);
 
-private:
+public slots:
 
     void setRed( const QVariantList &red );
     void setGreen( const QVariantList &green );
@@ -43,12 +37,10 @@ private:
 
 private:
 
-    WorkerBase  *m_worker;
-    int          m_nofBins;
     QVariantList m_red;
     QVariantList m_green;
     QVariantList m_blue;
     QVariantList m_lum;
 };
 
-#endif // HISTFACTORY_H
+#endif // HISTOGRAMDATA_H

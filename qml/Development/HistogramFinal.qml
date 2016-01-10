@@ -23,6 +23,7 @@ Item {
         property real toggleSize: 10
         property int  nofEnabled: 4
         property real opacity:    1.0/nofEnabled
+        property TaskHistogram histogram: TaskHistogram { task: theHistogram.task }
 
         function setToggle(toggle,enabled)
         {
@@ -55,7 +56,7 @@ Item {
         id: theLumChannel
         objectName:   "lum"
         anchors.fill: parent
-        bins:         task ? task.images.histogram.lum : []
+        bins:         internal.histogram.lum
         visible:      theLumToggle.enabled
         lineColor:    "black"
         fillColor:    Qt.rgba(0.2,0.2,0.2,0.25)
@@ -65,7 +66,7 @@ Item {
         id: theRedChannel
         objectName:   "red"
         anchors.fill: parent
-        bins:         task ? task.images.histogram.red : []
+        bins:         internal.histogram.red
         visible:      theRedToggle.enabled
         lineColor:    "red"
         fillColor:    Qt.rgba(1,0,0,0.25)
@@ -75,7 +76,7 @@ Item {
         id: theGreenChannel
         objectName:   "green"
         anchors.fill: parent
-        bins:         task ? task.images.histogram.green : []
+        bins:         internal.histogram.green
         visible:      theGreenToggle.enabled
         lineColor:    "green"
         fillColor:    Qt.rgba(0,1,0,0.25)
@@ -85,7 +86,7 @@ Item {
         id: theBlueChannel
         anchors.fill: parent
         objectName:   "blue"
-        bins:         task ? task.images.histogram.blue : []
+        bins:         internal.histogram.blue
         visible:      theBlueToggle.enabled
         lineColor:    "blue"
         fillColor:    Qt.rgba(0,0,1,0.25)

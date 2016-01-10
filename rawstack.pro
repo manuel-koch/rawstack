@@ -48,7 +48,6 @@ SOURCES += \
     src/imagefactoryregistry.cpp \
     src/commontasks.cpp \
     src/stringtoolbox.cpp \
-    src/histfactory.cpp \
     src/rotatetask.cpp \
     src/rotateworker.cpp \
     src/enfuseprocess.cpp \
@@ -75,7 +74,10 @@ SOURCES += \
     src/levelsettings.cpp \
     src/leveltask.cpp \
     src/levelworker.cpp \
-    src/configexif.cpp
+    src/configexif.cpp \
+    src/histogramdata.cpp \
+    src/taskhistogram.cpp \
+    src/histogrammaker.cpp
 
 RESOURCES += qml.qrc
 
@@ -103,7 +105,6 @@ HEADERS += \
     src/imagefactoryregistry.h \
     src/commontasks.h \
     src/stringtoolbox.h \
-    src/histfactory.h \
     src/rotatetask.h \
     src/rotateworker.h \
     src/enfuseprocess.h \
@@ -131,4 +132,7 @@ HEADERS += \
     src/levelsettings.h \
     src/leveltask.h \
     src/levelworker.h \
-    src/configexif.h
+    src/configexif.h \
+    src/histogramdata.h \
+    src/taskhistogram.h \
+    src/histogrammaker.h

@@ -2,6 +2,7 @@
 #include "configdbentry.h"
 #include "configsetting.h"
 #include "imagecache.h"
+#include "histogrammaker.h"
 
 #include <QDebug>
 #include <QMutexLocker>
@@ -22,8 +23,11 @@ WorkerBase::WorkerBase(QString name)
     , m_progress(0)
     , m_cycle(0)
     , m_config(NULL)
+    , m_histogram(NULL)
 {
-    connect( this, SIGNAL(develop(bool,WorkerBase*)), this, SLOT(onDevelop(bool,WorkerBase*)) );
+    m_histogram = new HistogramMaker(this);
+    connect( this, &WorkerBase::develop,          this, &WorkerBase::onDevelop );
+    connect( this, &WorkerBase::requestHistogram, this, &WorkerBase::onRequestHistogram );
 }
 
 WorkerBase::~WorkerBase()
@@ -81,6 +85,12 @@ void WorkerBase::onSettingChanged()
     bool dirty = m_doneSettingsHash != hash;
     qDebug() << "WorkerBase::onSettingChanged()" << this << (dirty?"dirty":"clean");
     setDirty( dirty );
+}
+
+void WorkerBase::onRequestHistogram()
+{
+    qDebug() << "WorkerBase::onRequestHistogram()" << this;
+    m_histogram->analyze( m_img );
 }
 
 void WorkerBase::setCache(ImageCache *cache)

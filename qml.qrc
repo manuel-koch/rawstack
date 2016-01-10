@@ -36,5 +36,6 @@
         <file>qml/Development/Tasks/HistogramLine.qml</file>
         <file>qml/Development/Tasks/HistogramLineLabel.qml</file>
         <file>qml/ConfigDb/ExifText.qml</file>
+        <file>qml/Overview/Footer.qml</file>
     </qresource>
 </RCC>

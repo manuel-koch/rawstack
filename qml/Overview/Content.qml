@@ -17,18 +17,65 @@
  * Copyright 2016 Manuel Koch
  */
 import QtQuick 2.0
+import QtQuick.Layouts 1.1
 
 import "../ConfigDb" as ConfigDb
+import "../Misc" as Misc
 
 Item {
+
+    width:  400
+    height: 400
 
     property alias cellsPerRow: theGrid.cellsPerRow
     property alias imageCount:  theGrid.count
 
-    ConfigDb.Grid {
-        id: theGrid
-        anchors.fill: parent
-    }
+    RowLayout {
 
+        anchors.fill: parent
+        spacing: 4
+
+        Misc.VerticalTabs {
+            id: theTabs
+            Layout.preferredWidth: theTabs.width
+            Layout.fillHeight:     true
+
+            Misc.TabContent {
+                title: "blue"
+                Rectangle {
+                    objectName: "contentblue"
+                    color:  "blue"
+                    width:  100
+                    height: 200
+                }
+            }
+
+            Misc.TabContent {
+                title: "red"
+                Rectangle {
+                    objectName: "contentred"
+                    color:  "red"
+                    width:  150
+                    height: 150
+                }
+            }
+
+            Misc.TabContent {
+                title: "magenta"
+                Rectangle {
+                    objectName: "contentmagenta"
+                    color:  "magenta"
+                    width:  200
+                    height: 100
+                }
+            }
+        }
+
+        ConfigDb.Grid {
+            id: theGrid
+            Layout.fillWidth:  true
+            Layout.fillHeight: true
+        }
+    }
 }
 

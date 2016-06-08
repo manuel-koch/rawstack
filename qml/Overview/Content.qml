@@ -40,35 +40,7 @@ Item {
             Layout.preferredWidth: theTabs.width
             Layout.fillHeight:     true
 
-            Misc.TabContent {
-                title: "blue"
-                Rectangle {
-                    objectName: "contentblue"
-                    color:  "blue"
-                    width:  100
-                    height: 200
-                }
-            }
-
-            Misc.TabContent {
-                title: "red"
-                Rectangle {
-                    objectName: "contentred"
-                    color:  "red"
-                    width:  150
-                    height: 150
-                }
-            }
-
-            Misc.TabContent {
-                title: "magenta"
-                Rectangle {
-                    objectName: "contentmagenta"
-                    color:  "magenta"
-                    width:  200
-                    height: 100
-                }
-            }
+            ExportTab { }
         }
 
         ConfigDb.Grid {

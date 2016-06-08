@@ -124,7 +124,7 @@ bool ExportImage::saveImage()
 
     switch( m_setting->imgType() )
     {
-        case ExportSetting::TIF:
+        case ExportImgType::TIF:
         {
             qDebug() << "ExportImage::saveImage() tif";
             img.magick( "TIF" );
@@ -132,14 +132,14 @@ bool ExportImage::saveImage()
             img.quality( m_setting->imgQuality() );
             break;
         }
-        case ExportSetting::PNG:
+        case ExportImgType::PNG:
         {
             qDebug() << "ExportImage::saveImage() png";
             img.magick( "PNG" );
             img.quality( m_setting->imgQuality() );
             break;
         }
-        case ExportSetting::JPG:
+        case ExportImgType::JPG:
         default:
         {
             qDebug() << "ExportImage::saveImage() jpg";

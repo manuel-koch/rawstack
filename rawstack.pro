@@ -77,7 +77,9 @@ SOURCES += \
     src/configexif.cpp \
     src/histogramdata.cpp \
     src/taskhistogram.cpp \
-    src/histogrammaker.cpp
+    src/histogrammaker.cpp \
+    src/exporttemplate.cpp \
+    src/exportimgtype.cpp
 
 RESOURCES += qml.qrc
 
@@ -135,4 +137,6 @@ HEADERS += \
     src/configexif.h \
     src/histogramdata.h \
     src/taskhistogram.h \
-    src/histogrammaker.h
+    src/histogrammaker.h \
+    src/exporttemplate.h \
+    src/exportimgtype.h

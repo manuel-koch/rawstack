@@ -38,6 +38,7 @@
         <file>qml/ConfigDb/ExifText.qml</file>
         <file>qml/Overview/Footer.qml</file>
         <file>qml/Overview/Content.qml</file>
+        <file>qml/Overview/ExportTab.qml</file>
         <file>qml/Misc/VerticalTabHeader.qml</file>
         <file>qml/Misc/VerticalTabs.qml</file>
         <file>qml/Misc/TabContent.qml</file>

@@ -50,7 +50,7 @@ void ExportSetting::setConfig(ConfigDbEntry *config)
 
 void ExportSetting::setImgPath(QString imgPath)
 {
-    imgPath = adjustedImgPath( imgPath );
+    imgPath = ExportImgType::adjusted( m_imgType, imgPath );
     if( m_imgPath == imgPath )
         return;
 
@@ -59,7 +59,7 @@ void ExportSetting::setImgPath(QString imgPath)
     emit imgPathChanged(imgPath);
 }
 
-void ExportSetting::setImgType(ExportSetting::ImageType imgType)
+void ExportSetting::setImgType(ExportImgType::ImageType imgType)
 {
     if( m_imgType == imgType )
         return;
@@ -68,7 +68,7 @@ void ExportSetting::setImgType(ExportSetting::ImageType imgType)
     qDebug() << "ExportSetting::setImgType()" << m_imgType;
     emit imgTypeChanged(imgType);
 
-    setImgPath( adjustedImgPath(m_imgPath) );
+    setImgPath( ExportImgType::adjusted( m_imgType, m_imgPath ) );
 }
 
 void ExportSetting::setImgQuality(int imgQuality)
@@ -81,30 +81,3 @@ void ExportSetting::setImgQuality(int imgQuality)
     qDebug() << "ExportSetting::setImgQuality()" << m_imgQuality;
     emit imgQualityChanged(imgQuality);
 }
-
-QString ExportSetting::adjustedImgPath(QString path)
-{
-    QFileInfo info( path );
-    QString ext;
-    switch( m_imgType )
-    {
-        case ExportSetting::TIF:
-        {
-            ext = ".tif";
-            break;
-        }
-        case ExportSetting::PNG:
-        {
-            ext = ".png";
-            break;
-        }
-        case ExportSetting::JPG:
-        default:
-        {
-            ext = ".jpg";
-            break;
-        }
-    }
-    return QFileInfo( info.dir(), info.completeBaseName() + ext ).absoluteFilePath();
-}
-

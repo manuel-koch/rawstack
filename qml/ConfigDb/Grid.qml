@@ -27,8 +27,10 @@ import "../Misc" as Misc
 
 Rectangle {
     id: theGrid
-    width:  100
-    height: 300
+
+    width:  400
+    height: 400
+
     color:  "#a0a0a0"
 
     property int cellsPerRow: 4
@@ -42,8 +44,8 @@ Rectangle {
         Item {
             id: theDelegate
 
-            property var delegateIsSelected: false
-            property var delegateModel:      model
+            property bool delegateIsSelected: false
+            property var delegateModel:       model
 
             width:  theGridView.cellWidth
             height: theGridView.cellHeight

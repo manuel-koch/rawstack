@@ -26,6 +26,8 @@
 #include "loghandler.h"
 #include "exportqueue.h"
 #include "exportimage.h"
+#include "exportimgtype.h"
+#include "exporttemplate.h"
 #include "exportsetting.h"
 #include "configdb.h"
 #include "configdbentry.h"
@@ -57,6 +59,8 @@ void register_types()
     qRegisterMetaType<CommonTasks*>("CommonTasks");
     qRegisterMetaType<ImageFactory*>("ImageFactory");
     qRegisterMetaType<ImageFactoryBase*>("ImageFactoryBase");
+    qRegisterMetaType<ExportImgType*>("ExportImgType");
+    qRegisterMetaType<ExportTemplate*>("ExportTemplate");
     qRegisterMetaType<ExportSetting*>("ExportSetting");
     qRegisterMetaType<ExportImage*>("ExportImage");
     qRegisterMetaType<ExportQueue*>("ExportQueue");
@@ -70,6 +74,7 @@ void register_types()
     qmlRegisterType<ConfigDbEntry>( "com.rawstack.types", 1, 0, "ConfigDbEntry" );
     qmlRegisterUncreatableType<ConfigDb>( "com.rawstack.types", 1, 0, "ConfigDb", "Can't create type ConfigDb" );
     qmlRegisterType<TaskHistogram>( "com.rawstack.types", 1, 0, "TaskHistogram" );
+    qmlRegisterUncreatableType<ExportImgType>( "com.rawstack.types", 1, 0, "ExportImgType", "Can't create type ExportImgType" );
 }
 
 int main(int argc, char *argv[])
@@ -109,15 +114,17 @@ int main(int argc, char *argv[])
 
     ConfigDb configDb;
     ExportQueue exportQueue;
+    ExportTemplate exportTemplate;
     TaskStack taskStack(true);
 
     if( argc > 1 )
         configDb.add( QUrl::fromLocalFile(argv[1]) );
 
     QQmlContext *rootContext = engine.rootContext();
-    rootContext->setContextProperty( "globalConfigDb",     &configDb );
-    rootContext->setContextProperty( "globalDevTaskStack", &taskStack );
-    rootContext->setContextProperty( "globalExportQueue",  &exportQueue );
+    rootContext->setContextProperty( "globalConfigDb",       &configDb );
+    rootContext->setContextProperty( "globalDevTaskStack",   &taskStack );
+    rootContext->setContextProperty( "globalExportTemplate", &exportTemplate );
+    rootContext->setContextProperty( "globalExportQueue",    &exportQueue );
 
     engine.load(QUrl(QStringLiteral("qrc:/qml/Main.qml")));
 

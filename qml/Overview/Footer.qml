@@ -41,7 +41,7 @@ RowLayout {
 
     Slider {
         id: theGridSlider
-        Layout.alignment:      Layout.verticalCenter
+        Layout.alignment:      Qt.AlignVCenter
         Layout.minimumWidth:   50
         Layout.maximumWidth:   100
         Layout.preferredWidth: parent.width/6

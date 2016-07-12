@@ -22,13 +22,13 @@
 #include <QDebug>
 #include <QDir>
 #include <QFileInfo>
+#include <QRegularExpression>
+
 
 ExportSetting::ExportSetting(ConfigDbEntry *config, QObject *parent)
     : QObject(parent)
     , m_config(config)
 {
-    if( m_config )
-        setImgPath( m_config->config() );
 }
 
 ExportSetting::~ExportSetting()
@@ -43,13 +43,11 @@ void ExportSetting::setConfig(ConfigDbEntry *config)
 
     m_config = config;
     emit configChanged(m_config);
-
-    if( m_config )
-        setImgPath( m_config->config() );
 }
 
 void ExportSetting::setImgPath(QString imgPath)
 {
+    imgPath = resolveVars( imgPath );
     imgPath = ExportImgType::adjusted( m_imgType, imgPath );
     if( m_imgPath == imgPath )
         return;
@@ -80,4 +78,19 @@ void ExportSetting::setImgQuality(int imgQuality)
     m_imgQuality = imgQuality;
     qDebug() << "ExportSetting::setImgQuality()" << m_imgQuality;
     emit imgQualityChanged(imgQuality);
+}
+
+QString ExportSetting::resolveVars(QString txt)
+{
+    QFileInfo rawInfo( m_config->raw() );
+    QMap<QString,QString> vars;
+    vars["rawdir"]  = rawInfo.absoluteDir().absolutePath();
+    vars["rawname"] = rawInfo.completeBaseName();
+    vars["ext"]     = ExportImgType::ext(m_imgType);
+    for( QString v : vars.keys() )
+    {
+        txt.replace( QRegularExpression(QString("\\$\\(%1\\)").arg(v)), vars[v] );
+    }
+
+    return txt;
 }

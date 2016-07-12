@@ -29,10 +29,15 @@ Item {
             leftMargin: 4
         }
         visible: theTabs.currentTab != -1
+
+        onHeightChanged: console.debug(theTabContainer,height)
+
         onChildrenChanged: {
             var titles = []
+            var child
             for(var i=0; i<children.length; i++ ) {
-                titles.push( children[i].title )
+                child = children[i]
+                titles.push( child.title )
             }
             theHeader.titles = titles
         }

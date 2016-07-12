@@ -19,6 +19,9 @@ public:
         PNG
     };
 
+    /// Returns path extension for image type
+    static QString ext(ImageType imgType);
+
     /// Returns path with proper image type extension
     static QString adjusted(ImageType imgType, QString path);
 };

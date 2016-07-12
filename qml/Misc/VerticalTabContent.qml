@@ -4,7 +4,7 @@ Item {
     id: theContent
 
     width:  childrenRect.width
-    height: childrenRect.height
+    height: parent.height
 
     property string title
 }

@@ -59,6 +59,10 @@ public slots:
 
 private:
 
+    QString resolveVars( QString txt );
+
+private:
+
     ConfigDbEntry           *m_config;     // path to task stack configuration to be exported
     QString                  m_imgPath;    // output path of exported image
     ExportImgType::ImageType m_imgType;    // type of exported image

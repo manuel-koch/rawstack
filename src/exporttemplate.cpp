@@ -2,19 +2,11 @@
 
 ExportTemplate::ExportTemplate(QObject *parent)
     : QObject(parent)
+    , m_imgPath("$(rawdir)/exported/$(rawname).$(ext)")
     , m_imgType(ExportImgType::JPG)
     , m_imgQuality(95)
 {
     // EMPTY
-}
-
-void ExportTemplate::setTemplatePath(QString templatePath)
-{
-    if (m_templatePath == templatePath)
-        return;
-
-    m_templatePath = templatePath;
-    emit templatePathChanged(templatePath);
 }
 
 void ExportTemplate::setImgPath(QString imgPath)
@@ -43,4 +35,3 @@ void ExportTemplate::setImgQuality(int imgQuality)
     m_imgQuality = imgQuality;
     emit imgQualityChanged(imgQuality);
 }
-

@@ -9,28 +9,19 @@ ExportImgType::ExportImgType(QObject *parent)
     // EMPTY
 }
 
+QString ExportImgType::ext(ExportImgType::ImageType imgType)
+{
+    switch( imgType )
+    {
+        case ExportImgType::TIF: return "tif";
+        case ExportImgType::PNG: return "png";
+        case ExportImgType::JPG: return "jpg";
+        return "";
+    }
+}
+
 QString ExportImgType::adjusted(ExportImgType::ImageType imgType, QString path)
 {
     QFileInfo info( path );
-    QString ext;
-    switch( imgType )
-    {
-        case ExportImgType::TIF:
-        {
-            ext = ".tif";
-            break;
-        }
-        case ExportImgType::PNG:
-        {
-            ext = ".png";
-            break;
-        }
-        case ExportImgType::JPG:
-        default:
-        {
-            ext = ".jpg";
-            break;
-        }
-    }
-    return QFileInfo( info.dir(), info.completeBaseName() + ext ).absoluteFilePath();
+    return QFileInfo( info.dir(), info.completeBaseName() + "." + ext(imgType) ).absoluteFilePath();
 }

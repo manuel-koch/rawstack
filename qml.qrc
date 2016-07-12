@@ -21,7 +21,6 @@
         <file>qml/Development/Tasks/RotateController.qml</file>
         <file>qml/Development/Tasks/RotateTask.qml</file>
         <file>qml/Development/RotateOverlay.qml</file>
-        <file>qml/Export/Main.qml</file>
         <file>qml/Export/ExportQueue.qml</file>
         <file>qml/ConfigDb/HorizontalList.qml</file>
         <file>qml/ConfigDb/Grid.qml</file>
@@ -41,6 +40,6 @@
         <file>qml/Overview/ExportTab.qml</file>
         <file>qml/Misc/VerticalTabHeader.qml</file>
         <file>qml/Misc/VerticalTabs.qml</file>
-        <file>qml/Misc/TabContent.qml</file>
+        <file>qml/Misc/VerticalTabContent.qml</file>
     </qresource>
 </RCC>

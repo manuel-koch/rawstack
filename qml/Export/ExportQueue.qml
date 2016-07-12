@@ -54,7 +54,7 @@ Rectangle {
                           rightMargin: theQueue.radius; }
                 wrapMode:       Text.WrapAtWordBoundaryOrAnywhere
                 font.pointSize: 10
-                text:           "Exporting "+delegateModel.export.setting.config+" to "+delegateModel.export.setting.imgPath+"..."
+                text:           "Exporting "+delegateModel.export.setting.config.raw+"\nto "+delegateModel.export.setting.imgPath
             }
             MouseArea {
                 anchors.fill: parent

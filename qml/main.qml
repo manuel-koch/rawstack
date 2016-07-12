@@ -141,17 +141,4 @@ ApplicationWindow {
         value:    theDevMain.title
         when:     theDevMain.visible
     }
-
-    Export.Main {
-        id: theExportMain
-        anchors.fill: parent
-        visible:      false
-    }
-
-    Binding {
-        target:   theAppWindow
-        property: "title"
-        value:    theExportMain.title
-        when:     theExportMain.visible
-    }
 }

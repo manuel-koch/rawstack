@@ -45,8 +45,9 @@ ImageCacheGroup::ImageCacheGroup(QString name, Lifetime lifetime, QObject *paren
     , m_maxFileSize(256*MByte)
 {
     m_dir = QFileInfo(QStandardPaths::writableLocation(QStandardPaths::CacheLocation),m_name).absoluteFilePath();
-    if( !m_dir.exists() )
-        qDebug() << m_dir.mkpath(".");
+    if( !m_dir.exists() && !m_dir.mkpath(".") )
+        qWarning() << "Failed to create cache directory at" << m_dir.absolutePath();
+
     qDebug() << "ImageCacheGroup::ImageCacheGroup()" << m_dir.absolutePath();
 
     connect( this, SIGNAL(triggerStore(QString,QByteArray)),

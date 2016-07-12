@@ -104,9 +104,9 @@ Rectangle {
         MenuItem {
             text: "Export"
             onTriggered: {
-//                var cfgs = theSelectionModel.selectedConfigs()
-//                for( var idx=0; idx<cfgs.length; idx++ )
-//                    exportConfig( cfgs[idx] )
+                var cfgs = theSelectionModel.selectedConfigs()
+                for( var idx=0; idx<cfgs.length; idx++ )
+                    globalExportQueue.enqueue( globalExportTemplate, cfgs[idx] )
             }
         }
         MenuItem {

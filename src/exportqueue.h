@@ -23,7 +23,8 @@
 #include <QThread>
 
 class ExportImage;
-class ExportSetting;
+class ExportTemplate;
+class ConfigDbEntry;
 
 class ExportQueue : public QAbstractListModel
 {
@@ -48,8 +49,8 @@ public:
 
 public slots:
 
-    /// Add given configuration to export queue, queue takes ownership of the export configuration
-    Q_INVOKABLE void enqueue(ExportSetting *setting );
+    /// Add given configuration to export queue using template settings
+    Q_INVOKABLE void enqueue( ExportTemplate *tmpl, ConfigDbEntry *cfg );
 
     /// Remove all queued exports
     Q_INVOKABLE void clearQueue();

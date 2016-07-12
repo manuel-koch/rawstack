@@ -18,6 +18,7 @@
  */
 #include "exportqueue.h"
 #include "exportsetting.h"
+#include "exporttemplate.h"
 #include "exportimage.h"
 #include "configdbentry.h"
 
@@ -42,8 +43,13 @@ ExportQueue::~ExportQueue()
     m_workerThread.wait();
 }
 
-void ExportQueue::enqueue(ExportSetting *setting)
+void ExportQueue::enqueue(ExportTemplate *tmpl, ConfigDbEntry *cfg)
 {
+    ExportSetting *setting = new ExportSetting( cfg );
+    setting->setImgQuality( tmpl->imgQuality() );
+    setting->setImgType( tmpl->imgType() );
+    setting->setImgPath( tmpl->imgPath() );
+
     qDebug() << "ExportQueue::enqueue()" << setting;
 
     beginInsertRows( QModelIndex(), m_exports.size(), m_exports.size() );

@@ -37,6 +37,7 @@ TaskStack::TaskStack(bool preview, QObject *parent)
     , m_developing(false)
     , m_dirty(false)
     , m_progress(0)
+    , m_config(nullptr)
     , m_preview(preview)
 {
     m_rolemap = QAbstractListModel::roleNames();

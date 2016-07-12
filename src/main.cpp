@@ -131,6 +131,8 @@ int main(int argc, char *argv[])
     QList<QObject*> rootObjects = engine.rootObjects();
     if( rootObjects.size() )
         QMetaObject::invokeMethod(rootObjects[0], "centerOnScreen");
+    else
+        qWarning() << "Failed to create GUI";
 
     int result = app.exec();
     return result;

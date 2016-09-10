@@ -91,11 +91,5 @@ MenuBar {
             shortcut:    "Ctrl+2"
             onTriggered: showDevelop()
         }
-
-        MenuItem {
-            text:        qsTr("Export")
-            shortcut:    "Ctrl+3"
-            onTriggered: showExport()
-        }
     }
 }

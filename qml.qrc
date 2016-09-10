@@ -1,45 +1,50 @@
 <RCC>
     <qresource prefix="/">
-        <file>qml/Main.qml</file>
-        <file>qml/MainMenuBar.qml</file>
-        <file>qml/Development/Main.qml</file>
+        <file>qml/ConfigDb/Entry.qml</file>
+        <file>qml/ConfigDb/ExifText.qml</file>
+        <file>qml/ConfigDb/Grid.qml</file>
+        <file>qml/ConfigDb/HorizontalList.qml</file>
+        <file>qml/Development/ColoredImage.qml</file>
         <file>qml/Development/DevImage.qml</file>
-        <file>qml/Development/HistogramFinal.qml</file>
-        <file>qml/Development/TaskStack.qml</file>
         <file>qml/Development/Filmstrip.qml</file>
+        <file>qml/Development/HistogramChannel.qml</file>
         <file>qml/Development/HistogramChannelToggle.qml</file>
+        <file>qml/Development/HistogramFinal.qml</file>
+        <file>qml/Development/ImageGrid.qml</file>
+        <file>qml/Development/InfoBadge.qml</file>
+        <file>qml/Development/Main.qml</file>
+        <file>qml/Development/RotateOverlay.qml</file>
+        <file>qml/Development/TaskStack.qml</file>
+        <file>qml/Development/Tasks/HistogramEditable.qml</file>
+        <file>qml/Development/Tasks/HistogramLine.qml</file>
+        <file>qml/Development/Tasks/HistogramLineLabel.qml</file>
+        <file>qml/Development/Tasks/LevelController.qml</file>
+        <file>qml/Development/Tasks/LevelTask.qml</file>
+        <file>qml/Development/Tasks/RotateController.qml</file>
+        <file>qml/Development/Tasks/RotateTask.qml</file>
+        <file>qml/Development/Tasks/SharpenController.qml</file>
+        <file>qml/Development/Tasks/SharpenTask.qml</file>
         <file>qml/Development/Tasks/Task.qml</file>
         <file>qml/Development/Tasks/TaskController.qml</file>
         <file>qml/Development/Tasks/TaskHeader.qml</file>
         <file>qml/Development/Tasks/TaskSetting.qml</file>
         <file>qml/Development/Tasks/UfrawController.qml</file>
         <file>qml/Development/Tasks/UfrawTask.qml</file>
-        <file>qml/Development/ColoredImage.qml</file>
-        <file>qml/Development/ImageGrid.qml</file>
-        <file>qml/Development/InfoBadge.qml</file>
-        <file>qml/Development/HistogramChannel.qml</file>
-        <file>qml/Development/Tasks/RotateController.qml</file>
-        <file>qml/Development/Tasks/RotateTask.qml</file>
-        <file>qml/Development/RotateOverlay.qml</file>
         <file>qml/Export/ExportQueue.qml</file>
-        <file>qml/ConfigDb/HorizontalList.qml</file>
-        <file>qml/ConfigDb/Grid.qml</file>
-        <file>qml/Overview/Main.qml</file>
+        <file>qml/Main.qml</file>
+        <file>qml/MainMenuBar.qml</file>
+        <file>qml/Misc/FadeInAnimation.qml</file>
+        <file>qml/Misc/FadeOutAnimation.qml</file>
         <file>qml/Misc/FlickableScrollIndicator.qml</file>
-        <file>qml/Development/Tasks/SharpenController.qml</file>
-        <file>qml/Development/Tasks/SharpenTask.qml</file>
-        <file>qml/ConfigDb/Entry.qml</file>
-        <file>qml/Development/Tasks/LevelController.qml</file>
-        <file>qml/Development/Tasks/LevelTask.qml</file>
-        <file>qml/Development/Tasks/HistogramEditable.qml</file>
-        <file>qml/Development/Tasks/HistogramLine.qml</file>
-        <file>qml/Development/Tasks/HistogramLineLabel.qml</file>
-        <file>qml/ConfigDb/ExifText.qml</file>
-        <file>qml/Overview/Footer.qml</file>
+        <file>qml/Misc/TabContainer.qml</file>
+        <file>qml/Misc/TabContainerContent.qml</file>
+        <file>qml/Misc/TabContainerHorizLabels.qml</file>
+        <file>qml/Misc/TabContainerLabel.qml</file>
+        <file>qml/Misc/TabContainerLabels.qml</file>
+        <file>qml/Misc/TabContainerVertLabels.qml</file>
         <file>qml/Overview/Content.qml</file>
         <file>qml/Overview/ExportTab.qml</file>
-        <file>qml/Misc/VerticalTabHeader.qml</file>
-        <file>qml/Misc/VerticalTabs.qml</file>
-        <file>qml/Misc/VerticalTabContent.qml</file>
+        <file>qml/Overview/Footer.qml</file>
+        <file>qml/Overview/Main.qml</file>
     </qresource>
 </RCC>

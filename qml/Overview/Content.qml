@@ -35,12 +35,29 @@ Item {
         anchors.fill: parent
         spacing: 4
 
-        Misc.VerticalTabs {
+        Misc.TabContainer {
             id: theTabs
-            Layout.preferredWidth: theTabs.width
+            Layout.preferredWidth: theTabs.implicitWidth
             Layout.fillHeight:     true
+            orientation:           Qt.Vertical
 
             ExportTab { }
+
+            Misc.TabContainerContent {
+                title: "Foo"
+                Rectangle {
+                    anchors.fill: parent
+                    color:        "red"
+                }
+            }
+
+            Misc.TabContainerContent {
+                title: "Bar"
+                Rectangle {
+                    anchors.fill: parent
+                    color:        "blue"
+                }
+            }
         }
 
         ConfigDb.Grid {

@@ -25,17 +25,13 @@ import com.rawstack.types 1.0
 import "../Misc" as Misc
 import "../Export" as Export
 
-Misc.VerticalTabContent {
+Misc.TabContainerContent {
     id: theExportTab
-    title: "Export"
+    title: theQueue.title
 
     ColumnLayout {
         id: theColLayout
-        width:          300
-        anchors.top:    parent.top
-        anchors.bottom: parent.bottom
-
-        onHeightChanged: console.debug(theColLayout,height)
+        anchors.fill: parent
 
         Text {
             text: "Export Settings..."

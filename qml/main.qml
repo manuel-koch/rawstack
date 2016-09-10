@@ -45,18 +45,11 @@ ApplicationWindow {
         function showView(main) {
             if( main === theOverviewMain ) {
                 theDevMain.visible      = false
-                theExportMain.visible   = false
                 theOverviewMain.visible = true
             }
             else if( main === theDevMain ) {
                 theOverviewMain.visible = false
-                theExportMain.visible   = false
                 theDevMain.visible      = true
-            }
-            else if( main === theExportMain ) {
-                theOverviewMain.visible = false
-                theDevMain.visible      = false
-                theExportMain.visible   = true
             }
         }
     }
@@ -114,7 +107,6 @@ ApplicationWindow {
         onSaveAsDb:     saveDbDialog.open()
         onShowOverview: internal.showView(theOverviewMain)
         onShowDevelop:  internal.showView(theDevMain)
-        onShowExport:   internal.showView(theExportMain)
     }
 
     Overview.Main {

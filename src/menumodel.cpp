@@ -26,8 +26,21 @@ MenuModel* MenuModel::ms_model = nullptr;
 MenuModel::MenuModel(QObject *parent)
     : QObject(parent)
 {
-    m_screenOverview = new MenuEntry(this);
-    m_screenDevelop  = new MenuEntry(this);
+    m_screenOverview   = new MenuEntry(this);
+    m_screenDevelop    = new MenuEntry(this);
+
+    m_screenGridToggle = new MenuEntry(this);
+    m_screenGridFive   = new MenuEntry(this);
+    m_screenGridTen    = new MenuEntry(this);
+    m_screenGridTwenty = new MenuEntry(this);
+    m_screenGridThirds = new MenuEntry(this);
+    m_screenGridPhi    = new MenuEntry(this);
+
+    m_screenZoomIn     = new MenuEntry(this);
+    m_screenZoomOut    = new MenuEntry(this);
+    m_screenZoomFit    = new MenuEntry(this);
+
+    m_screenExposure   = new MenuEntry(this);
 }
 
 MenuModel *MenuModel::getInstance()

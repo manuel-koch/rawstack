@@ -24,43 +24,77 @@ Item {
     width:  300
     height: 200
 
-    property int    gridXSteps:    10
-    property int    gridYSteps:    10
+    readonly property int grid_none:   0
+    readonly property int grid_five:   1
+    readonly property int grid_ten:    2
+    readonly property int grid_twenty: 3
+    readonly property int grid_thirds: 4
+    readonly property int grid_phi:    5
+
     property real   gridThickness: 0.5
     property color  gridColor:     "red"
-    property string gridType:      ""
+    property int    gridType:      grid_none
+    property string gridTypeName:  "None"
 
-    onGridXStepsChanged:    theCanvas.requestPaint()
-    onGridYStepsChanged:    theCanvas.requestPaint()
-    onGridThicknessChanged: theCanvas.requestPaint()
-    onGridColorChanged:     theCanvas.requestPaint()
-    onGridTypeChanged:      theCanvas.requestPaint()
+    QtObject {
+        id: internal
+        property var gridTypeNames: ["None","Five","Ten","Twenty","Thirds","Phi"]
+    }
 
     function toggleGrid() {
-        if( gridType == "" )
-        {
-            gridType = "grid-5"
-            gridXSteps = 5
-            gridYSteps = 5
+        gridType = (gridType<grid_phi) ? gridType+1 : grid_none
+    }
+
+    onGridThicknessChanged: theCanvas.requestPaint()
+    onGridColorChanged:     theCanvas.requestPaint()
+    onGridTypeChanged: {
+        theCanvas.requestPaint();
+        globalMenuModel.screenGridFive.checked   = (gridType==grid_five)
+        globalMenuModel.screenGridTen.checked    = (gridType==grid_ten)
+        globalMenuModel.screenGridTwenty.checked = (gridType==grid_twenty)
+        globalMenuModel.screenGridThirds.checked = (gridType==grid_thirds)
+        globalMenuModel.screenGridPhi.checked    = (gridType==grid_phi)
+        gridTypeName = (gridType > grid_none && gridType <= grid_phi) ? internal.gridTypeNames[gridType] : grid_none
+    }
+
+    Connections {
+        target: globalMenuModel.screenGridToggle
+        onTriggered: toggleGrid()
+    }
+    Connections {
+        target: globalMenuModel.screenGridFive
+        onCheckedChanged: {
+            if( globalMenuModel.screenGridFive.checked )
+                gridType = grid_five
         }
-        else if( gridType == "grid-5" )
-        {
-            gridType = "grid-10"
-            gridXSteps = 10
-            gridYSteps = 10
+    }
+    Connections {
+        target: globalMenuModel.screenGridTen
+        onCheckedChanged: {
+            if( globalMenuModel.screenGridTen.checked )
+                gridType = grid_ten
         }
-        else if( gridType == "grid-10" )
-        {
-            gridType = "grid-20"
-            gridXSteps = 20
-            gridYSteps = 20
+    }
+    Connections {
+        target: globalMenuModel.screenGridTwenty
+        onCheckedChanged: {
+            if( globalMenuModel.screenGridTwenty.checked )
+                gridType = grid_twenty
         }
-        else if( gridType == "grid-20" )
-            gridType = "thirds"
-        else if( gridType == "thirds" )
-            gridType = "phi"
-        else if( gridType == "phi" )
-            gridType = ""
+    }
+    Connections {
+        target: globalMenuModel.screenGridThirds
+        onCheckedChanged: {
+            if( globalMenuModel.screenGridThirds.checked )
+                gridType = grid_thirds
+        }
+    }
+    Connections {
+        target: globalMenuModel.screenGridPhi
+        onCheckedChanged: {
+            if( globalMenuModel.screenGridPhi.checked )
+                gridType = grid_phi
+        }
     }
 
     Canvas {
@@ -70,26 +104,32 @@ Item {
         onPaint: {
             var ctx = getContext("2d")
             ctx.clearRect( 0, 0, width, height )
+            if( gridType == grid_none )
+                return
             ctx.save()
             ctx.strokeStyle = theGrid.gridColor
             ctx.lineWidth   = gridThickness
             ctx.beginPath()
-            if( gridType.substring(0,4) === "grid" ) {
-                for( var i=1; i<theGrid.gridYSteps; i++ )
+            if( gridType >= grid_five && gridType <= grid_twenty ) {
+                var gridSteps
+                if( gridType == grid_five )
+                    gridSteps = 5
+                else if( gridType == grid_ten )
+                    gridSteps = 10
+                else if( gridType == grid_twenty )
+                    gridSteps = 20
+                for( var i=1; i<gridSteps; i++ )
                 {
-                    var y = height * i / theGrid.gridYSteps;
+                    var y = height * i / gridSteps;
+                    var x = width * i / gridSteps;
                     ctx.moveTo( 0, y )
                     ctx.lineTo( width, y );
-                }
-                for( var i=1; i<theGrid.gridXSteps; i++ )
-                {
-                    var x = width * i / theGrid.gridXSteps;
                     ctx.moveTo( x, 0 )
                     ctx.lineTo( x, height );
                 }
             }
-            else if( gridType === "phi" || gridType === "thirds" ) {
-                var f = gridType === "phi" ? 2.618 : 3
+            else if( gridType == grid_thirds || gridType == grid_phi ) {
+                var f = gridType == grid_phi ? 2.618 : 3
                 var a = width / f
                 var b = height / f
                 var x1 = a

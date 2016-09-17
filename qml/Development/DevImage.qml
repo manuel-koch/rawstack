@@ -109,6 +109,32 @@ Rectangle {
         }
     }
 
+    Connections {
+        target: globalMenuModel.screenZoomIn
+        onTriggered: internal.zoomIn()
+    }
+
+    Connections {
+        target: globalMenuModel.screenZoomOut
+        onTriggered: internal.zoomOut()
+    }
+
+    Connections {
+        target: globalMenuModel.screenZoomFit
+        onTriggered: internal.zoomFit()
+    }
+
+    Connections {
+        target: globalMenuModel.screenExposure
+        onTriggered: {
+            theExposureTimer.running = globalMenuModel.screenExposure.checked
+            if( !theExposureTimer.running ) {
+                theUnderImage.visible = false
+                theOverImage.visible  = false
+            }
+        }
+    }
+
     Flickable {
         id: theFlickable
         anchors.centerIn:     parent
@@ -134,27 +160,6 @@ Rectangle {
             anchors.fill: parent
             fillMode:     Image.PreserveAspectFit
             source:       globalDevTaskStack.config ? globalDevTaskStack.config.final : ""
-            Keys.onPressed: {
-                if( event.key === Qt.Key_G ) {
-                    theGrid.toggleGrid()
-                }
-                else if( event.key === Qt.Key_E ) {
-                    theExposureTimer.running = !theExposureTimer.running
-                    if( !theExposureTimer.running ) {
-                        theUnderImage.visible = false
-                        theOverImage.visible  = false
-                    }
-                }
-                else if( event.key === Qt.Key_Plus ) {
-                    internal.zoomIn()
-                }
-                else if( event.key === Qt.Key_Minus ) {
-                    internal.zoomOut()
-                }
-                else if( event.key === Qt.Key_NumberSign ) {
-                    internal.zoomFit()
-                }
-            }
         }
 
         Timer {
@@ -223,9 +228,15 @@ Rectangle {
         }
 
         InfoBadge {
+            id: theExposureBadge
+            text:    "Exposure"
+            visible: theExposureTimer.running
+        }
+
+        InfoBadge {
             id: theGridBadge
-            text:    "Grid: "+theGrid.gridType
-            visible: theGrid.gridType
+            text:    "Grid: "+theGrid.gridTypeName
+            visible: theGrid.gridType!=theGrid.grid_none
         }
 
         InfoBadge {

@@ -17,7 +17,7 @@
  * Copyright 2016 Manuel Koch
  */
 import QtQuick 2.0
-import QtQuick.Controls 1.3
+import QtQuick.Controls 1.4
 
 MenuBar {
 
@@ -77,39 +77,179 @@ MenuBar {
     }
 
     Menu {
-        title: qsTr("&Screen")
+        title: qsTr("&View")
 
-        MenuItem {
-            id: theOverviewItem
-            text:        qsTr("Overview")
-            shortcut:    "Ctrl+1"
-            checkable:   true
-            checked:     true
-            onCheckedChanged: {
-                if( checked )
-                    theDevelopItem.checked = false
+        Menu {
+            title: qsTr("&Mode")
+
+            ExclusiveGroup {
+                id: theScreenGroup
+            }
+
+            MenuItem {
+                id: theOverviewItem
+                text:           qsTr("Overview")
+                shortcut:       "Ctrl+1"
+                checkable:      true
+                checked:        true
+                exclusiveGroup: theScreenGroup
+            }
+
+            MainMenuItemConnection {
+                menuItem:    theOverviewItem
+                menuEntry:   globalMenuModel.screenOverview
+            }
+
+            MenuItem {
+                id: theDevelopItem
+                text:           qsTr("Development")
+                shortcut:       "Ctrl+2"
+                checkable:      true
+                exclusiveGroup: theScreenGroup
+            }
+
+            MainMenuItemConnection {
+                menuItem:    theDevelopItem
+                menuEntry:   globalMenuModel.screenDevelop
             }
         }
 
-        MainMenuItemConnection {
-            menuItem:    theOverviewItem
-            menuEntry:   globalMenuModel.screenOverview
-        }
+        Menu {
+            title: qsTr("&Image Grid")
 
-        MenuItem {
-            id: theDevelopItem
-            text:        qsTr("Development")
-            shortcut:    "Ctrl+2"
-            checkable:   true
-            onCheckedChanged: {
-                if( checked )
-                    theOverviewItem.checked = false
+            MenuItem {
+                id: theGridNextItem
+                text:     qsTr("Toggle Grid")
+                shortcut: "Ctrl+G"
+                enabled:  globalMenuModel.screenDevelop.checked
+            }
+
+            MainMenuItemConnection {
+                menuItem:    theGridNextItem
+                menuEntry:   globalMenuModel.screenGridToggle
+            }
+
+            ExclusiveGroup {
+                id: theGridGroup
+            }
+
+            MenuItem {
+                id: theGridFiveItem
+                text:           qsTr("Five")
+                checkable:      true
+                exclusiveGroup: theGridGroup
+                enabled:        globalMenuModel.screenDevelop.checked
+            }
+
+            MainMenuItemConnection {
+                menuItem:    theGridFiveItem
+                menuEntry:   globalMenuModel.screenGridFive
+            }
+
+            MenuItem {
+                id: theGridTenItem
+                text:           qsTr("Ten")
+                checkable:      true
+                exclusiveGroup: theGridGroup
+                enabled:        globalMenuModel.screenDevelop.checked
+            }
+
+            MainMenuItemConnection {
+                menuItem:    theGridTenItem
+                menuEntry:   globalMenuModel.screenGridTen
+            }
+
+            MenuItem {
+                id: theGridTwentyItem
+                text:           qsTr("Twenty")
+                checkable:      true
+                exclusiveGroup: theGridGroup
+                enabled:        globalMenuModel.screenDevelop.checked
+            }
+
+            MainMenuItemConnection {
+                menuItem:    theGridTwentyItem
+                menuEntry:   globalMenuModel.screenGridTwenty
+            }
+
+            MenuItem {
+                id: theGridThirdsItem
+                text:           qsTr("Thirds")
+                checkable:      true
+                exclusiveGroup: theGridGroup
+                enabled:        globalMenuModel.screenDevelop.checked
+            }
+
+            MainMenuItemConnection {
+                menuItem:    theGridThirdsItem
+                menuEntry:   globalMenuModel.screenGridThirds
+            }
+
+            MenuItem {
+                id: theGridPhiItem
+                text:           qsTr("Phi")
+                checkable:      true
+                exclusiveGroup: theGridGroup
+                enabled:        globalMenuModel.screenDevelop.checked
+            }
+
+            MainMenuItemConnection {
+                menuItem:    theGridPhiItem
+                menuEntry:   globalMenuModel.screenGridPhi
             }
         }
 
+        Menu {
+            title: qsTr("&Image Zoom")
+
+            MenuItem {
+                id: theZoomInItem
+                text:     qsTr("In")
+                shortcut: "Ctrl++"
+                enabled:  globalMenuModel.screenDevelop.checked
+            }
+
+            MainMenuItemConnection {
+                menuItem:    theZoomInItem
+                menuEntry:   globalMenuModel.screenZoomIn
+            }
+
+            MenuItem {
+                id: theZoomOutItem
+                text:     qsTr("Out")
+                shortcut: "Ctrl+-"
+                enabled:  globalMenuModel.screenDevelop.checked
+            }
+
+            MainMenuItemConnection {
+                menuItem:    theZoomOutItem
+                menuEntry:   globalMenuModel.screenZoomOut
+            }
+
+            MenuItem {
+                id: theZoomFitItem
+                text:     qsTr("Fit")
+                shortcut: "Ctrl+#"
+                enabled:  globalMenuModel.screenDevelop.checked
+            }
+
+            MainMenuItemConnection {
+                menuItem:    theZoomFitItem
+                menuEntry:   globalMenuModel.screenZoomFit
+            }
+        }
+
+        MenuItem {
+            id: theExposureItem
+            text:      qsTr("Image Exposure")
+            shortcut:  "Ctrl+E"
+            checkable: true
+            enabled:   globalMenuModel.screenDevelop.checked
+        }
+
         MainMenuItemConnection {
-            menuItem:    theDevelopItem
-            menuEntry:   globalMenuModel.screenDevelop
+            menuItem:    theExposureItem
+            menuEntry:   globalMenuModel.screenExposure
         }
     }
 }

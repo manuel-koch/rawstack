@@ -20,6 +20,7 @@ import QtQuick 2.0
 import QtQuick.Controls 1.3
 import com.rawstack.types 1.0
 
+// Keep properties of MenuItem and MenuEntry in sync
 Item {
     property MenuItem  menuItem
     property MenuEntry menuEntry
@@ -36,21 +37,10 @@ Item {
         onCheckedChanged:   menuItem.checked   = menuEntry.checked
     }
 
-    Binding {
-        target: menuEntry
-        property: "title"
-        value:    menuItem.text
-    }
-
-    Binding {
-        target: menuEntry
-        property: "checked"
-        value:    menuItem.checked
-    }
-
-    Binding {
-        target: menuEntry
-        property: "checkable"
-        value:    menuItem.checkable
+    Connections {
+        target: menuItem
+        onTextChanged:      menuEntry.title     = menuItem.text
+        onCheckableChanged: menuEntry.checkable = menuItem.checkable
+        onCheckedChanged:   menuEntry.checked   = menuItem.checked
     }
 }

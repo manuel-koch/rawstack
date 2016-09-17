@@ -26,8 +26,18 @@ class MenuEntry;
 class MenuModel : public QObject
 {
     Q_OBJECT
-    Q_PROPERTY(MenuEntry* screenOverview READ screenOverview CONSTANT)
-    Q_PROPERTY(MenuEntry* screenDevelop  READ screenDevelop  CONSTANT)
+    Q_PROPERTY(MenuEntry* screenOverview   READ screenOverview   CONSTANT)
+    Q_PROPERTY(MenuEntry* screenDevelop    READ screenDevelop    CONSTANT)
+    Q_PROPERTY(MenuEntry* screenGridToggle READ screenGridToggle CONSTANT)
+    Q_PROPERTY(MenuEntry* screenGridFive   READ screenGridFive   CONSTANT)
+    Q_PROPERTY(MenuEntry* screenGridTen    READ screenGridTen    CONSTANT)
+    Q_PROPERTY(MenuEntry* screenGridTwenty READ screenGridTwenty CONSTANT)
+    Q_PROPERTY(MenuEntry* screenGridThirds READ screenGridThirds CONSTANT)
+    Q_PROPERTY(MenuEntry* screenGridPhi    READ screenGridPhi    CONSTANT)
+    Q_PROPERTY(MenuEntry* screenZoomIn     READ screenZoomIn     CONSTANT)
+    Q_PROPERTY(MenuEntry* screenZoomOut    READ screenZoomOut    CONSTANT)
+    Q_PROPERTY(MenuEntry* screenZoomFit    READ screenZoomFit    CONSTANT)
+    Q_PROPERTY(MenuEntry* screenExposure   READ screenExposure   CONSTANT)
 
 public:
 
@@ -36,8 +46,21 @@ public:
     static MenuModel *getInstance();
     static void setInstance(MenuModel*);
 
-    MenuEntry* screenOverview() const { return m_screenOverview; }
-    MenuEntry* screenDevelop() const { return m_screenDevelop; }
+    MenuEntry* screenOverview()   const { return m_screenOverview; }
+    MenuEntry* screenDevelop()    const { return m_screenDevelop; }
+
+    MenuEntry* screenGridToggle() const { return m_screenGridToggle; }
+    MenuEntry* screenGridFive()   const { return m_screenGridFive; }
+    MenuEntry* screenGridTen()    const { return m_screenGridTen; }
+    MenuEntry* screenGridTwenty() const { return m_screenGridTwenty; }
+    MenuEntry* screenGridThirds() const { return m_screenGridThirds; }
+    MenuEntry* screenGridPhi()    const { return m_screenGridPhi; }
+
+    MenuEntry* screenZoomIn()     const { return m_screenZoomIn; }
+    MenuEntry* screenZoomOut()    const { return m_screenZoomOut; }
+    MenuEntry* screenZoomFit()    const { return m_screenZoomFit; }
+
+    MenuEntry* screenExposure()   const { return m_screenExposure; }
 
 private:
 
@@ -45,6 +68,19 @@ private:
 
     MenuEntry* m_screenOverview;
     MenuEntry* m_screenDevelop;
+
+    MenuEntry* m_screenGridToggle;
+    MenuEntry* m_screenGridFive;
+    MenuEntry* m_screenGridTen;
+    MenuEntry* m_screenGridTwenty;
+    MenuEntry* m_screenGridThirds;
+    MenuEntry* m_screenGridPhi;
+
+    MenuEntry* m_screenZoomIn;
+    MenuEntry* m_screenZoomOut;
+    MenuEntry* m_screenZoomFit;
+
+    MenuEntry* m_screenExposure;
 };
 
 #endif // MENUMODEL_H

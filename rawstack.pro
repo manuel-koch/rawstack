@@ -23,7 +23,9 @@ QMAKE_CXXFLAGS += -I/opt/local/include
 
 # Need to tell Qt which Xcode SDK is installed
 # See https://forum.qt.io/topic/58926/solved-xcode-7-and-qt-error/3
-QMAKE_MAC_SDK = macosx10.11
+# Try the following command to get a list of supported SDKs
+# $ xcodebuild -showsdks
+QMAKE_MAC_SDK = macosx10.12
 
 # Need this to work around strange linker errors related to std::string stuff.
 # See https://forum.qt.io/topic/33577/trouble-compiling-using-static-library-stk-qt-creator-and-qmake/12

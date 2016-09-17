@@ -34,6 +34,8 @@
 #include "configsetting.h"
 #include "configexif.h"
 #include "taskhistogram.h"
+#include "menumodel.h"
+#include "menuentry.h"
 
 #include "ufrawtask.h"
 #include "ufrawsettings.h"
@@ -54,6 +56,8 @@
 
 void register_types()
 {
+    qRegisterMetaType<MenuModel*>("MenuModel");
+    qRegisterMetaType<MenuEntry*>("MenuEntry");
     qRegisterMetaType<TaskBase*>("TaskBase");
     qRegisterMetaType<TaskStack*>("TaskStack");
     qRegisterMetaType<CommonTasks*>("CommonTasks");
@@ -70,6 +74,8 @@ void register_types()
     qRegisterMetaType<ConfigExif*>("ConfigExif");
     qRegisterMetaType<ImageCacheGroup::Lifetime>("ImageCacheGroup::Lifetime");
 
+    qmlRegisterUncreatableType<MenuModel>( "com.rawstack.types", 1, 0, "MenuModel", "Can't create type MenuModel" );
+    qmlRegisterType<MenuEntry>( "com.rawstack.types", 1, 0, "MenuEntry" );
     qmlRegisterType<TaskBase>( "com.rawstack.types", 1, 0, "TaskBase" );
     qmlRegisterType<ConfigDbEntry>( "com.rawstack.types", 1, 0, "ConfigDbEntry" );
     qmlRegisterUncreatableType<ConfigDb>( "com.rawstack.types", 1, 0, "ConfigDb", "Can't create type ConfigDb" );
@@ -96,6 +102,9 @@ int main(int argc, char *argv[])
         qDebug() << fmt.toStdString().c_str();
     }
 
+    MenuModel menuModel;
+    MenuModel::setInstance( &menuModel );
+
     ImageFactoryRegistry imageFactoryRegistry;
     ImageFactoryRegistry::setInstance( &imageFactoryRegistry );
 
@@ -121,6 +130,7 @@ int main(int argc, char *argv[])
         configDb.add( QUrl::fromLocalFile(argv[1]) );
 
     QQmlContext *rootContext = engine.rootContext();
+    rootContext->setContextProperty( "globalMenuModel",      &menuModel );
     rootContext->setContextProperty( "globalConfigDb",       &configDb );
     rootContext->setContextProperty( "globalDevTaskStack",   &taskStack );
     rootContext->setContextProperty( "globalExportTemplate", &exportTemplate );

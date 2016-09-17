@@ -39,21 +39,6 @@ ApplicationWindow {
         theAppWindow.y = Screen.desktopAvailableHeight/2 - theAppWindow.height/2
     }
 
-    QtObject {
-        id: internal
-
-        function showView(main) {
-            if( main === theOverviewMain ) {
-                theDevMain.visible      = false
-                theOverviewMain.visible = true
-            }
-            else if( main === theDevMain ) {
-                theOverviewMain.visible = false
-                theDevMain.visible      = true
-            }
-        }
-    }
-
     FileDialog {
         id: openFileDialog
         title: "Please choose image file(s) or rawstack configuration(s)"
@@ -106,12 +91,12 @@ ApplicationWindow {
         onSaveDb:       globalConfigDb.save()
         onSaveAsDb:     saveDbDialog.open()
         onShowOverview: internal.showView(theOverviewMain)
-        onShowDevelop:  internal.showView(theDevMain)
     }
 
     Overview.Main {
         id: theOverviewMain
         anchors.fill: parent
+        visible:      globalMenuModel.screenOverview.checked
     }
 
     Binding {
@@ -124,7 +109,7 @@ ApplicationWindow {
     Development.Main {
         id: theDevMain
         anchors.fill: parent
-        visible:      false
+        visible:      globalMenuModel.screenDevelop.checked
     }
 
     Binding {

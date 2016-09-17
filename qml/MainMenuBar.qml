@@ -29,7 +29,6 @@ MenuBar {
     signal saveAsDb()
 
     signal showOverview()
-    signal showDevelop()
     signal showExport()
 
     Menu {
@@ -78,18 +77,39 @@ MenuBar {
     }
 
     Menu {
-        title: qsTr("&View")
+        title: qsTr("&Screen")
 
         MenuItem {
+            id: theOverviewItem
             text:        qsTr("Overview")
             shortcut:    "Ctrl+1"
-            onTriggered: showOverview()
+            checkable:   true
+            checked:     true
+            onCheckedChanged: {
+                if( checked )
+                    theDevelopItem.checked = false
+            }
+        }
+
+        MainMenuItemConnection {
+            menuItem:    theOverviewItem
+            menuEntry:   globalMenuModel.screenOverview
         }
 
         MenuItem {
+            id: theDevelopItem
             text:        qsTr("Development")
             shortcut:    "Ctrl+2"
-            onTriggered: showDevelop()
+            checkable:   true
+            onCheckedChanged: {
+                if( checked )
+                    theOverviewItem.checked = false
+            }
+        }
+
+        MainMenuItemConnection {
+            menuItem:    theDevelopItem
+            menuEntry:   globalMenuModel.screenDevelop
         }
     }
 }

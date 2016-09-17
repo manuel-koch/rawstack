@@ -33,6 +33,7 @@
         <file>qml/Export/ExportQueue.qml</file>
         <file>qml/Main.qml</file>
         <file>qml/MainMenuBar.qml</file>
+        <file>qml/MainMenuItemConnection.qml</file>
         <file>qml/Misc/FadeInAnimation.qml</file>
         <file>qml/Misc/FadeOutAnimation.qml</file>
         <file>qml/Misc/FlickableScrollIndicator.qml</file>

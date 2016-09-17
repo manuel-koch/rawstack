@@ -81,7 +81,9 @@ SOURCES += \
     src/taskhistogram.cpp \
     src/histogrammaker.cpp \
     src/exporttemplate.cpp \
-    src/exportimgtype.cpp
+    src/exportimgtype.cpp \
+    src/menumodel.cpp \
+    src/menuentry.cpp
 
 RESOURCES += qml.qrc
 
@@ -141,4 +143,6 @@ HEADERS += \
     src/taskhistogram.h \
     src/histogrammaker.h \
     src/exporttemplate.h \
-    src/exportimgtype.h
+    src/exportimgtype.h \
+    src/menumodel.h \
+    src/menuentry.h

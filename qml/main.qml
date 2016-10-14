@@ -90,7 +90,6 @@ ApplicationWindow {
         onLoadDb:       loadDbDialog.open()
         onSaveDb:       globalConfigDb.save()
         onSaveAsDb:     saveDbDialog.open()
-        onShowOverview: internal.showView(theOverviewMain)
     }
 
     Overview.Main {

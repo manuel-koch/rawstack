@@ -162,7 +162,19 @@ void WorkerBase::onDevelop(bool preview, WorkerBase *predecessor)
     bool imgCached = false;
     bool enabled = config()->settings()->getSetting(m_name+".enabled")->value().toBool();
 
-    QByteArray preImgHash = predecessor ? predecessor->hash() : QByteArray();
+    QByteArray preImgHash;
+    if( predecessor )
+    {
+        preImgHash = predecessor->hash();
+    }
+    else
+    {
+        // use raw image and preview mode as initial hash value
+        QCryptographicHash h(QCryptographicHash::Md5);
+        h.addData( QString(preview ? "HQ" : "LQ").toLocal8Bit() );
+        h.addData( config()->raw().toLocal8Bit() );
+        preImgHash = h.result();
+    }
     QByteArray curSettingsHash = hashSettings();
     QByteArray curImgHash = hashSettings( preImgHash );
     if( m_doneImgHash != curImgHash )

@@ -17,30 +17,31 @@
  * Copyright 2016 Manuel Koch
  */
 import QtQuick 2.0
-import QtQuick.Controls 1.3
+import QtQuick.Controls 1.4
+
 import com.rawstack.types 1.0
 
-// Keep properties of MenuItem and MenuEntry in sync
-Item {
-    property MenuItem  menuItem
-    property MenuEntry menuEntry
+Menu {
+    title: qsTr("&View")
 
-    Connections {
-        target: menuItem
-        onTriggered: menuEntry.triggered()
+    MenuMode { }
+
+    MenuImageSettings { }
+
+    MenuImageZoom { }
+
+    MenuImageGrid { }
+
+    MenuItem {
+        id: theExposureItem
+        text:      qsTr("Image Exposure")
+        shortcut:  "Ctrl+E"
+        checkable: true
+        enabled:   globalMenuModel.screenDevelop.checked
     }
 
-    Connections {
-        target: menuEntry
-        onTitleChanged:     menuItem.text      = menuEntry.title
-        onCheckableChanged: menuItem.checkable = menuEntry.checkable
-        onCheckedChanged:   menuItem.checked   = menuEntry.checked
-    }
-
-    Connections {
-        target: menuItem
-        onTextChanged:      menuEntry.title     = menuItem.text
-        onCheckableChanged: menuEntry.checkable = menuItem.checkable
-        onCheckedChanged:   menuEntry.checked   = menuItem.checked
+    MenuConnection {
+        menuItem:    theExposureItem
+        menuEntry:   globalMenuModel.screenExposure
     }
 }

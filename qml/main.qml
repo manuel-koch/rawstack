@@ -24,6 +24,7 @@ import QtQuick.Window 2.2
 import "Overview" as Overview
 import "Development" as Development
 import "Export" as Export
+import "Menus" as Menus
 
 import com.rawstack.types 1.0
 
@@ -84,7 +85,7 @@ ApplicationWindow {
         }
     }
 
-    menuBar: MainMenuBar {
+    menuBar: Menus.MainMenuBar {
         onOpenFile:     openFileDialog.open()
         onOpenDir:      openDirDialog.open()
         onLoadDb:       loadDbDialog.open()

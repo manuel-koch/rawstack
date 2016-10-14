@@ -32,8 +32,9 @@
         <file>qml/Development/Tasks/UfrawTask.qml</file>
         <file>qml/Export/ExportQueue.qml</file>
         <file>qml/Main.qml</file>
-        <file>qml/MainMenuBar.qml</file>
-        <file>qml/MainMenuItemConnection.qml</file>
+        <file>qml/Menus/MainMenuBar.qml</file>
+        <file>qml/Menus/MenuConnection.qml</file>
+        <file>qml/Menus/MenuView.qml</file>
         <file>qml/Misc/FadeInAnimation.qml</file>
         <file>qml/Misc/FadeOutAnimation.qml</file>
         <file>qml/Misc/FlickableScrollIndicator.qml</file>
@@ -47,5 +48,9 @@
         <file>qml/Overview/ExportTab.qml</file>
         <file>qml/Overview/Footer.qml</file>
         <file>qml/Overview/Main.qml</file>
+        <file>qml/Menus/MenuMode.qml</file>
+        <file>qml/Menus/MenuImageGrid.qml</file>
+        <file>qml/Menus/MenuImageZoom.qml</file>
+        <file>qml/Menus/MenuImageSettings.qml</file>
     </qresource>
 </RCC>

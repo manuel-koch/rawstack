@@ -24,10 +24,10 @@
 class MenuEntry : public QObject
 {
     Q_OBJECT
-    Q_PROPERTY(QString title READ title WRITE setTitle NOTIFY titleChanged)
-    Q_PROPERTY(bool enabled READ enabled WRITE setEnabled NOTIFY enabledChanged)
-    Q_PROPERTY(bool checkable READ checkable WRITE setCheckable NOTIFY checkableChanged)
-    Q_PROPERTY(bool checked READ checked WRITE setChecked NOTIFY checkedChanged)
+    Q_PROPERTY(QString title     READ title     WRITE setTitle     NOTIFY titleChanged)
+    Q_PROPERTY(bool    enabled   READ enabled   WRITE setEnabled   NOTIFY enabledChanged)
+    Q_PROPERTY(bool    checkable READ checkable WRITE setCheckable NOTIFY checkableChanged)
+    Q_PROPERTY(bool    checked   READ checked   WRITE setChecked   NOTIFY checkedChanged)
 
 public:
 

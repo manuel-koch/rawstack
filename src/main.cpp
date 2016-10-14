@@ -104,6 +104,7 @@ int main(int argc, char *argv[])
 
     MenuModel menuModel;
     MenuModel::setInstance( &menuModel );
+    menuModel.screenOverview()->setChecked(true);
 
     ImageFactoryRegistry imageFactoryRegistry;
     ImageFactoryRegistry::setInstance( &imageFactoryRegistry );

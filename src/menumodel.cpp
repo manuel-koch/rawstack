@@ -41,6 +41,9 @@ MenuModel::MenuModel(QObject *parent)
     m_screenZoomFit    = new MenuEntry(this);
 
     m_screenExposure   = new MenuEntry(this);
+
+    m_imgSettingsCopy  = new MenuEntry(this);
+    m_imgSettingsPaste = new MenuEntry(this);
 }
 
 MenuModel *MenuModel::getInstance()

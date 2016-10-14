@@ -38,6 +38,8 @@ class MenuModel : public QObject
     Q_PROPERTY(MenuEntry* screenZoomOut    READ screenZoomOut    CONSTANT)
     Q_PROPERTY(MenuEntry* screenZoomFit    READ screenZoomFit    CONSTANT)
     Q_PROPERTY(MenuEntry* screenExposure   READ screenExposure   CONSTANT)
+    Q_PROPERTY(MenuEntry* imgSettingsCopy  READ imgSettingsCopy  CONSTANT)
+    Q_PROPERTY(MenuEntry* imgSettingsPaste READ imgSettingsPaste CONSTANT)
 
 public:
 
@@ -62,6 +64,9 @@ public:
 
     MenuEntry* screenExposure()   const { return m_screenExposure; }
 
+    MenuEntry* imgSettingsCopy()   const { return m_imgSettingsCopy; }
+    MenuEntry* imgSettingsPaste()  const { return m_imgSettingsPaste; }
+
 private:
 
     static MenuModel*  ms_model;
@@ -81,6 +86,9 @@ private:
     MenuEntry* m_screenZoomFit;
 
     MenuEntry* m_screenExposure;
+
+    MenuEntry* m_imgSettingsCopy;
+    MenuEntry* m_imgSettingsPaste;
 };
 
 #endif // MENUMODEL_H

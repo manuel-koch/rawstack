@@ -198,6 +198,12 @@ void TaskStack::clearTasks()
 
 void TaskStack::createDefaultTasks()
 {
+    if( !m_config )
+    {
+        qDebug() << "TaskStack::createDefaultTasks() no config";
+        return;
+    }
+
     qDebug() << "TaskStack::createDefaultTasks()" << m_config->raw();
 
     if( !m_config->isValidRaw() )

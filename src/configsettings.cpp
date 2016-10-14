@@ -66,11 +66,15 @@ ConfigSetting *ConfigSettings::getSetting(QString fullname)
     if( m_map.contains(fullname) )
         return m_map[fullname];
 
-    ConfigSetting *setting = new ConfigSetting(fullname,this);
-    m_settings.append( setting );
-    m_map[fullname] = setting;
+    return appendNewSetting(fullname);
+}
 
-    return setting;
+ConfigSetting *ConfigSettings::getSetting(int index) const
+{
+    if( index < 0 || index >= m_settings.size() )
+        return nullptr;
+
+    return m_settings.at(index);
 }
 
 void ConfigSettings::removeSetting(QString name)
@@ -124,4 +128,22 @@ void ConfigSettings::fromXML(const QDomNode &node)
         ConfigSetting *setting = getSetting(name);
         setting->setValue( settingElm.text() );
     }
+}
+
+void ConfigSettings::operator =(const ConfigSettings &other)
+{
+    removeAll();
+    foreach( ConfigSetting *otherSetting, other.m_settings )
+    {
+        ConfigSetting *s = appendNewSetting(otherSetting->fullname());
+        s->setValue( otherSetting->value() );
+    }
+}
+
+ConfigSetting *ConfigSettings::appendNewSetting(QString fullname)
+{
+    ConfigSetting *setting = new ConfigSetting(fullname,this);
+    m_settings.append( setting );
+    m_map[fullname] = setting;
+    return setting;
 }

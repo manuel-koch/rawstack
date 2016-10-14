@@ -102,6 +102,22 @@ Rectangle {
         id: theContextMenu
 
         MenuItem {
+            text: "Copy Settings"
+            enabled: theSelectionModel.selectedIndexes.length === 1
+            onTriggered: {
+                globalConfigStore.copyFrom( theSelectionModel.selectedConfigs()[0] )
+            }
+        }
+        MenuItem {
+            text: "Apply Settings"
+            enabled: globalConfigStore.nofSettings > 0
+            onTriggered: {
+                var cfgs = theSelectionModel.selectedConfigs()
+                for( var idx=0; idx<cfgs.length; idx++ )
+                    globalConfigStore.applyTo( cfgs[idx] )
+            }
+        }
+        MenuItem {
             text: "Export"
             onTriggered: {
                 var cfgs = theSelectionModel.selectedConfigs()

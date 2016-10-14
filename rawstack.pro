@@ -83,7 +83,8 @@ SOURCES += \
     src/exporttemplate.cpp \
     src/exportimgtype.cpp \
     src/menumodel.cpp \
-    src/menuentry.cpp
+    src/menuentry.cpp \
+    src/configsettingsstore.cpp
 
 RESOURCES += qml.qrc
 
@@ -145,4 +146,5 @@ HEADERS += \
     src/exporttemplate.h \
     src/exportimgtype.h \
     src/menumodel.h \
-    src/menuentry.h
+    src/menuentry.h \
+    src/configsettingsstore.h

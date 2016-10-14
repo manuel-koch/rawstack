@@ -32,6 +32,7 @@
 #include "configdb.h"
 #include "configdbentry.h"
 #include "configsetting.h"
+#include "configsettingsstore.h"
 #include "configexif.h"
 #include "taskhistogram.h"
 #include "menumodel.h"
@@ -71,6 +72,7 @@ void register_types()
     qRegisterMetaType<ConfigDb*>("ConfigDb");
     qRegisterMetaType<ConfigDbEntry*>("ConfigDbEntry");
     qRegisterMetaType<ConfigSetting*>("ConfigSetting");
+    qRegisterMetaType<ConfigSettingsStore*>("ConfigSettingsStore");
     qRegisterMetaType<ConfigExif*>("ConfigExif");
     qRegisterMetaType<ImageCacheGroup::Lifetime>("ImageCacheGroup::Lifetime");
 
@@ -123,6 +125,7 @@ int main(int argc, char *argv[])
     engine.addImageProvider( imageProviderName, imageProvider );
 
     ConfigDb configDb;
+    ConfigSettingsStore configSettingsStore;
     ExportQueue exportQueue;
     ExportTemplate exportTemplate;
     TaskStack taskStack(true);
@@ -133,6 +136,7 @@ int main(int argc, char *argv[])
     QQmlContext *rootContext = engine.rootContext();
     rootContext->setContextProperty( "globalMenuModel",      &menuModel );
     rootContext->setContextProperty( "globalConfigDb",       &configDb );
+    rootContext->setContextProperty( "globalConfigStore",    &configSettingsStore );
     rootContext->setContextProperty( "globalDevTaskStack",   &taskStack );
     rootContext->setContextProperty( "globalExportTemplate", &exportTemplate );
     rootContext->setContextProperty( "globalExportQueue",    &exportQueue );

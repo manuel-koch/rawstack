@@ -44,6 +44,9 @@ public:
     /// Return a named setting
     ConfigSetting *getSetting(QString fullname);
 
+    /// Return a setting by index
+    ConfigSetting *getSetting(int index) const;
+
     /// Remove named setting or all settings of named task
     void removeSetting(QString name);
 
@@ -53,7 +56,12 @@ public:
     void toXML(QDomNode &node) const;
     void fromXML(const QDomNode &node);
 
+    // copy settings from other instance
+    void operator =(const ConfigSettings &other);
+
 private:
+
+    ConfigSetting *appendNewSetting(QString fullname);
 
     QList<ConfigSetting*>         m_settings;
     QHash<QString,ConfigSetting*> m_map;

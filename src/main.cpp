@@ -77,6 +77,7 @@ void register_types()
     qRegisterMetaType<ImageCacheGroup::Lifetime>("ImageCacheGroup::Lifetime");
 
     qmlRegisterUncreatableType<MenuModel>( "com.rawstack.types", 1, 0, "MenuModel", "Can't create type MenuModel" );
+    qmlRegisterUncreatableType<ConfigSettingsStore>( "com.rawstack.types", 1, 0, "ConfigSettingsStore", "Can't create type ConfigSettingsStore" );
     qmlRegisterType<MenuEntry>( "com.rawstack.types", 1, 0, "MenuEntry" );
     qmlRegisterType<TaskBase>( "com.rawstack.types", 1, 0, "TaskBase" );
     qmlRegisterType<ConfigDbEntry>( "com.rawstack.types", 1, 0, "ConfigDbEntry" );

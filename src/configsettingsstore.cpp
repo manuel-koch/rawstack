@@ -6,6 +6,7 @@
 ConfigSettingsStore::ConfigSettingsStore(QObject *parent)
     : QAbstractListModel(parent)
     , m_nofSettings(0)
+    , m_nofSelectedSettings(0)
 {
     m_rolemap = QAbstractListModel::roleNames();
     m_rolemap[NameRole]     = "name";
@@ -51,6 +52,33 @@ QVariant ConfigSettingsStore::data(const QModelIndex &index, int role) const
     return QVariant();
 }
 
+bool ConfigSettingsStore::setData(const QModelIndex &index, const QVariant &value, int role)
+{
+    if( index.row() < 0 || index.row() >= m_nofSettings || !value.isValid() )
+        return false;
+
+    qDebug() << "ConfigSettingsStore::setData()" << index.row() << m_rolemap[role];
+    switch( role )
+    {
+        case SelectedRole:
+        {
+             bool sel = value.toBool();
+             if( m_selected[index.row()] != sel )
+             {
+                 m_selected[index.row()] = sel;
+                 if( sel )
+                     setNofSelectedSettings( m_nofSelectedSettings+1 );
+                 else
+                    setNofSelectedSettings( m_nofSelectedSettings-1 );
+                 dataChanged( index, index, QVector<int>()<<SelectedRole);
+                 return true;
+             }
+        }
+    }
+
+    return false;
+}
+
 void ConfigSettingsStore::setNofSettings(int nof)
 {
     if( m_nofSettings == nof )
@@ -58,6 +86,15 @@ void ConfigSettingsStore::setNofSettings(int nof)
 
     m_nofSettings = nof;
     emit nofSettingsChanged(m_nofSettings);
+}
+
+void ConfigSettingsStore::setNofSelectedSettings(int nof)
+{
+    if( m_nofSelectedSettings == nof )
+        return;
+
+    m_nofSelectedSettings = nof;
+    emit nofSelectedSettingsChanged(m_nofSelectedSettings);
 }
 
 void ConfigSettingsStore::copyFrom(ConfigDbEntry *config)
@@ -70,6 +107,7 @@ void ConfigSettingsStore::copyFrom(ConfigDbEntry *config)
     beginResetModel();
     m_settings    = *config->settings();
     setNofSettings( m_settings.settings().size() );
+    setNofSelectedSettings( m_nofSettings );
     m_selected.clear();
     for( int i=0; i<m_nofSettings; i++ )
         m_selected.append(true);

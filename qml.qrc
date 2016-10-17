@@ -52,5 +52,6 @@
         <file>qml/Menus/MenuImageGrid.qml</file>
         <file>qml/Menus/MenuImageZoom.qml</file>
         <file>qml/Menus/MenuImageSettings.qml</file>
+        <file>qml/ConfigDb/SelectSettingsDialog.qml</file>
     </qresource>
 </RCC>

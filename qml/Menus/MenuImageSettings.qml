@@ -28,12 +28,23 @@ Menu {
         id: theCopySettingsItem
         text:     qsTr("Copy")
         shortcut: "Ctrl+C"
-        enabled:  globalMenuModel.imgSettingsCopy.enabled &&
-                  globalDevTaskStack.config
+        enabled:  globalMenuModel.imgSettingsCopy.enabled
     }
 
     MenuConnection {
         menuItem:    theCopySettingsItem
         menuEntry:   globalMenuModel.imgSettingsCopy
+    }
+
+    MenuItem {
+        id: theApplySettingsItem
+        text:     qsTr("Apply")
+        shortcut: "Ctrl+V"
+        enabled:  globalMenuModel.imgSettingsApply.enabled
+    }
+
+    MenuConnection {
+        menuItem:    theApplySettingsItem
+        menuEntry:   globalMenuModel.imgSettingsApply
     }
 }

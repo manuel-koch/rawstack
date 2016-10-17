@@ -98,24 +98,32 @@ Rectangle {
         }
     }
 
+    SelectSettingsDialog {
+        id: theSelectSettingsDialog
+    }
+
+    Connections {
+        target: globalMenuModel.imgSettingsCopy
+        onTriggered: theSelectionModel.copySettingsFromSelected()
+    }
+
+    Connections {
+        target: globalMenuModel.imgSettingsApply
+        onTriggered: theSelectSettingsDialog.open()
+    }
+
     Menu {
         id: theContextMenu
 
         MenuItem {
             text: "Copy Settings"
             enabled: theSelectionModel.selectedIndexes.length === 1
-            onTriggered: {
-                globalConfigStore.copyFrom( theSelectionModel.selectedConfigs()[0] )
-            }
+            onTriggered: theSelectionModel.copySettingsFromSelected()
         }
         MenuItem {
             text: "Apply Settings"
             enabled: globalConfigStore.nofSettings > 0
-            onTriggered: {
-                var cfgs = theSelectionModel.selectedConfigs()
-                for( var idx=0; idx<cfgs.length; idx++ )
-                    globalConfigStore.applyTo( cfgs[idx] )
-            }
+            onTriggered: theSelectSettingsDialog.open()
         }
         MenuItem {
             text: "Export"
@@ -160,17 +168,30 @@ Rectangle {
         }
     }
 
+    Connections {
+        target:     theSelectSettingsDialog
+        onAccepted: theSelectionModel.applySettingsToSelected()
+    }
+
     ItemSelectionModel {
         id: theSelectionModel
         model: globalConfigDb
 
         function selectedConfigs() {
             var cfgs = [];
-            console.log("selectedConfigs",ConfigDb.ConfigRole)
             for( var idx = 0; idx < selectedIndexes.length; idx++ )
                 cfgs.push( globalConfigDb.data( selectedIndexes[idx], ConfigDb.ConfigRole ) );
-            console.log( cfgs )
             return cfgs;
+        }
+
+        function copySettingsFromSelected() {
+            globalConfigStore.copyFrom( theSelectionModel.selectedConfigs()[0] )
+        }
+
+        function applySettingsToSelected() {
+            var cfgs = theSelectionModel.selectedConfigs()
+            for( var idx=0; idx<cfgs.length; idx++ )
+                globalConfigStore.applyTo( cfgs[idx] )
         }
     }
 

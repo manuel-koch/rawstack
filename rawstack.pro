@@ -94,6 +94,9 @@ QML_IMPORT_PATH =
 # Default rules for deployment.
 include(deployment.pri)
 
+# Rules for thirdparty executables.
+include(thirdparty.pri)
+
 HEADERS += \
     src/taskfactory.h \
     src/taskbuilderbase.h \

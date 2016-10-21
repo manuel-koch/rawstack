@@ -57,7 +57,7 @@ void EnfuseProcess::run()
          << QString("--exposure-sigma=%1").arg(m_exposuresigma)
          << "--levels=29"
          << "-o" << m_output.fileName();
-    qDebug() << "EnfuseProcess::run()" << args;
+    qDebug() << "EnfuseProcess::run()" << program() << args;
     setArguments( args );
     setProcessChannelMode( QProcess::MergedChannels );
     start();

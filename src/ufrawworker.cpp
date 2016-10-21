@@ -28,11 +28,15 @@
 #include <QDebug>
 #include <QThread>
 #include <QTemporaryFile>
+#include <QCoreApplication>
+#include <QDir>
 
 UfrawWorker::UfrawWorker()
     : WorkerBase("ufraw")
 {
-    // EMPTY
+    QDir appDir(QCoreApplication::applicationDirPath());
+    m_ufrawPath  = appDir.filePath("ufraw-batch");
+    m_enfusePath = appDir.filePath("enfuse");
 }
 
 UfrawWorker::~UfrawWorker()
@@ -53,7 +57,7 @@ void UfrawWorker::run( UfrawProcess &ufraw, bool preview, int idx, int nof )
         exposureShift *= (double)idx / (nof/2);
     double exposure = config()->settings()->getSetting(UfrawSettings::Exposure)->value().toDouble() + exposureShift;
 
-    ufraw.setProgram( "/opt/local/bin/ufraw-batch" );
+    ufraw.setProgram( m_ufrawPath );
     ufraw.setRaw( config()->raw() );
     ufraw.setExposure( exposure );
     ufraw.setWbTemperature( config()->settings()->getSetting(UfrawSettings::WbTemperature)->value().toInt() );
@@ -91,7 +95,7 @@ void UfrawWorker::prepareImpl()
     {
         // probe for resulting settings...
         UfrawProcess ufraw;
-        ufraw.setProgram( "/opt/local/bin/ufraw-batch" );
+        ufraw.setProgram( m_ufrawPath );
         ufraw.setRaw( config()->raw() );
         ufraw.setExposure( config()->settings()->getSetting(UfrawSettings::Exposure)->value().toDouble() );
         ufraw.setShrink( 8 );
@@ -149,6 +153,7 @@ void UfrawWorker::developImpl(bool preview, WorkerBase *predecessor)
     for( int i=0; i<nof; i++ )
     {
         setProgress( double(i) / nof * progressPhaseA );
+        qDebug() << "UfrawWorker::developImpl() running" << i << "...";
         run( ufraw[i], preview, firstIdx+i, nof );
     }
     for( int i=0; i<nof; i++ )
@@ -187,7 +192,7 @@ void UfrawWorker::developImpl(bool preview, WorkerBase *predecessor)
     {
         double sigma = config()->settings()->getSetting(UfrawSettings::ExposureSigma)->value().toDouble();
         EnfuseProcess enfuse;
-        enfuse.setProgram( "/opt/local/bin/enfuse" );
+        enfuse.setProgram( m_enfusePath );
         enfuse.setInputs( rawImages );
         enfuse.setExposureSigma( sigma );
         connect( &enfuse, &EnfuseProcess::progress, [&](double progress) {
@@ -198,6 +203,7 @@ void UfrawWorker::developImpl(bool preview, WorkerBase *predecessor)
         qDebug() << "UfrawWorker::developImpl() enfuse finished with exitcode" << enfuse.exitCode() << ":" << enfuse.console();
         if( enfuse.exitCode() == 0 )
         {
+            qDebug() << "UfrawWorker::developImpl()" << "loading" << enfuse.output();
             m_img.read( enfuse.output().toStdString().c_str() );
             m_img.matte(false);
             qDebug() << "UfrawWorker::developImpl() fused" << m_img.format().c_str();

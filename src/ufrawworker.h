@@ -42,6 +42,11 @@ private:
     virtual void registerSettingsImpl() override;
     virtual void prepareImpl() override;
     virtual void developImpl(bool preview, WorkerBase *predecessor) override;
+
+private:
+
+    QString m_ufrawPath;
+    QString m_enfusePath;
 };
 
 #endif // UFRAWWORKER_H

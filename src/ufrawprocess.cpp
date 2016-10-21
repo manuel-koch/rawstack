@@ -68,7 +68,7 @@ void UfrawProcess::run(Output output)
 
     QStringList args;
     buildArgs( output, args );
-    qDebug() << "UfrawProcess::run()" << args;
+    qDebug() << "UfrawProcess::run()" << program() << args;
     setArguments( args );
     setProcessChannelMode( QProcess::MergedChannels );
     start();

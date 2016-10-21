@@ -23,6 +23,7 @@
 #include <QRegularExpression>
 #include <QDomDocument>
 #include <QDomElement>
+#include <QDir>
 
 UfrawProcess::UfrawProcess(QObject *parent)
     : QProcess(parent)
@@ -60,10 +61,11 @@ void UfrawProcess::run(Output output)
     qDebug() << "UfrawProcess::run()" << output;
 
     if( output == OutputThumbnail )
-        m_output.setFileTemplate("XXXXXX.jpg");
+        m_output.setFileTemplate(QDir::tempPath()+QDir::separator()+"XXXXXX.jpg");
     else
-        m_output.setFileTemplate("XXXXXX.tif");
-    m_output.open();
+        m_output.setFileTemplate(QDir::tempPath()+QDir::separator()+"XXXXXX.tif");
+    if( !m_output.open() )
+        qDebug() << "UfrawProcess::run() open temporary file failed:" << m_output.errorString();
     m_console.clear();
 
     QStringList args;

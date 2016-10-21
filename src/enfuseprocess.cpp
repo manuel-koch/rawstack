@@ -20,10 +20,11 @@
 
 #include <QDebug>
 #include <QRegularExpression>
+#include <QDir>
 
 EnfuseProcess::EnfuseProcess(QObject *parent)
     : QProcess(parent)
-    , m_output("XXXXXX.tif")
+    , m_output(QDir::tempPath()+QDir::separator()+"XXXXXX.tif")
     , m_exposuresigma(0.2)
 {
     connect( this, SIGNAL(finished(int)),                        this, SLOT(onTerminated(int)) );
@@ -45,7 +46,8 @@ void EnfuseProcess::run()
         return;
     qDebug() << "EnfuseProcess::run() fuse...";
 
-    m_output.open();
+    if( !m_output.open() )
+        qDebug() << "EnfuseProcess::run() open temporary file failed:" << m_output.errorString();
     m_console.clear();
 
     QStringList args(m_inputs);

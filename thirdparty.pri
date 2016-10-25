@@ -1,21 +1,19 @@
-UFRAW_BINARY = /opt/local/bin/ufraw-batch
-!exists($$UFRAW_BINARY) {
-    message(Unable to find binary UFRAW_BINARY at $$UFRAW_BINARY)
-}
-else {
-    message(Using UFRAW_BINARY at $$UFRAW_BINARY)
-}
-UFRAW_DATA.files = $$UFRAW_BINARY
-UFRAW_DATA.path  = Contents/MacOS
+MAC_PORT_BIN_DIR = /opt/local/bin
+MAC_PORT_INC_DIR = /opt/local/include
 
-ENFUSE_BINARY = /opt/local/bin/enfuse
-!exists($$ENFUSE_BINARY) {
-    message(Unable to find binary ENFUSE_BINARY at $$ENFUSE_BINARY)
-}
-else {
-    message(Using ENFUSE_BINARY at $$ENFUSE_BINARY)
-}
-ENFUSE_DATA.files = $$ENFUSE_BINARY
-ENFUSE_DATA.path  = Contents/MacOS
+UFRAW_BINARY_PATH = $$MAC_PORT_BIN_DIR/ufraw-batch
+message(Using ufraw at $$UFRAW_BINARY_PATH)
 
-QMAKE_BUNDLE_DATA += UFRAW_DATA ENFUSE_DATA
+ENFUSE_BINARY_PATH = $$MAC_PORT_BIN_DIR/enfuse
+message(Using enfuse at $$ENFUSE_BINARY_PATH)
+
+# Get compiler settings for GraphicsMagick++
+GRAPHICSMAGICK_CXXFLAGS = $$system($$MAC_PORT_BIN_DIR/GraphicsMagick++-config --cppflags --cxxflags)
+GRAPHICSMAGICK_LIBS     = $$system($$MAC_PORT_BIN_DIR/GraphicsMagick++-config --libs)
+GRAPHICSMAGICK_LFLAGS   = $$system($$MAC_PORT_BIN_DIR/GraphicsMagick++-config --ldflags)
+message(GRAPHICSMAGICK_CXXFLAGS = $$GRAPHICSMAGICK_CXXFLAGS)
+message(GRAPHICSMAGICK_LFLAGS = $$GRAPHICSMAGICK_LFLAGS)
+message(GRAPHICSMAGICK_LIBS = $$GRAPHICSMAGICK_LIBS)
+
+# Library for Exiv2 functionality
+EXIV2_LIBS = -lexiv2

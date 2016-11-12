@@ -17,4 +17,4 @@ QMAKE_MAC_SDK = macosx10.12
 
 # Need this to work around strange linker errors related to std::string stuff.
 # See https://forum.qt.io/topic/33577/trouble-compiling-using-static-library-stk-qt-creator-and-qmake/12
-QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.9
+QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.11

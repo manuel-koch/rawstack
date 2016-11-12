@@ -29,6 +29,7 @@
 #include <QFile>
 #include <QDir>
 #include <QMimeDatabase>
+#include <QStandardPaths>
 
 TaskStack::TaskStack(bool preview, QObject *parent)
     : QAbstractListModel(parent)
@@ -314,6 +315,19 @@ void TaskStack::onTaskFinished()
     int releaseIdx = idx-1;
     if( !m_preview && releaseIdx >= 0 )
         m_tasks[releaseIdx]->worker()->releaseImages();
+
+    // save output image of current task for debugging
+    Magick::Image img = m_tasks[idx]->worker()->gmimage();
+    if( img.isValid() )
+    {
+        QString tmpImgName = QString("stack_%1_%2_%3.tif")
+                                    .arg(QFileInfo(m_config->raw()).baseName())
+                                    .arg(idx,2,10,QChar('0'))
+                                    .arg(m_tasks[idx]->name());
+        QString tmpImgPath = QFileInfo(QStandardPaths::writableLocation(QStandardPaths::CacheLocation),tmpImgName).absoluteFilePath();
+        qDebug() << "TaskStack::onTaskFinished() saving" << tmpImgPath;
+        img.write( tmpImgPath.toStdString() );
+    }
 
     double p = (double)(idx+1) / m_tasks.size();
     setProgress( p );

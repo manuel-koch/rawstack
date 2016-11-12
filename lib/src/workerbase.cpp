@@ -207,8 +207,6 @@ void WorkerBase::onDevelop(bool preview, WorkerBase *predecessor)
                  << "result image:" << m_img.format().c_str()
                  << "width:"  << m_img.size().width()
                  << "height:" << m_img.size().height();
-        Magick::Image img = m_img;
-        img.write( QString("/Users/manuel/tmp/test_%1.tif").arg(m_name).toStdString() );
     }
     else
     {

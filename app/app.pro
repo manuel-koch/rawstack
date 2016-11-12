@@ -21,3 +21,5 @@ QML_IMPORT_PATH =
 SOURCES += src/main.cpp
 
 HEADERS +=
+
+PRE_TARGETDEPS += $$OUT_PWD/../lib/librawstack.a

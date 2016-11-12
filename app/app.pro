@@ -13,8 +13,6 @@ ENFUSE_TARGET.files = $$ENFUSE_BINARY_PATH
 ENFUSE_TARGET.path  = Contents/MacOS
 QMAKE_BUNDLE_DATA += UFRAW_TARGET ENFUSE_TARGET
 
-RESOURCES += qml.qrc
-
 # Additional import path used to resolve QML modules in Qt Creator's code model
 QML_IMPORT_PATH =
 

@@ -16,6 +16,7 @@
  *
  * Copyright 2016 Manuel Koch
  */
+#include "librawstack.h"
 #include "taskfactory.h"
 #include "taskbuilder.h"
 #include "taskstack.h"
@@ -96,6 +97,7 @@ int main(int argc, char *argv[])
     LogHandler logHandler;
     logHandler.start( "/Users/manuel/tmp/rawstack/debug.log" );
 
+    LibRawstack::initResources();
     register_types();
 
     qDebug() << "Supported image formats:";

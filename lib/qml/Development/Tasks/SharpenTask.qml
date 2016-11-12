@@ -48,11 +48,42 @@ Task {
             Layout.fillWidth:  true
             font.pointSize:    10
             decimals:          2
-            maximumValue:      10
+            maximumValue:      5
             minimumValue:      0.01
             stepSize:          0.02
             value:             controller.sigma
             onEditingFinished: controller.setSigma( value )
+        }
+    }
+
+    TaskSetting {
+        label:   "Threshold"
+        SpinBox {
+            Layout.alignment:  Qt.AlignRight
+            Layout.fillWidth:  true
+            font.pointSize:    10
+            decimals:          2
+            maximumValue:      10
+            minimumValue:      0
+            stepSize:          0.1
+            value:             controller.threshold
+            onEditingFinished: controller.setThreshold( value )
+        }
+    }
+
+    TaskSetting {
+        label:   "Amount"
+        SpinBox {
+            Layout.alignment:  Qt.AlignRight
+            Layout.fillWidth:  true
+            font.pointSize:    10
+            decimals:          2
+            maximumValue:      200
+            minimumValue:      0
+            stepSize:          5
+            suffix:            "%"
+            value:             controller.amount * 100
+            onEditingFinished: controller.setAmount( value/100 )
         }
     }
 }

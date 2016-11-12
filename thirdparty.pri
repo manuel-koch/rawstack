@@ -1,4 +1,5 @@
 MAC_PORT_BIN_DIR = /opt/local/bin
+MAC_PORT_LIB_DIR = /opt/local/lib
 MAC_PORT_INC_DIR = /opt/local/include
 
 UFRAW_BINARY_PATH = $$MAC_PORT_BIN_DIR/ufraw-batch

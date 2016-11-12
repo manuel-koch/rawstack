@@ -45,4 +45,10 @@ void SharpenTask::initTaskSettings()
 
     m_sigma = settings->getSetting( SharpenSettings::Sigma );
     m_sigma->initIfNull( SharpenSettings::DefaultSigma );
+
+    m_amount = settings->getSetting( SharpenSettings::Amount );
+    m_amount->initIfNull( SharpenSettings::DefaultAmount );
+
+    m_threshold = settings->getSetting( SharpenSettings::Threshold );
+    m_threshold->initIfNull( SharpenSettings::DefaultThreshold );
 }

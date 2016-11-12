@@ -26,9 +26,13 @@ public:
     static const char *Name;
     static const char *Radius;
     static const char *Sigma;
+    static const char *Amount;
+    static const char *Threshold;
 
     static const double DefaultRadius;
     static const double DefaultSigma;
+    static const double DefaultAmount;
+    static const double DefaultThreshold;
 };
 
 #endif // SHARPENSETTINGS_H

@@ -18,9 +18,13 @@
  */
 #include "sharpensettings.h"
 
-const char *SharpenSettings::Name   = "sharpen";
-const char *SharpenSettings::Radius = "sharpen.radius";
-const char *SharpenSettings::Sigma  = "sharpen.sigma";
+const char *SharpenSettings::Name      = "sharpen";
+const char *SharpenSettings::Radius    = "sharpen.radius";
+const char *SharpenSettings::Sigma     = "sharpen.sigma";
+const char *SharpenSettings::Amount    = "sharpen.amount";
+const char *SharpenSettings::Threshold = "sharpen.threshold";
 
-const double SharpenSettings::DefaultRadius = 0.0;
-const double SharpenSettings::DefaultSigma  = 1.0;
+const double SharpenSettings::DefaultRadius    = 1.0;
+const double SharpenSettings::DefaultSigma     = 1.0;
+const double SharpenSettings::DefaultAmount    = 1.0;
+const double SharpenSettings::DefaultThreshold = 0.0;

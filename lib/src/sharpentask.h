@@ -25,8 +25,10 @@
 class SharpenTask : public TaskBase
 {
     Q_OBJECT
-    Q_PROPERTY(ConfigSetting* radius READ radius CONSTANT)
-    Q_PROPERTY(ConfigSetting* sigma  READ sigma  CONSTANT)
+    Q_PROPERTY(ConfigSetting* radius    READ radius    CONSTANT)
+    Q_PROPERTY(ConfigSetting* sigma     READ sigma     CONSTANT)
+    Q_PROPERTY(ConfigSetting* amount    READ amount    CONSTANT)
+    Q_PROPERTY(ConfigSetting* threshold READ threshold CONSTANT)
 
 public:
 
@@ -35,6 +37,8 @@ public:
 
     ConfigSetting* radius() { return m_radius; }
     ConfigSetting* sigma() { return m_sigma; }
+    ConfigSetting* amount() { return m_amount; }
+    ConfigSetting* threshold() { return m_threshold; }
 
 private:
 
@@ -45,6 +49,8 @@ private:
 
     ConfigSetting* m_radius;
     ConfigSetting* m_sigma;
+    ConfigSetting* m_amount;
+    ConfigSetting* m_threshold;
 };
 
 #endif // SHARPENTASK_H

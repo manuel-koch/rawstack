@@ -41,6 +41,8 @@ void SharpenWorker::registerSettingsImpl()
 {
     hashSetting(SharpenSettings::Radius);
     hashSetting(SharpenSettings::Sigma);
+    hashSetting(SharpenSettings::Amount);
+    hashSetting(SharpenSettings::Threshold);
 }
 
 void SharpenWorker::developImpl(bool preview, WorkerBase *predecessor)
@@ -49,11 +51,13 @@ void SharpenWorker::developImpl(bool preview, WorkerBase *predecessor)
 
     qDebug() << "SharpenWorker::developImpl()" << this << predecessor;
 
-    double radius = config()->settings()->getSetting(SharpenSettings::Radius)->value().toDouble();
-    double sigma  = config()->settings()->getSetting(SharpenSettings::Sigma)->value().toDouble();
-    if( radius>=0 && sigma>0 )
+    double radius    = config()->settings()->getSetting(SharpenSettings::Radius)->value().toDouble();
+    double sigma     = config()->settings()->getSetting(SharpenSettings::Sigma)->value().toDouble();
+    double amount    = config()->settings()->getSetting(SharpenSettings::Amount)->value().toDouble();
+    double threshold = config()->settings()->getSetting(SharpenSettings::Threshold)->value().toDouble();
+    if( radius>=0 && sigma>0 && amount>0 && threshold>=0 )
     {
-        qDebug() << "SharpenWorker::developImpl()" << this << radius << sigma;
-        m_img.sharpen( radius, sigma );
+        qDebug() << "SharpenWorker::developImpl()" << this << radius << sigma << amount << threshold;
+        m_img.unsharpmask( radius, sigma, amount, threshold );
     }
 }

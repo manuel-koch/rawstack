@@ -16,8 +16,8 @@
  *
  * Copyright 2016 Manuel Koch
  */
-#ifndef CONFIGSETTING_H
-#define CONFIGSETTING_H
+#ifndef CONFIGSETTING_H_E448C00A_43DF_4571_94ED_0074C1A2C9C0
+#define CONFIGSETTING_H_E448C00A_43DF_4571_94ED_0074C1A2C9C0
 
 #include <QObject>
 #include <QVariant>
@@ -32,15 +32,26 @@ class ConfigSetting : public QObject
 
 public:
 
+    /// @brief Construct a named setting
+    /// @param fullname is name with multiple parts separated by a dot
     explicit ConfigSetting(QString fullname, QObject *parent = 0);
 
+    /// @returns full name of setting
     QString fullname() const { return m_fullname; }
+
+    /// @returns first part of fullname, i.e. the task name
     QString task() const;
+
+    /// @returns middle part(s) of fullname, i.e. the group name
     QString group() const;
+
+    /// @returns last part of fullname, i.e. the name
     QString name() const;
+
+    /// @returns current value of setting
     QVariant value() const { return m_value; }
 
-    /// Initialize value of setting with given data if it is currently null/invalid
+    /// @brief Initialize value of setting with given data if it is currently null/invalid
     template <typename T>
     void initIfNull( const T &value )
     {
@@ -55,6 +66,7 @@ signals:
 
 public slots:
 
+    /// @brief Set value of setting
     void setValue(QVariant value);
 
 private:
@@ -63,4 +75,4 @@ private:
     QVariant m_value;    // Value of the setting
 };
 
-#endif // CONFIGSETTING_H
+#endif // CONFIGSETTING_H_E448C00A_43DF_4571_94ED_0074C1A2C9C0

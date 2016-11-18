@@ -17,8 +17,9 @@ SOURCES += \
     src/main.cpp \
     src/unittestenv.cpp \
     src/testapplicationbase.cpp \
+    src/testloghandler.cpp \
     src/testapplication.cpp \
-    src/testloghandler.cpp
+    src/testconfigsetting.cpp
 
 HEADERS += \
     src/testapplicationbase.h \

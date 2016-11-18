@@ -18,3 +18,7 @@ message(GRAPHICSMAGICK_LIBS = $$GRAPHICSMAGICK_LIBS)
 
 # Library for Exiv2 functionality
 EXIV2_LIBS = -lexiv2
+
+# Test framework gtest/gmock
+GTEST_DIR = $$PWD/../googletest/googletest
+GMOCK_DIR = $$PWD/../googletest/googlemock

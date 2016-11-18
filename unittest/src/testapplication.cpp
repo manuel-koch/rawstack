@@ -16,27 +16,19 @@
  *
  * Copyright 2016 Manuel Koch
  */
-#include "unittestenv.h"
 #include "testapplicationbase.h"
-#include "loghandler.h"
 
-#include <gtest/gtest.h>
+#include <QDebug>
 
-int main(int argc, char *argv[])
+class TestApplication : public TestApplicationBase
 {
-    // Disables/enable elapsed time
-    ::testing::GTEST_FLAG(print_time) = true;
+    //EMPTY
+};
 
-    // This allows the user to override the flag on the command line.
-    ::testing::InitGoogleTest(&argc, argv);
-
-    TestApplicationBase::initArguments(&argc,argv);
-
-    qSetMessagePattern("%{time yyyy-MM-dd hh:mm:ss.zzz} %{threadid} %{type}: %{message} [%{file}:%{line}]");
-
-    LogHandler logHandler;
-    logHandler.start( "/Users/manuel/tmp/rawstack/unittest.log" );
-
-    AddGlobalTestEnvironment(new UnitTestEnv());
-    return RUN_ALL_TESTS();
+TEST_F( TestApplication, exec)
+{
+    createApplication();
+    qDebug() << "START" << __FUNCTION__;
+    exec(1000);
+    qDebug() << "END" << __FUNCTION__;
 }

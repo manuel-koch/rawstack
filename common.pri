@@ -1,6 +1,9 @@
 # Use latest C++ standard to enable lambdas
 QMAKE_CXXFLAGS += -std=c++11
 
+# Add switches for googletest / googlemock
+QMAKE_CXXFLAGS += -I$$GTEST_DIR -I$$GTEST_DIR/include -I$$GMOCK_DIR -I$$GMOCK_DIR/include
+
 # Add switches for GraphicsMagick to make variables
 QMAKE_LIBS     += $$GRAPHICSMAGICK_LIBS
 QMAKE_CXXFLAGS += $$GRAPHICSMAGICK_CXXFLAGS

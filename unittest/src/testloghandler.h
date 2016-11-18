@@ -16,24 +16,20 @@
  *
  * Copyright 2016 Manuel Koch
  */
-#include "testapplicationbase.h"
+#ifndef TESTLOGHANDLER_H_0ED26372_BE08_4433_81A5_8DAFC96DEF34
+#define TESTLOGHANDLER_H_0ED26372_BE08_4433_81A5_8DAFC96DEF34
 
-#include <QDebug>
+#include "loghandler.h"
+#include <gtest/gtest.h>
 
-class TestApplication : public TestApplicationBase
+class TestLogHandler : public LogHandler
 {
-    //EMPTY
+public:
+
+    TestLogHandler();
+    virtual ~TestLogHandler();
+
+    ::testing::TestEventListener *createTestEventListener();
 };
 
-TEST_F( TestApplication, create)
-{
-    createApplication();
-}
-
-TEST_F( TestApplication, exec)
-{
-    createApplication();
-    qDebug() << "START" << __FUNCTION__;
-    exec(1000);
-    qDebug() << "END" << __FUNCTION__;
-}
+#endif // TESTLOGHANDLER_H

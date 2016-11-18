@@ -39,6 +39,8 @@ public slots:
     void start( const QString &path );
     void stop();
 
+    void logToFile( const QString &msg );
+
 private:
 
     static void setInstance( LogHandler *instance ) { ms_instance = instance; }

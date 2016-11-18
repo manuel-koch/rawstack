@@ -38,13 +38,26 @@ LogHandler::~LogHandler()
 void LogHandler::start(const QString &path)
 {
     stop();
-    m_log.setFileName( path );
-    m_log.open( QFile::WriteOnly | QFile::Truncate | QFile::Unbuffered );
+    if( !path.isEmpty() )
+    {
+        m_log.setFileName( path );
+        m_log.open( QFile::WriteOnly | QFile::Truncate | QFile::Unbuffered );
+    }
 }
 
 void LogHandler::stop()
 {
     m_log.close();
+}
+
+void LogHandler::logToFile(const QString &msg)
+{
+    if( m_log.isOpen() )
+    {
+        QTextStream ts(&m_log);
+        ts << msg << endl;
+        ts.flush();
+    }
 }
 
 void LogHandler::onLog(QtMsgType type, const QMessageLogContext &context, const QString &msg)
@@ -56,15 +69,8 @@ void LogHandler::onLog(QtMsgType type, const QMessageLogContext &context, const 
 void LogHandler::onLogImpl(QtMsgType type, const QMessageLogContext &context, const QString &msg)
 {
     QString txt = qFormatLogMessage(type,context,msg);
-
-    if( m_log.isOpen() )
-    {
-        QTextStream ts(&m_log);
-        ts << txt << endl;
-        ts.flush();
-    }
-
-    fprintf(stderr, "%s\n",txt.toStdString().c_str());
-    fflush(stderr);
+    logToFile(txt);
+    fprintf(stdout, "%s\n",txt.toStdString().c_str());
+    fflush(stdout);
 }
 

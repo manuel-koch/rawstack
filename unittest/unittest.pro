@@ -17,9 +17,11 @@ SOURCES += \
     src/main.cpp \
     src/unittestenv.cpp \
     src/testapplicationbase.cpp \
-    src/testapplication.cpp
+    src/testapplication.cpp \
+    src/testloghandler.cpp
 
 HEADERS += \
-    src/testapplicationbase.h
+    src/testapplicationbase.h \
+    src/testloghandler.h
 
 PRE_TARGETDEPS += $$OUT_PWD/../lib/librawstack.a

@@ -18,7 +18,7 @@
  */
 #include "unittestenv.h"
 #include "testapplicationbase.h"
-#include "loghandler.h"
+#include "testloghandler.h"
 
 #include <gtest/gtest.h>
 
@@ -33,9 +33,10 @@ int main(int argc, char *argv[])
     TestApplicationBase::initArguments(&argc,argv);
 
     qSetMessagePattern("%{time yyyy-MM-dd hh:mm:ss.zzz} %{threadid} %{type}: %{message} [%{file}:%{line}]");
-
-    LogHandler logHandler;
+    TestLogHandler logHandler;
     logHandler.start( "/Users/manuel/tmp/rawstack/unittest.log" );
+    ::testing::TestEventListeners& listeners = ::testing::UnitTest::GetInstance()->listeners();
+    listeners.Append( logHandler.createTestEventListener() );
 
     AddGlobalTestEnvironment(new UnitTestEnv());
     return RUN_ALL_TESTS();

@@ -41,22 +41,25 @@ public:
     /// Return list of all settings or those starting with selected prefix ( task/group )
     QStringList settings(QString prefix = "") const;
 
-    /// Return a named setting
+    /// Return a named setting, creates a new setting if it doesn't exist yet
     ConfigSetting *getSetting(QString fullname);
 
     /// Return a setting by index
     ConfigSetting *getSetting(int index) const;
 
-    /// Remove named setting or all settings of named task
+    /// Remove fully named setting or all settings of named task
     void removeSetting(QString name);
 
     /// Remove all settings
     void removeAll();
 
+    /// Convert settings to XML by adding element hierarchy to given DOM node
     void toXML(QDomNode &node) const;
+
+    /// Init settings from XML by parsing element hierarchy from given DOM node
     void fromXML(const QDomNode &node);
 
-    // copy settings from other instance
+    /// copy settings from other instance
     void operator =(const ConfigSettings &other);
 
 private:

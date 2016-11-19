@@ -47,22 +47,26 @@ QStringList ConfigSettings::tasks() const
 
 QStringList ConfigSettings::settings(QString prefix) const
 {
-    if( prefix.isEmpty() )
-        return m_map.keys();
-
     QStringList settings;
-    prefix += ".";
+
+    if( !prefix.isEmpty() )
+        prefix += ".";
+
     foreach( ConfigSetting *setting, m_settings )
     {
         QString fullname = setting->fullname();
         if( fullname.startsWith(prefix) )
             settings.append(fullname);
     }
+
     return settings;
 }
 
 ConfigSetting *ConfigSettings::getSetting(QString fullname)
 {
+    if( fullname.trimmed().isEmpty() )
+        return nullptr;
+
     if( m_map.contains(fullname) )
         return m_map[fullname];
 

@@ -23,8 +23,6 @@
 #include "configsetting.h"
 #include "enfuseprocess.h"
 
-#include "libraw/libraw.h"
-
 #include <QDebug>
 #include <QThread>
 #include <QTemporaryFile>

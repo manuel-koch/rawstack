@@ -3,9 +3,15 @@ MAC_PORT_LIB_DIR = /opt/local/lib
 MAC_PORT_INC_DIR = /opt/local/include
 
 UFRAW_BINARY_PATH = $$MAC_PORT_BIN_DIR/ufraw-batch
+!exists( $$UFRAW_BINARY_PATH ) {
+    error(Could not find ufraw at $$UFRAW_BINARY_PATH)
+}
 message(Using ufraw at $$UFRAW_BINARY_PATH)
 
 ENFUSE_BINARY_PATH = $$MAC_PORT_BIN_DIR/enfuse
+!exists( $$ENFUSE_BINARY_PATH ) {
+    error(Could not find enfuse at $$ENFUSE_BINARY_PATH)
+}
 message(Using enfuse at $$ENFUSE_BINARY_PATH)
 
 # Get compiler settings for GraphicsMagick++

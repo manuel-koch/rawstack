@@ -69,7 +69,7 @@ bool ConfigSettingsStore::setData(const QModelIndex &index, const QVariant &valu
                  if( sel )
                      setNofSelectedSettings( m_nofSelectedSettings+1 );
                  else
-                    setNofSelectedSettings( m_nofSelectedSettings-1 );
+                     setNofSelectedSettings( m_nofSelectedSettings-1 );
                  dataChanged( index, index, QVector<int>()<<SelectedRole);
                  return true;
              }
@@ -105,7 +105,7 @@ void ConfigSettingsStore::copyFrom(ConfigDbEntry *config)
     qDebug() << "ConfigSettingsStore::copyFrom()" << config->config();
 
     beginResetModel();
-    m_settings    = *config->settings();
+    m_settings = *config->settings();
     setNofSettings( m_settings.settings().size() );
     setNofSelectedSettings( m_nofSettings );
     m_selected.clear();

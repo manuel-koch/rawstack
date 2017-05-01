@@ -45,6 +45,11 @@ QStringList ConfigSettings::tasks() const
     return taskList;
 }
 
+bool ConfigSettings::hasSettings() const
+{
+    return !m_settings.empty();
+}
+
 QStringList ConfigSettings::settings(QString prefix) const
 {
     QStringList settings;
@@ -83,6 +88,8 @@ ConfigSetting *ConfigSettings::getSetting(int index) const
 
 void ConfigSettings::removeSetting(QString name)
 {
+    const bool hadSettings = hasSettings();
+
     QList<int> indices;
     bool wildcard = !name.contains(".");
     for( int i=0; i<m_settings.size(); i++ )
@@ -96,16 +103,22 @@ void ConfigSettings::removeSetting(QString name)
         m_map.remove( setting->fullname() );
         delete setting;
     }
+
+    if( hadSettings != hasSettings() )
+        emit hasSettingsChanged( !hadSettings );
 }
 
 void ConfigSettings::removeAll()
 {
+    const bool hadSettings = hasSettings();
     while( m_settings.size() )
     {
         ConfigSetting *setting = m_settings.takeAt(0);
         m_map.remove( setting->fullname() );
         delete setting;
     }
+    if( hadSettings != hasSettings() )
+        emit hasSettingsChanged( !hadSettings );
 }
 
 void ConfigSettings::toXML(QDomNode &node) const
@@ -146,8 +159,14 @@ void ConfigSettings::operator =(const ConfigSettings &other)
 
 ConfigSetting *ConfigSettings::appendNewSetting(QString fullname)
 {
+    const bool hadSettings = hasSettings();
+
     ConfigSetting *setting = new ConfigSetting(fullname,this);
     m_settings.append( setting );
     m_map[fullname] = setting;
+
+    if( hadSettings != hasSettings() )
+        emit hasSettingsChanged( !hadSettings );
+
     return setting;
 }

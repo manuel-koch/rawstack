@@ -29,6 +29,7 @@ class ConfigSetting;
 class ConfigSettings : public QObject
 {
     Q_OBJECT
+    Q_PROPERTY(bool hasSettings READ hasSettings NOTIFY hasSettingsChanged)
 
 public:
 
@@ -37,6 +38,9 @@ public:
 
     /// Return list of tasks that have a setting
     QStringList tasks() const;
+
+    /// Returns true when there is atleast one setting
+    bool hasSettings() const;
 
     /// Return list of all settings or those starting with selected prefix ( task/group )
     QStringList settings(QString prefix = "") const;
@@ -61,6 +65,10 @@ public:
 
     /// copy settings from other instance
     void operator =(const ConfigSettings &other);
+
+signals:
+
+    void hasSettingsChanged(bool hasSettings );
 
 private:
 

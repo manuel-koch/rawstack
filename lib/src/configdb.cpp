@@ -100,7 +100,8 @@ void ConfigDb::save(const QUrl &url)
     foreach( ConfigDbEntry *entry, m_configs )
     {
         QDomNode config = root.appendChild( doc.createElement("config") );
-        config.toElement().setAttribute( "path", entry->config() );
+        QString path = entry->settings()->hasSettings() ? entry->config() : entry->raw();
+        config.toElement().setAttribute( "path", path );
     }
 
     QFile file( path );
@@ -159,9 +160,7 @@ void ConfigDb::load(const QUrl &url)
     for( int i=0; i<configs.size(); i++ )
     {
         QDomElement cfg = configs.item(i).toElement();
-        ConfigDbEntry *entry = new ConfigDbEntry(this);
-        entry->setConfig( cfg.attribute("path") );
-        loadAndAddEntry( entry );
+        addFromPath( cfg.attribute("path") );
     }
 }
 
@@ -273,6 +272,7 @@ void ConfigDb::setPath(QString path)
 
 void ConfigDb::addFromPath(const QFileInfo &path)
 {
+    qDebug() << "ConfigDb::addFromPath()" << path.absoluteFilePath();
     if( path.isDir() )
     {
         qDebug() << "ConfigDb::addFromPath() adding content of" << path.absoluteFilePath();
@@ -292,6 +292,7 @@ void ConfigDb::addFromPath(const QFileInfo &path)
 
 void ConfigDb::addFromRaw(const QFileInfo &path)
 {
+    qDebug() << "ConfigDb::addFromRaw()" << path.absoluteFilePath();
     ConfigDbEntry *config = new ConfigDbEntry( this );
     config->setRaw( path.absoluteFilePath() );
     config->setConfig( QFileInfo(path.dir(), path.completeBaseName() + ".rawstack").absoluteFilePath() );
@@ -300,6 +301,7 @@ void ConfigDb::addFromRaw(const QFileInfo &path)
 
 void ConfigDb::addFromConfig(const QFileInfo &path)
 {
+    qDebug() << "ConfigDb::addFromConfig()" << path.absoluteFilePath();
     ConfigDbEntry *config = new ConfigDbEntry( this );
     config->setConfig( path.absoluteFilePath() );
     loadAndAddEntry( config );
@@ -307,6 +309,7 @@ void ConfigDb::addFromConfig(const QFileInfo &path)
 
 void ConfigDb::loadAndAddEntry(ConfigDbEntry *entry)
 {
+    qDebug() << "ConfigDb::loadAndAddEntry()" << entry->config();
     entry->load();
 
     bool found = false;
@@ -321,12 +324,12 @@ void ConfigDb::loadAndAddEntry(ConfigDbEntry *entry)
 
     if( found )
     {
-        qDebug() << "ConfigDb::add() already in list:" << entry->config();
+        qDebug() << "ConfigDb::loadAndAddEntry() already in list:" << entry->config();
         delete entry;
         return;
     }
 
-    qDebug() << "ConfigDb::add()" << entry->config();
+    qDebug() << "ConfigDb::loadAndAddEntry()" << entry->config();
 
     int idx = 0;
     foreach( ConfigDbEntry *existingEntry, m_configs )
@@ -342,7 +345,7 @@ void ConfigDb::loadAndAddEntry(ConfigDbEntry *entry)
     connect( entry, SIGNAL(purge()),     this, SLOT(onPurgeConfig()) );
     endInsertRows();
 
-    qDebug() << "ConfigDb::add()" << m_configs.size();
+    qDebug() << "ConfigDb::loadAndAddEntry()" << m_configs.size();
 
     if( !m_path.isEmpty() )
         save();

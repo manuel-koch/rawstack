@@ -120,6 +120,18 @@ void ConfigDb::load(const QUrl &url)
     QString path = url.toLocalFile();
     qDebug() << "ConfigDb::load()" << path;
 
+    QFileInfo info( path );
+    if( !info.exists() )
+    {
+        qWarning() << "ConfigDb::load failed, path does not exist:" << path;
+        return;
+    }
+    if( info.suffix() != DatabaseSuffix )
+    {
+        qWarning() << "ConfigDb::load failed, wrong extension:" << path;
+        return;
+    }
+
     removeAll();
 
     QFile file(path);

@@ -30,8 +30,11 @@ ImageFactoryThumbnail::ImageFactoryThumbnail(ConfigDbEntry *config)
     , m_cycle(0)
 {
     connect( m_config, SIGNAL(rawChanged(QString)), this, SLOT(onRawChanged(QString)) );
-    connect( &m_config->db()->cache(), SIGNAL(miss(QString)), this, SLOT(onCacheMiss(QString)) );
-    connect( &m_config->db()->cache(), SIGNAL(cached(ImageCacheGroup::Action,QString)), this, SLOT(onCacheChanged(ImageCacheGroup::Action,QString)) );
+    if( m_config->db() )
+    {
+        connect( &m_config->db()->cache(), SIGNAL(miss(QString)), this, SLOT(onCacheMiss(QString)) );
+        connect( &m_config->db()->cache(), SIGNAL(cached(ImageCacheGroup::Action,QString)), this, SLOT(onCacheChanged(ImageCacheGroup::Action,QString)) );
+    }
     setUrl( m_cycle );
 }
 

@@ -117,12 +117,12 @@ Rectangle {
 
         MenuItem {
             text: "Copy Settings"
-            enabled: theSelectionModel.selectedIndexes.length === 1
+            enabled: globalMenuModel.imgSettingsCopy.enabled
             onTriggered: theSelectionModel.copySettingsFromSelected()
         }
         MenuItem {
             text: "Apply Settings"
-            enabled: globalConfigStore.nofSettings > 0
+            enabled: globalMenuModel.imgSettingsApply.enabled
             onTriggered: theSelectSettingsDialog.open()
         }
         MenuItem {
@@ -176,6 +176,11 @@ Rectangle {
     ItemSelectionModel {
         id: theSelectionModel
         model: globalConfigDb
+
+        onSelectionChanged: {
+            globalMenuModel.imgSettingsCopy.enabled = (selectedIndexes.length === 1) ? selectedConfigs()[0].settings.hasSettings : false
+            globalMenuModel.imgSettingsApply.enabled = (globalConfigStore.nofSettings > 0)
+        }
 
         function selectedConfigs() {
             var cfgs = [];

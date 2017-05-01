@@ -84,6 +84,7 @@ TEST_F( TestConfigSettings, init)
 
     // get setting again, setting list size increases, setting value has changed
     ConfigSetting* aaaBar3 = s.getSetting("aaa.bar");
+    Q_UNUSED(aaaBar3);
     EXPECT_EQ( s.settings().size(), 2 );
 
     // remove all settings, list is empty

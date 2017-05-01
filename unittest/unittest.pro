@@ -20,11 +20,14 @@ SOURCES += \
     src/testloghandler.cpp \
     src/testapplication.cpp \
     src/testconfigsetting.cpp \
-    src/testconfigsettings.cpp
+    src/testconfigsettings.cpp \
+    src/testconfigsettingsstore.cpp \
+    src/testhelper.cpp
 
 HEADERS += \
     src/testapplicationbase.h \
     src/testloghandler.h \
-    src/testhelpermacros.h
+    src/testhelpermacros.h \
+    src/testhelper.h
 
 PRE_TARGETDEPS += $$OUT_PWD/../lib/librawstack.a

@@ -14,14 +14,34 @@
  * You should have received a copy of the GNU General Public License
  * along with Rawstack. If not, see <http://www.gnu.org/licenses/>.
  *
- * Copyright 2016 Manuel Koch
+ * Copyright 2017 Manuel Koch
  */
-#ifndef TESTHELPERMACROS_H_39A50EC4_6EC0_4F0F_B1CC_23C5CBA4D62B
-#define TESTHELPERMACROS_H_39A50EC4_6EC0_4F0F_B1CC_23C5CBA4D62B
+#include "testhelper.h"
 
-#define EXPECT_NULL(ptr)     EXPECT_EQ(ptr,nullptr)
-#define EXPECT_NOT_NULL(ptr) EXPECT_NE(ptr,nullptr)
-#define ASSERT_NULL(ptr)     ASSERT_EQ(ptr,nullptr)
-#define ASSERT_NOT_NULL(ptr) ASSERT_NE(ptr,nullptr)
+#include <QString>
+#include <QStringList>
+#include <QVariant>
 
-#endif // TESTHELPERMACROS_H_39A50EC4_6EC0_4F0F_B1CC_23C5CBA4D62B
+// It's important that the << operator is defined in the SAME
+// namespace that defines the class.  C++'s look-up rules rely on that.
+QT_BEGIN_NAMESPACE
+
+::std::ostream& operator<<(::std::ostream& os, const QStringList& l)
+{
+    int i = 0;
+    for( const QString &s : l )
+    {
+        os << "\"" << s.toStdString() << "\"";
+        if( i+1 < l.size() )
+            os << " ";
+        i++;
+    }
+    return os;
+}
+
+::std::ostream& operator<<(::std::ostream& os, const QVariant& v)
+{
+    return os << v.toString().toStdString();
+}
+
+QT_END_NAMESPACE

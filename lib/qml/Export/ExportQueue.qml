@@ -16,7 +16,8 @@
  *
  * Copyright 2016 Manuel Koch
  */
-import QtQuick 2.0
+import QtQuick 2.7
+import QtQuick.Controls 2.1
 import QtQuick.Layouts 1.1
 import com.rawstack.types 1.0
 
@@ -48,16 +49,20 @@ Rectangle {
             }
             Text {
                 id: theExportText
-                anchors { left:        parent.left;
-                          right:       parent.right;
-                          leftMargin:  theQueue.radius;
-                          rightMargin: theQueue.radius; }
-                wrapMode:       Text.WrapAtWordBoundaryOrAnywhere
-                font.pointSize: 10
-                text:           "Exporting\n"+delegateModel.export.setting.config.raw+"\nto\n"+delegateModel.export.setting.imgPath
+                anchors { left:    parent.left
+                          right:   parent.right }
+                padding:         theQueue.radius
+                font.pointSize:  10
+                text:            delegateModel.export.setting.imgPath
+                elide:           Text.ElideLeft
+                ToolTip.visible: theExportMouse.containsMouse
+                ToolTip.text:    "<small>Exporting<br>"+delegateModel.export.setting.config.raw+"&nbsp;&nbsp;&nbsp;&nbsp;<br>to<br>"+delegateModel.export.setting.imgPath + "&nbsp;&nbsp;&nbsp;&nbsp;</small>"
+
             }
             MouseArea {
+                id: theExportMouse
                 anchors.fill: parent
+                hoverEnabled: true
                 onClicked:    theList.currentIndex = delegateModel.index
             }
         }

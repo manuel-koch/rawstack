@@ -30,7 +30,7 @@ public:
 
     static bool isRaw( const QFileInfo &path )
     {
-        if( path.isDir() )
+        if( !path.exists() || path.isDir() )
             return false;
 
         QMimeDatabase mime;

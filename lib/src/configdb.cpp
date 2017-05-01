@@ -99,7 +99,7 @@ void ConfigDb::save(const QUrl &url)
     root.toElement().setAttribute("version",QString("%1.%2").arg(MajorVersion).arg(MinorVersion));
     foreach( ConfigDbEntry *entry, m_configs )
     {
-        QDomNode config = doc.appendChild( doc.createElement("config") );
+        QDomNode config = root.appendChild( doc.createElement("config") );
         config.toElement().setAttribute( "path", entry->config() );
     }
 

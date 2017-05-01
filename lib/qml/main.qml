@@ -70,6 +70,7 @@ ApplicationWindow {
         id: loadDbDialog
         title: "Please choose database"
         selectExisting: true
+        nameFilters: ["Rawstack database (*.rawstackdb)"]
         onAccepted: {
             globalConfigDb.load( loadDbDialog.fileUrls[0] )
         }

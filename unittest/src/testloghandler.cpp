@@ -54,6 +54,7 @@ public:
     }
 
     virtual void OnTestEnd(const ::testing::TestInfo& test_info) {
+        Q_UNUSED(test_info);
         QString verdict(m_failed ? "[  FAILED  ]" : "[       OK ]");
         m_handler.logToFile( QString("%1 %2.%3")
                             .arg(verdict)

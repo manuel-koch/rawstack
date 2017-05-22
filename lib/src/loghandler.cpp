@@ -40,6 +40,7 @@ void LogHandler::start(const QString &path)
     stop();
     if( !path.isEmpty() )
     {
+        qDebug() << "LogHandler::start()" << path;
         m_log.setFileName( path );
         m_log.open( QFile::WriteOnly | QFile::Truncate | QFile::Unbuffered );
     }

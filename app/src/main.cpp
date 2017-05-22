@@ -16,6 +16,7 @@
  *
  * Copyright 2016 Manuel Koch
  */
+#include "rawstackappinfo.h"
 #include "librawstack.h"
 #include "taskfactory.h"
 #include "taskbuilder.h"
@@ -90,12 +91,24 @@ void register_types()
 int main(int argc, char *argv[])
 {
     QApplication app( argc, argv );
+    QCoreApplication::setApplicationName("Rawstack");
+    QCoreApplication::setApplicationVersion(RawstackAppInfo::version());
+
     Magick::InitializeMagick( argv[0] );
 
     qSetMessagePattern("%{time yyyy-MM-dd hh:mm:ss.zzz} %{threadid} %{type}: %{message} [%{file}:%{line}]");
 
+    QCommandLineParser parser;
+    parser.setApplicationDescription("Fusion blend multiple developed images from single RAW image.");
+    parser.addHelpOption();
+    parser.addVersionOption();
+    QCommandLineOption logPathOption(QStringList() << "l" << "log", "Log messages to given <path>.", "path");
+    parser.addOption(logPathOption);
+    parser.process(app);
+
     LogHandler logHandler;
-    logHandler.start( "/Users/manuel/tmp/rawstack/debug.log" );
+    if( parser.isSet(logPathOption) )
+        logHandler.start( parser.value(logPathOption) );
 
     LibRawstack::initResources();
     register_types();
@@ -133,8 +146,10 @@ int main(int argc, char *argv[])
     ExportTemplate exportTemplate;
     TaskStack taskStack(true);
 
-    if( argc > 1 )
-        configDb.add( QUrl::fromLocalFile(argv[1]) );
+    const QStringList args = parser.positionalArguments();
+    foreach(const QString &arg, args) {
+        configDb.add( QUrl::fromLocalFile(arg) );
+    }
 
     QQmlContext *rootContext = engine.rootContext();
     rootContext->setContextProperty( "globalMenuModel",      &menuModel );

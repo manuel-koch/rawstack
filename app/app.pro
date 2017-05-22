@@ -16,8 +16,10 @@ QMAKE_BUNDLE_DATA += UFRAW_TARGET ENFUSE_TARGET
 # Additional import path used to resolve QML modules in Qt Creator's code model
 QML_IMPORT_PATH =
 
-SOURCES += src/main.cpp
+SOURCES += src/main.cpp \
+    src/rawstackappinfo.cpp
 
-HEADERS +=
+HEADERS += \
+    src/rawstackappinfo.h
 
 PRE_TARGETDEPS += $$OUT_PWD/../lib/librawstack.a

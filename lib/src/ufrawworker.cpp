@@ -169,13 +169,13 @@ void UfrawWorker::developImpl(bool preview, WorkerBase *predecessor)
             if( isNormalExposed )
             {
                 normalImg = img;
-                normalImg.write( QString("/Users/manuel/tmp/test_normal.tif").toStdString().c_str() );
+                //normalImg.write( QString("/Users/manuel/tmp/test_normal.tif").toStdString().c_str() );
             }
             else
             {
                 mask = masked( isOverExposed, 0.98, img );
                 mask.write( ufraw[i].output().toStdString().c_str() );
-                mask.write( QString("/Users/manuel/tmp/test_masked%1.tif").arg(i).toStdString().c_str() );
+                //mask.write( QString("/Users/manuel/tmp/test_masked%1.tif").arg(i).toStdString().c_str() );
             }
         }
     }

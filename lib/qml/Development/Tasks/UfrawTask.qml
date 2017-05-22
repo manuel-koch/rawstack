@@ -50,8 +50,8 @@ Task {
             font.pointSize:    10
             decimals:          2
             maximumValue:      1
-            minimumValue:      0.05
-            stepSize:          0.05
+            minimumValue:      0.01
+            stepSize:          0.01
             value:             controller.exposuresigma
             onEditingFinished: controller.setExposureSigma( value )
         }

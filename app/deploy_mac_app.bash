@@ -6,12 +6,20 @@
 if [ -z "$1" ] ; then
 	echo "Missing build directory path argument"
 	exit 1
-fi 
+fi
 if [ ! -d "$1" ] ; then
 	echo "Invalid build directory path: $1"
 	exit 1
-fi 
-QT_BIN_DIR=$HOME/Qt5.7.0/5.7/clang_64/bin
+fi
+if [ -z "$2" ] ; then
+	echo "Missing Qt binary directory path argument"
+	exit 1
+fi
+if [ ! -d "$2" ] ; then
+	echo "Invalid Qt binary directory path: $2"
+	exit 1
+fi
+QT_BIN_DIR=$2
 MACDEPLOYQT=$QT_BIN_DIR/macdeployqt
 RAWSTACK_APP_DIR=$(dirname $0)
 RAWSTACK_APP_BUNDLE=$1/app/rawstack.app

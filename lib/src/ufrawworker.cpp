@@ -77,7 +77,7 @@ void UfrawWorker::run( UfrawProcess &ufraw, bool preview, int idx, int nof )
     {
         ufraw.setInterpolate( UfrawProcess::InterpolateBilinear );
         ufraw.setColorSmoothing( false );
-        ufraw.setShrink( 4 );
+        ufraw.setShrink( 3 );
     }
 
     // extract the image

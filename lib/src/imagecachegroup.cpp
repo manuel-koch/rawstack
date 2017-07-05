@@ -40,9 +40,9 @@ ImageCacheGroup::ImageCacheGroup(QString name, Lifetime lifetime, QObject *paren
     , m_name(name)
     , m_lifetime(lifetime)
     , m_memsize(0)
-    , m_maxMemSize(128*MByte)
+    , m_maxMemSize((lifetime == ImageCacheGroup::Temporary ? 1024 : 512)*MByte)
     , m_filesize(0)
-    , m_maxFileSize(256*MByte)
+    , m_maxFileSize(1024*MByte)
 {
     m_dir = QFileInfo(QStandardPaths::writableLocation(QStandardPaths::CacheLocation),m_name).absoluteFilePath();
     if( !m_dir.exists() && !m_dir.mkpath(".") )
@@ -239,6 +239,7 @@ void ImageCacheGroup::cleanup()
     unsigned long oldMemSize  = m_memsize;
     unsigned long oldFileSize = m_filesize;
 
+    // unload images cached in memory, keeping thumbnails
     int idx = 0;
     while( m_maxMemSize < m_memsize && idx < m_cached.size() )
     {
@@ -246,6 +247,7 @@ void ImageCacheGroup::cleanup()
         idx++;
     }
 
+    // unload images cached in memory, dropping thumbnails too
     idx = 0;
     while( m_maxMemSize < m_memsize && idx < m_cached.size() )
     {
@@ -253,6 +255,7 @@ void ImageCacheGroup::cleanup()
         idx++;
     }
 
+    // remove images cached in files
     idx = 0;
     while( m_maxFileSize < m_filesize && idx < m_cached.size() )
     {

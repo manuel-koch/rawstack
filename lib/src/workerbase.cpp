@@ -152,7 +152,7 @@ void WorkerBase::onDevelop(bool preview, WorkerBase *predecessor)
 {
     QMutexLocker lock(&m_mutex);
 
-    qDebug() << "WorkerBase::onDevelop()" << this << (preview ? "preview" : "HQ") << predecessor;
+    qDebug() << "WorkerBase::onDevelop()" << this << (preview ? "LQ and caching" : "HQ and not caching") << predecessor;
 
     emit started();
     setProgress(0);
@@ -189,7 +189,7 @@ void WorkerBase::onDevelop(bool preview, WorkerBase *predecessor)
             m_img = predecessor ? predecessor->gmimage() : Magick::Image();
             if( (!predecessor || m_img.isValid()) && enabled )
                 developImpl( preview, predecessor );
-            if( m_cache )
+            if( preview && m_cache )
                 m_cache->store( curImgHash, ImageCacheGroup::Temporary, m_img );
         }
         else

@@ -136,7 +136,7 @@ void TaskStack::releaseImages()
 
 void TaskStack::develop()
 {
-    qDebug() << "TaskStack::develop()" << (m_preview ? "LQ" : "HQ");
+    qDebug() << "TaskStack::develop()" << (m_preview ? "LQ and caching" : "HQ and not caching");
     if( !m_tasks.empty() && !m_developing )
         m_tasks[0]->develop( m_preview );
 }
@@ -338,9 +338,10 @@ void TaskStack::onTaskFinished()
     if( isLastTask )
     {
         m_config->save();
-        m_config->db()->cache().store( m_config->config(),
-                                       ImageCacheGroup::Persistent,
-                                       m_tasks.back()->worker()->gmimage() );
+        if( m_preview )
+            m_config->db()->cache().store( m_config->config(),
+                                           ImageCacheGroup::Persistent,
+                                           m_tasks.back()->worker()->gmimage() );
         setDeveloping( false );
     }
     else

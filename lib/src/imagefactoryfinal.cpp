@@ -87,5 +87,5 @@ void ImageFactoryFinal::onCacheChanged(ImageCacheGroup::Action action, QString k
 void ImageFactoryFinal::onCacheMiss(QString key)
 {
     if( key == m_config->raw() )
-        m_config->db()->cache().loadThumbnail(  m_config->raw() );
+        m_config->db()->cache().loadThumbnail( m_config->raw() );
 }

@@ -316,6 +316,7 @@ void TaskStack::onTaskFinished()
     if( !m_preview && releaseIdx >= 0 )
         m_tasks[releaseIdx]->worker()->releaseImages();
 
+#if 0
     // save output image of current task for debugging
     Magick::Image img = m_tasks[idx]->worker()->gmimage();
     if( img.isValid() )
@@ -328,6 +329,7 @@ void TaskStack::onTaskFinished()
         qDebug() << "TaskStack::onTaskFinished() saving" << tmpImgPath;
         img.write( tmpImgPath.toStdString() );
     }
+#endif
 
     double p = (double)(idx+1) / m_tasks.size();
     setProgress( p );

@@ -42,7 +42,7 @@ ImageCacheGroup::ImageCacheGroup(QString name, Lifetime lifetime, QObject *paren
     , m_memsize(0)
     , m_maxMemSize((lifetime == ImageCacheGroup::Temporary ? 1024 : 512)*MByte)
     , m_filesize(0)
-    , m_maxFileSize(1024*MByte)
+    , m_maxFileSize(lifetime == ImageCacheGroup::Temporary ? 4096 : 1024*MByte)
 {
     m_dir = QFileInfo(QStandardPaths::writableLocation(QStandardPaths::CacheLocation),m_name).absoluteFilePath();
     if( !m_dir.exists() && !m_dir.mkpath(".") )

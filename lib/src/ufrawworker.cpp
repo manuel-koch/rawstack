@@ -77,7 +77,7 @@ void UfrawWorker::run( UfrawProcess &ufraw, bool preview, int idx, int nof )
     {
         ufraw.setInterpolate( UfrawProcess::InterpolateBilinear );
         ufraw.setColorSmoothing( false );
-        ufraw.setShrink( 3 );
+        ufraw.setShrink( 4 );
     }
 
     // extract the image
@@ -145,6 +145,11 @@ void UfrawWorker::developImpl(bool preview, WorkerBase *predecessor)
     double progressPhaseB = 0.5;
 
     int nof = config()->settings()->getSetting(UfrawSettings::Fuse)->value().toInt();
+    if( preview && nof > 3 )
+    {
+        nof -= 2;
+    }
+
     Magick::Image normalImg;
     std::vector<UfrawProcess>  ufraw(nof);
     int firstIdx = -(nof-1)/2;

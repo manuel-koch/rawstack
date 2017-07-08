@@ -213,7 +213,7 @@ Rectangle {
         cellHeight:              Math.min( cellWidth, theGridView.height )
         focus:                   true
         clip:                    true
-        snapMode:                GridView.SnapToRow
+        snapMode:                GridView.NoSnap
         flow:                    GridView.FlowLeftToRight
         cacheBuffer:             cellHeight*2
 

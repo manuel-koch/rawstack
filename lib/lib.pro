@@ -118,4 +118,5 @@ HEADERS += \
     src/ufrawsettings.h \
     src/ufrawtask.h \
     src/ufrawworker.h \
-    src/workerbase.h
+    src/workerbase.h \
+    src/librawstack_cfg.h

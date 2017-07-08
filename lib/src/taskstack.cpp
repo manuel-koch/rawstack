@@ -23,6 +23,7 @@
 #include "configdb.h"
 #include "configdbentry.h"
 #include "fileinfotoolbox.h"
+#include "librawstack_cfg.h"
 
 #include <QDebug>
 #include <QFileInfo>
@@ -316,7 +317,7 @@ void TaskStack::onTaskFinished()
     if( !m_preview && releaseIdx >= 0 )
         m_tasks[releaseIdx]->worker()->releaseImages();
 
-#if 0
+#if RAWSTACK_SAVE_TMP_IMAGE
     // save output image of current task for debugging
     Magick::Image img = m_tasks[idx]->worker()->gmimage();
     if( img.isValid() )

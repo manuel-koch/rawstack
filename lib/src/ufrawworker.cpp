@@ -22,12 +22,14 @@
 #include "configdbentry.h"
 #include "configsetting.h"
 #include "enfuseprocess.h"
+#include "librawstack_cfg.h"
 
 #include <QDebug>
 #include <QThread>
 #include <QTemporaryFile>
 #include <QCoreApplication>
 #include <QDir>
+#include <QStandardPaths>
 
 UfrawWorker::UfrawWorker()
     : WorkerBase("ufraw")
@@ -137,6 +139,19 @@ void UfrawWorker::registerSettingsImpl()
     hashSetting(UfrawSettings::WbGreen);
 }
 
+void saveTmpImage(QString name, QString step, Magick::Image img)
+{
+#ifdef RAWSTACK_SAVE_TMP_IMAGE
+    QString tmpImgName = QString("stack_%1_00_%2.tif").arg(name).arg(step);
+    QString tmpImgPath = QFileInfo(QStandardPaths::writableLocation(QStandardPaths::CacheLocation),tmpImgName).absoluteFilePath();
+    img.write( tmpImgPath.toStdString().c_str() );
+#else
+    Q_UNUSED(name);
+    Q_UNUSED(step);
+    Q_UNUSED(img);
+#endif
+}
+
 void UfrawWorker::developImpl(bool preview, WorkerBase *predecessor)
 {
     qDebug() << "UfrawWorker::developImpl()" << this << predecessor;
@@ -174,13 +189,13 @@ void UfrawWorker::developImpl(bool preview, WorkerBase *predecessor)
             if( isNormalExposed )
             {
                 normalImg = img;
-                //normalImg.write( QString("/Users/manuel/tmp/test_normal.tif").toStdString().c_str() );
+                saveTmpImage(QFileInfo(config()->raw()).baseName(), "normal", normalImg);
             }
             else
             {
                 mask = masked( isOverExposed, 0.98, img );
                 mask.write( ufraw[i].output().toStdString().c_str() );
-                //mask.write( QString("/Users/manuel/tmp/test_masked%1.tif").arg(i).toStdString().c_str() );
+                saveTmpImage(QFileInfo(config()->raw()).baseName(), QString("masked%1.tif").arg(i), mask);
             }
         }
     }

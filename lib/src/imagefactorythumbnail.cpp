@@ -87,5 +87,5 @@ void ImageFactoryThumbnail::onCacheChanged(ImageCacheGroup::Action action, QStri
 void ImageFactoryThumbnail::onCacheMiss(QString key)
 {
     if( key == m_config->raw() )
-        m_config->db()->cache().loadThumbnail(  m_config->raw() );
+        emit m_config->db()->cache().loadThumbnail( m_config->raw() );
 }

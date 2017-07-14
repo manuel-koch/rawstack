@@ -75,6 +75,11 @@ void UfrawWorker::run( UfrawProcess &ufraw, bool preview, int idx, int nof )
         ufraw.setClip( UfrawProcess::ClipFilm );
     }
 
+    if( !preview && idx >= 0 )
+    {
+        ufraw.setWaveletDenoiseThreshold( 20 + idx*10 );
+    }
+
     if( preview )
     {
         ufraw.setInterpolate( UfrawProcess::InterpolateBilinear );

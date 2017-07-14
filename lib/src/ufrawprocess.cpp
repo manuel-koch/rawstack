@@ -37,6 +37,7 @@ UfrawProcess::UfrawProcess(QObject *parent)
     , m_clip(ClipDigital)
     , m_wbTemperature(0)
     , m_wbGreen(0)
+    , m_waveletDenoiseThreshold(0)
 {
     connect( this, SIGNAL(finished(int)),                        this, SLOT(onTerminated(int)) );
     connect( this, SIGNAL(started()),                            this, SLOT(onStarted()) );
@@ -137,6 +138,11 @@ void UfrawProcess::setWbGreen(double wbGreen)
     m_wbGreen = wbGreen;
 }
 
+void UfrawProcess::setWaveletDenoiseThreshold(int threshold)
+{
+    m_waveletDenoiseThreshold = threshold;
+}
+
 void UfrawProcess::onTerminated(int exitCode)
 {
     qDebug() << "UfrawProcess::onTerminated()" << exitCode;
@@ -221,6 +227,9 @@ void UfrawProcess::buildArgs(Output output, QStringList &args)
             args << QString("--temperature=%1").arg(m_wbTemperature) << QString("--green=%1").arg(m_wbGreen);
         else
             args << "--wb=camera";
+
+        if( m_waveletDenoiseThreshold > 0 )
+            args << QString("--wavelet-denoising-threshold=%1").arg(m_waveletDenoiseThreshold);
     }
 
     if( output == OutputProbe )

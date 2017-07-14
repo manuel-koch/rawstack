@@ -91,6 +91,7 @@ public slots:
     void setClip( Clip clip );
     void setWbTemperature( int wbTemperature );
     void setWbGreen( double wbGreen );
+    void setWaveletDenoiseThreshold( int threshold );
 
 private slots:
 
@@ -120,6 +121,7 @@ private:
     Clip        m_clip;
     int         m_wbTemperature;
     double      m_wbGreen;
+    int         m_waveletDenoiseThreshold;
     InfoMap     m_info;
 };
 

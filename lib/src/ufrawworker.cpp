@@ -146,7 +146,7 @@ void UfrawWorker::registerSettingsImpl()
 
 void saveTmpImage(QString name, QString step, Magick::Image img)
 {
-#ifdef RAWSTACK_SAVE_TMP_IMAGE
+#if RAWSTACK_SAVE_TMP_IMAGE
     QString tmpImgName = QString("stack_%1_00_%2.tif").arg(name).arg(step);
     QString tmpImgPath = QFileInfo(QStandardPaths::writableLocation(QStandardPaths::CacheLocation),tmpImgName).absoluteFilePath();
     img.write( tmpImgPath.toStdString().c_str() );

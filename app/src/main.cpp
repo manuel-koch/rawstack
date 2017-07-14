@@ -104,6 +104,8 @@ int main(int argc, char *argv[])
     parser.addVersionOption();
     QCommandLineOption logPathOption(QStringList() << "l" << "log", "Log messages to given <path>.", "path");
     parser.addOption(logPathOption);
+    QCommandLineOption exportOption(QStringList() << "e" << "export", "Export selected images immediately");
+    parser.addOption(exportOption);
     parser.process(app);
 
     LogHandler logHandler;
@@ -147,8 +149,19 @@ int main(int argc, char *argv[])
     TaskStack taskStack(true);
 
     const QStringList args = parser.positionalArguments();
-    foreach(const QString &arg, args) {
+    foreach(const QString &arg, args)
+    {
         configDb.add( QUrl::fromLocalFile(arg) );
+    }
+
+    if( parser.isSet(exportOption) )
+    {
+        for( int i=0; i<configDb.rowCount(); i++ )
+        {
+            QModelIndex idx(configDb.index(i,0));
+            QVariant entry(configDb.data(idx, ConfigDb::ConfigRole));
+            exportQueue.enqueue( &exportTemplate, entry.value<ConfigDbEntry*>() );
+        }
     }
 
     QQmlContext *rootContext = engine.rootContext();

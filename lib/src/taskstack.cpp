@@ -144,10 +144,18 @@ void TaskStack::develop()
 
 void TaskStack::setConfig(ConfigDbEntry *config)
 {
-    if( m_config == config || (m_config && m_config->equals(config)) )
+    if( m_developing )
+    {
+        qDebug() << "TaskStack::setConfig() skipped, developing";
         return;
+    }
+    if( m_config == config || (m_config && m_config->equals(config)) )
+    {
+        qDebug() << "TaskStack::setConfig() skipped, same config";
+        return;
+    }
 
-    qDebug() << "TaskStack::loadFromFile()" << (config ? config->config() : "unload");
+    qDebug() << "TaskStack::setConfig()" << (config ? config->config() : "unload");
 
     clearTasks();
 

@@ -16,8 +16,8 @@
  *
  * Copyright 2016 Manuel Koch
  */
-#ifndef CONFIGDB_H
-#define CONFIGDB_H
+#ifndef CONFIGDB_H_7FFC7863_20C6_423B_B274_20A35E4049AA
+#define CONFIGDB_H_7FFC7863_20C6_423B_B274_20A35E4049AA
 
 #include "imagecache.h"
 
@@ -107,4 +107,4 @@ private:
     ImageCache            m_cache;
 };
 
-#endif // CONFIGDB_H
+#endif // CONFIGDB_H_7FFC7863_20C6_423B_B274_20A35E4049AA

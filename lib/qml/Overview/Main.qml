@@ -41,7 +41,8 @@ Rectangle {
 
         Footer {
             id: theFooter
-            text: theContent.imageCount+" images..."
+            text: theContent.imageCount+" images" +
+                  ( theContent.selImageCount ? ", " + theContent.selImageCount + " selected" : "")
             onCellsPerRowChanged: theContent.cellsPerRow = cellsPerRow
         }
     }

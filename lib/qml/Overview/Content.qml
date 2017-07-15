@@ -27,8 +27,9 @@ Item {
     width:  400
     height: 400
 
-    property alias cellsPerRow: theGrid.cellsPerRow
-    property alias imageCount:  theGrid.count
+    property alias cellsPerRow:   theGrid.cellsPerRow
+    property alias imageCount:    theGrid.count
+    property alias selImageCount: theGrid.selCount
 
     RowLayout {
 

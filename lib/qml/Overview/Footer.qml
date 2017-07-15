@@ -34,7 +34,7 @@ RowLayout {
         Layout.rightMargin:    4
         Layout.topMargin:      2
         Layout.bottomMargin:   2
-        Layout.fillWidth:   true
+        Layout.fillWidth:      true
         wrapMode:              Text.WordWrap
         font.pointSize:        8
     }

@@ -43,7 +43,7 @@ Rectangle {
             Layout.rightMargin:    4
             Layout.preferredWidth: parent.width
             wrapMode:              Text.WordWrap
-            text:                  theHorizontalList.count + " images..."
+            text:                  theHorizontalList.count + " images"
             font.pointSize:        8
         }
 

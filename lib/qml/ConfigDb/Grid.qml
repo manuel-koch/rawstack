@@ -183,6 +183,15 @@ Rectangle {
             globalMenuModel.imgSettingsApply.enabled = (globalConfigStore.nofSettings > 0)
         }
 
+        function selectAll() {
+            console.log("selectAll()")
+            for( var i = 0; i < model.rowCount(); i++ ) {
+                console.log("selectAll()",i)
+                var idx = globalConfigDb.index( i, 0 )
+                theSelectionModel.select( idx, ItemSelectionModel.Select )
+            }
+        }
+
         function selectedConfigs() {
             var cfgs = [];
             for( var idx = 0; idx < selectedIndexes.length; idx++ )
@@ -219,14 +228,23 @@ Rectangle {
         cacheBuffer:             cellHeight*2
 
         Keys.onPressed: {
-            if( event.key == Qt.Key_Space ) {
+            console.log(event.modifiers,Qt.ControlModifier,event.key,Qt.Key_A)
+            if( event.key === Qt.Key_Space ) {
                 var idx = globalConfigDb.index( currentIndex, 0 )
                 theSelectionModel.select( idx, ItemSelectionModel.Toggle )
             }
-            if( event.key == Qt.Key_Minus )
+            else if( (event.modifiers & Qt.ControlModifier) && (event.key === Qt.Key_A) ) {
+                if( event.modifiers & Qt.ShiftModifier )
+                    theSelectionModel.clear()
+                else
+                    theSelectionModel.selectAll()
+            }
+            else if( event.key === Qt.Key_Minus ) {
                 theGrid.cellsPerRow = Math.min( 9, theGrid.cellsPerRow+1 )
-            else if( event.key == Qt.Key_Plus )
+            }
+            else if( event.key === Qt.Key_Plus ) {
                 theGrid.cellsPerRow = Math.max( 1, theGrid.cellsPerRow-1 )
+            }
         }
     }
 

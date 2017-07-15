@@ -248,6 +248,19 @@ Rectangle {
         }
     }
 
+    DropArea {
+        anchors.fill: parent
+        onDropped: {
+            console.log(drop)
+            if( drop.hasUrls ) {
+                for( var i=0; i<drop.urls.length; i++ ) {
+                    console.log(drop.urls[i])
+                    globalConfigDb.add( drop.urls[i] )
+                }
+            }
+        }
+    }
+
     Misc.FlickableScrollIndicator {
         id: theScroll
         anchors.fill: parent

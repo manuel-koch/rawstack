@@ -52,9 +52,10 @@ Rectangle {
 
             function toggleSelection(extendSelection,forceSelection) {
                 var cmd = forceSelection ? ItemSelectionModel.Select : ItemSelectionModel.Toggle;
-                if( !extendSelection && !delegateIsSelected )
+                if( !forceSelection && !extendSelection && ( !delegateIsSelected || theSelectionModel.selectedIndexes.length > 1) )
                     cmd |= ItemSelectionModel.Clear
-                theSelectionModel.select( globalConfigDb.index( delegateModel.index, 0 ), cmd )
+                var idx = globalConfigDb.index( delegateModel.index, 0 )
+                theSelectionModel.select( idx, cmd )
             }
 
             Connections {

@@ -105,12 +105,18 @@ Rectangle {
 
     Connections {
         target: globalMenuModel.imgSettingsCopy
-        onTriggered: theSelectionModel.copySettingsFromSelected()
+        onTriggered: {
+            if( globalMenuModel.screenOverview.checked )
+                theSelectionModel.copySettingsFromSelected()
+        }
     }
 
     Connections {
         target: globalMenuModel.imgSettingsApply
-        onTriggered: theSelectSettingsDialog.open()
+        onTriggered: {
+            if( globalMenuModel.screenOverview.checked )
+                theSelectSettingsDialog.open()
+        }
     }
 
     Menu {

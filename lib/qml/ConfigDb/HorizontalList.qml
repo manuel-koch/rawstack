@@ -106,7 +106,7 @@ Rectangle {
         spacing:                 4
         focus:                   true
         clip:                    true
-        snapMode:                ListView.SnapToItem
+        snapMode:                ListView.NoSnap
     }
 
     Misc.FlickableScrollIndicator {

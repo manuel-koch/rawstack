@@ -34,8 +34,11 @@ Rectangle {
     function selectConfig(config)
     {
         var idx = globalConfigDb.indexOfConfig(config)
-        if( idx !== -1 )
+        if( idx !== -1 ) {
             theListView.currentIndex = idx;
+            globalMenuModel.imgSettingsCopy.enabled = config.settings.hasSettings
+            globalMenuModel.imgSettingsApply.enabled = true
+        }
     }
 
     Component {

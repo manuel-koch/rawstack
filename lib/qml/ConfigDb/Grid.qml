@@ -94,7 +94,10 @@ Rectangle {
                     else
                         theContextMenu.visible = false
                 }
-                onDoubleClicked: globalDevTaskStack.setConfig( delegateModel.config )
+                onDoubleClicked: {
+                    globalDevTaskStack.setConfig( delegateModel.config )
+                    globalMenuModel.screenDevelop.checked = true;
+                }
             }
         }
     }
